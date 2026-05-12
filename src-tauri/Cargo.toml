@@ -1,0 +1,65 @@
+[package]
+name = "abu"
+version = "0.15.6"
+description = "ABU - AI Desktop Assistant"
+authors = ["you"]
+edition = "2021"
+
+[lib]
+name = "abu_lib"
+crate-type = ["lib", "cdylib", "staticlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon", "macos-private-api"] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = { version = "2", features = ["watch"] }
+tauri-plugin-shell = "2"
+tauri-plugin-notification = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-os = "2"
+tauri-plugin-http = "2"
+tauri-plugin-clipboard-manager = "2"
+tauri-plugin-global-shortcut = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["net", "io-util", "rt", "sync", "macros", "time"] }
+tokio-tungstenite = { version = "0.26", features = ["native-tls"] }
+futures-util = "0.3"
+prost = "0.13"
+reqwest = { version = "0.12", default-features = false, features = ["json", "native-tls"] }
+xcap = "0.3"
+enigo = { version = "0.3", features = ["serde"] }
+base64 = "0.22"
+image = { version = "0.25", default-features = false, features = ["png"] }
+tempfile = "3"
+rusqlite = { version = "0.31", features = ["bundled"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+objc2-app-kit = { version = "0.3", features = ["NSWindow", "NSResponder"] }
+objc2-core-graphics = "0.3"
+# Secrets: hardware-bound AES-256-GCM (keyring avoided to sidestep
+# ad-hoc-signed ACL re-prompts on every auto-update).
+aes-gcm = "0.10"
+hkdf = "0.13"
+sha2 = "0.11"
+rand = "0.8"
+machine-uid = "0.5"
+
+# Secrets: Credential Manager (DPAPI) on Windows, secret-service on Linux.
+[target.'cfg(not(target_os = "macos"))'.dependencies]
+keyring = { version = "3", features = ["windows-native", "sync-secret-service"] }
+
+[dev-dependencies]
+# tempfile moved to [dependencies] (used at runtime by atomic_write module).
+
+[profile.release]
+strip = true
+lto = true
+codegen-units = 1
+panic = "abort"

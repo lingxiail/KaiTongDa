@@ -1,0 +1,464 @@
+/**
+ * Tool Executor — handles execution of tool call batches within the agent loop.
+ *
+ * Extracted from agentLoop.ts to reduce file size and improve modularity.
+ * Responsibilities:
+ * - Execute individual tools with abort support, hooks, and input validation
+ * - Classify tool batches (computer / command / parallel) and execute accordingly
+ * - Process results: update chatStore, eventRouter, and planned step tracking
+ */
+
+import type { ToolCall, ToolResultContent, ToolExecutionContext, ToolResult } from '../../types';
+import type { ConfirmationInfo, FilePermissionCallback } from '../tools/registry';
+import { executeAnyTool, toolResultToString } from '../tools/registry';
+import { processToolResult } from '../session/sessionMemory';
+import { emitHook } from './lifecycleHooks';
+import type { PreToolCallEvent } from './lifecycleHooks';
+import { setComputerUseBatchMode, setSkipAutoScreenshot } from '../tools/builtins';
+import { setComputerUseActive, incrementComputerUseStep, setCurrentAction, isSessionWindowHidden, setSessionWindowHidden, pauseComputerUseStatus } from './computerUseStatus';
+import { TOOL_NAMES } from '../tools/toolNames';
+import { invoke } from '@tauri-apps/api/core';
+import { useChatStore } from '../../stores/chatStore';
+import { useTaskExecutionStore } from '../../stores/taskExecutionStore';
+import { setLoopContext, clearLoopContext } from './permissionBridge';
+import type { EventRouter } from './eventRouter';
+import { createLogger } from '../logging/logger';
+
+const logger = createLogger('toolExecutor');
+
+/** Human-readable description of a computer use action for the status bar. */
+function actionToDescription(action: string, input: Record<string, unknown>): string {
+  switch (action) {
+    case 'screenshot': return '截屏';
+    case 'click': return `点击 (${input.x}, ${input.y})`;
+    case 'move': return `移动鼠标 (${input.x}, ${input.y})`;
+    case 'scroll': return `滚动 ${input.direction}`;
+    case 'drag': return `拖拽 (${input.startX},${input.startY}) → (${input.endX},${input.endY})`;
+    case 'type': return `输入: ${(input.text as string)?.slice(0, 30) ?? ''}`;
+    case 'key': return `按键: ${input.modifiers ? (input.modifiers as string[]).join('+') + '+' : ''}${input.key}`;
+    case 'wait': return `等待 ${input.duration ?? 1000}ms`;
+    default: return action;
+  }
+}
+
+export interface ToolBatchParams {
+  collectedToolCalls: ToolCall[];
+  toolCallToStepId: Map<string, string>;
+  conversationId: string;
+  assistantMsgId: string;
+  loopId: string;
+  abortController: AbortController;
+  eventRouter: EventRouter;
+  executionId: string;
+  inputValidators: Map<string, (input: Record<string, unknown>) => boolean>;
+  confirmCb: (info: ConfirmationInfo) => Promise<boolean>;
+  filePermCb: FilePermissionCallback;
+  toolContext: ToolExecutionContext;
+  /** Whether the loop will continue (tool_use stop reason) */
+  continueLoop: boolean;
+  /** Current context window usage (0-100). Scales tool result truncation under pressure. */
+  contextUsagePercent?: number;
+}
+
+export interface ToolBatchResult {
+  /** Whether MCP tools changed (server installed/uninstalled) */
+  mcpChanged: boolean;
+}
+
+type ToolExecResult = {
+  id: string;
+  result: string;
+  resultContent: ToolResultContent[] | undefined;
+  error: boolean;
+  duration: number;
+};
+
+/**
+ * Execute a batch of tool calls collected from the LLM response.
+ *
+ * Handles:
+ * 1. Setting/clearing loop context for delegate_to_agent
+ * 2. Single-tool execution with abort, hooks, and validation
+ * 3. Batch classification: computer (sequential + window hide/show),
+ *    run_command (sequential), or parallel
+ * 4. Result processing: updating chatStore, eventRouter, and planned steps
+ * 5. MCP tool change detection
+ */
+export async function executeToolBatch(params: ToolBatchParams): Promise<ToolBatchResult> {
+  const {
+    collectedToolCalls,
+    toolCallToStepId,
+    conversationId,
+    assistantMsgId,
+    loopId,
+    abortController,
+    eventRouter,
+    executionId,
+    inputValidators,
+    confirmCb,
+    filePermCb,
+    toolContext,
+    continueLoop,
+    contextUsagePercent,
+  } = params;
+
+  const chatStore = useChatStore.getState();
+
+  // Update the assistant message with tool calls
+  useChatStore.setState((state) => {
+    const msg = state.conversations[conversationId]?.messages.find(
+      (m) => m.id === assistantMsgId
+    );
+    if (msg) {
+      msg.toolCalls = collectedToolCalls;
+      msg.isStreaming = false;
+    }
+  });
+
+  // Execute tools in parallel using Promise.allSettled
+  chatStore.setAgentStatus('tool-calling', `${collectedToolCalls.length} tools`);
+
+  // Expose loop context for delegate_to_agent tool (per-loop, supports concurrent agents)
+  setLoopContext(loopId, {
+    commandConfirmCallback: confirmCb,
+    filePermissionCallback: filePermCb,
+    signal: abortController.signal,
+    eventRouter,
+    loopId,
+    conversationId,
+    toolCallToStepId,
+  });
+
+  let completedCount = 0;
+  const totalCount = collectedToolCalls.length;
+
+  const executeSingleTool = async (tc: typeof collectedToolCalls[number]): Promise<ToolExecResult> => {
+    // Check if cancelled before executing
+    if (abortController.signal.aborted) {
+      return { id: tc.id, result: '[已取消]', resultContent: undefined, error: false, duration: 0 };
+    }
+
+    // Emit preToolCall hook (can block or modify input)
+    const preEvent = await emitHook({
+      type: 'preToolCall' as const,
+      timestamp: Date.now(),
+      conversationId,
+      toolName: tc.name,
+      toolInput: tc.input,
+    } as PreToolCallEvent);
+
+    if (preEvent.blocked) {
+      return { id: tc.id, result: '[被 hook 拦截]', resultContent: undefined, error: false, duration: 0 };
+    }
+
+    const effectiveInput = preEvent.modifiedInput ?? tc.input;
+
+    // Enforce allowed-tools input constraints (e.g., run_command(npm *))
+    const validator = inputValidators.get(tc.name);
+    if (validator && !validator(effectiveInput)) {
+      return { id: tc.id, result: `此操作被技能的 allowed-tools 限制拦截：工具 ${tc.name} 的输入不符合约束条件`, resultContent: undefined, error: true, duration: 0 };
+    }
+
+    const startTime = Date.now();
+    try {
+      // Race tool execution against abort signal so stop button works during long-running tools (e.g. MCP)
+      const rawResult: ToolResult = await new Promise<ToolResult>((resolve, reject) => {
+        if (abortController.signal.aborted) {
+          reject(new DOMException('Aborted', 'AbortError'));
+          return;
+        }
+        let settled = false;
+        const onAbort = () => {
+          if (!settled) {
+            settled = true;
+            reject(new DOMException('Aborted', 'AbortError'));
+          }
+        };
+        abortController.signal.addEventListener('abort', onAbort, { once: true });
+        executeAnyTool(tc.name, effectiveInput, confirmCb, filePermCb, toolContext, contextUsagePercent)
+          .then((result) => {
+            if (!settled) {
+              settled = true;
+              abortController.signal.removeEventListener('abort', onAbort);
+              resolve(result);
+            }
+          })
+          .catch((err) => {
+            if (!settled) {
+              settled = true;
+              abortController.signal.removeEventListener('abort', onAbort);
+              reject(err);
+            }
+          });
+      });
+      const durationMs = Date.now() - startTime;
+      completedCount++;
+      if (totalCount > 1) {
+        chatStore.setAgentStatus('tool-calling', `${completedCount}/${totalCount}: ${tc.name}`);
+      }
+      // Extract string for display/hooks; keep rich content for LLM
+      const resultStr = toolResultToString(rawResult);
+      const resultContent: ToolResultContent[] | undefined =
+        typeof rawResult !== 'string' ? rawResult : undefined;
+      // Emit postToolCall hook
+      await emitHook({
+        type: 'postToolCall',
+        timestamp: Date.now(),
+        conversationId,
+        toolName: tc.name,
+        toolInput: effectiveInput,
+        result: resultStr,
+        error: false,
+        durationMs,
+      });
+      logger.info('Tool executed', { toolName: tc.name, durationMs, error: false });
+      return { id: tc.id, result: resultStr, resultContent, error: false, duration: durationMs / 1000 };
+    } catch (err) {
+      // Re-throw AbortError so outer catch handles cancellation properly
+      if (err instanceof Error && err.name === 'AbortError') {
+        throw err;
+      }
+      const durationMs = Date.now() - startTime;
+      completedCount++;
+      if (totalCount > 1) {
+        chatStore.setAgentStatus('tool-calling', `${completedCount}/${totalCount}: ${tc.name}`);
+      }
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      // Emit postToolCall hook for errors too
+      await emitHook({
+        type: 'postToolCall',
+        timestamp: Date.now(),
+        conversationId,
+        toolName: tc.name,
+        toolInput: effectiveInput,
+        result: `Error: ${errorMsg}`,
+        error: true,
+        durationMs,
+      });
+      logger.info('Tool executed', { toolName: tc.name, durationMs, error: true });
+      return { id: tc.id, result: `Error: ${errorMsg}`, resultContent: undefined, error: true, duration: durationMs / 1000 };
+    }
+  };
+
+  // If batch contains any computer tool call, execute ALL sequentially
+  // (e.g. click → wait → type must run in order, not race each other)
+  const hasComputerTool = collectedToolCalls.some(tc => tc.name === TOOL_NAMES.COMPUTER);
+
+  const allRunCommand = collectedToolCalls.every(tc => tc.name === TOOL_NAMES.RUN_COMMAND);
+  const strategy = hasComputerTool ? 'computer-sequential' : allRunCommand ? 'command-sequential' : 'parallel';
+  logger.info('Tool batch started', { toolCount: collectedToolCalls.length, strategy });
+
+  let results: PromiseSettledResult<ToolExecResult>[];
+  if (hasComputerTool) {
+    // Sequential execution for computer use batches.
+    // Window hide is only needed when batch contains actions that physically interact
+    // with the screen (click, type, etc.) — Abu's window may block the target.
+    // Pure screenshot batches use capture_screen_excluding and don't need window hide.
+    const ACTION_TYPES = new Set(['click', 'move', 'scroll', 'drag', 'type', 'key']);
+    const hasInteractiveAction = collectedToolCalls.some(tc =>
+      tc.name === TOOL_NAMES.COMPUTER && ACTION_TYPES.has(tc.input.action as string)
+    );
+
+    // Session-level window management: only hide on first interactive batch.
+    // Subsequent batches in the same agent loop skip hide/show to avoid flickering.
+    if (hasInteractiveAction && !isSessionWindowHidden()) {
+      try { await invoke('show_screen_border'); } catch { /* ignore */ }
+      // Remember the foreground app before hiding Abu
+      let targetAppName: string | null = null;
+      try {
+        const activeWin = await invoke<{ app_name: string }>('get_active_window');
+        if (activeWin.app_name && activeWin.app_name !== 'Abu' && activeWin.app_name !== 'Abu Dev') {
+          targetAppName = activeWin.app_name;
+        }
+      } catch { /* ignore */ }
+
+      try { await invoke('window_hide'); } catch { /* ignore */ }
+      await new Promise(r => setTimeout(r, 200));
+      setSessionWindowHidden(true);
+
+      // Re-activate the target app after Abu is hidden
+      if (targetAppName) {
+        try { await invoke('activate_app', { appName: targetAppName }); } catch { /* ignore */ }
+        await new Promise(r => setTimeout(r, 100));
+      }
+    }
+    setComputerUseActive(true, conversationId);
+    setComputerUseBatchMode(true);
+
+    const sequentialResults: PromiseSettledResult<ToolExecResult>[] = [];
+    try {
+      for (let i = 0; i < collectedToolCalls.length; i++) {
+        const tc = collectedToolCalls[i];
+        // Only auto-screenshot on the last computer tool in the batch
+        const hasMoreComputerTools = collectedToolCalls.slice(i + 1).some(t => t.name === TOOL_NAMES.COMPUTER);
+        setSkipAutoScreenshot(tc.name === TOOL_NAMES.COMPUTER && hasMoreComputerTools);
+        try {
+          if (tc.name === TOOL_NAMES.COMPUTER) {
+            const action = tc.input.action as string;
+            setCurrentAction(actionToDescription(action, tc.input));
+            incrementComputerUseStep(action);
+          }
+          const value = await executeSingleTool(tc);
+          sequentialResults.push({ status: 'fulfilled', value });
+        } catch (err) {
+          sequentialResults.push({ status: 'rejected', reason: err });
+        }
+      }
+    } finally {
+      setSkipAutoScreenshot(false);
+      setComputerUseBatchMode(false);
+      // NOTE: window_show and hide_screen_border are NOT called here.
+      // They are managed at session level — restored when the agent loop ends
+      // (via cancelStreaming cleanup or natural loop completion).
+      // This prevents window flickering between consecutive CU batches.
+    }
+    results = sequentialResults;
+  } else {
+    // Non-computer batch — pause the CU status bar if it was active from a
+    // previous batch.  The session state (window hidden) is preserved so a
+    // later computer batch can resume without flickering.
+    pauseComputerUseStatus();
+
+    // run_command may have implicit dependencies (e.g. npm install → npm build), serialize them
+    if (allRunCommand) {
+      const sequentialResults: PromiseSettledResult<ToolExecResult>[] = [];
+      for (const tc of collectedToolCalls) {
+        if (abortController.signal.aborted) break;
+        try {
+          const value = await executeSingleTool(tc);
+          sequentialResults.push({ status: 'fulfilled', value });
+        } catch (err) {
+          sequentialResults.push({ status: 'rejected', reason: err });
+        }
+      }
+      results = sequentialResults;
+    } else {
+      // Parallel execution for non-command batches
+      const toolPromises = collectedToolCalls.map(tc => executeSingleTool(tc));
+      results = await Promise.allSettled(toolPromises);
+    }
+  }
+
+  // Update tool call results via EventRouter (use index to match rejected results)
+  // Process results sequentially to handle async offloading
+  for (let i = 0; i < results.length; i++) {
+    const result = results[i];
+    if (result.status === 'fulfilled') {
+      const { id, result: toolResult, resultContent, error } = result.value;
+      // Determine hideScreenshot for computer tool
+      let hideScreenshot: boolean | undefined;
+      const matchedTc = collectedToolCalls[i];
+      if (matchedTc?.name === TOOL_NAMES.COMPUTER) {
+        const showUser = matchedTc.input.show_user;
+        const action = matchedTc.input.action as string;
+        if (typeof showUser === 'boolean') {
+          hideScreenshot = !showUser;
+        } else {
+          hideScreenshot = action !== 'screenshot';
+        }
+      }
+
+      // Offload large tool results to disk to reduce localStorage pressure
+      let storedResult = toolResult;
+      try {
+        const processed = await processToolResult(conversationId, id, toolResult);
+        storedResult = processed.stored;
+        if (processed.offloaded) {
+          logger.info('Tool result offloaded to disk', { toolName: matchedTc?.name, originalSize: toolResult.length });
+        }
+      } catch {
+        // Offload failed — store full result in memory (fallback)
+      }
+
+      // Snapshot any output files this tool produced so they survive original-file deletion.
+      // Fire-and-forget: snapshot failures must never block the agent loop.
+      // Uses the un-offloaded toolResult so extractFileOutputs can still parse stdout.
+      if (!error && matchedTc) {
+        const workspacePath = useChatStore.getState().conversations[conversationId]?.workspacePath ?? null;
+        import('../session/outputSnapshots').then(({ snapshotToolOutputs }) => {
+          snapshotToolOutputs(conversationId, {
+            id,
+            name: matchedTc.name,
+            input: matchedTc.input,
+            result: toolResult,
+          }, workspacePath).catch((e) => logger.warn('snapshot tool output failed', { tool: matchedTc.name, err: e }));
+        }).catch(() => {});
+      }
+
+      chatStore.updateToolCall(conversationId, assistantMsgId, id, storedResult, resultContent, error, hideScreenshot);
+
+      // Update TaskExecutionStore via EventRouter
+      const stepId = toolCallToStepId.get(id);
+      if (stepId) {
+        if (error) {
+          eventRouter.route({ type: 'step-error', loopId, stepId, error: toolResult });
+        } else {
+          eventRouter.route({ type: 'step-end', loopId, stepId, result: toolResult, resultContent });
+        }
+
+        // Update linked planned step status and auto-advance to next
+        const execState = useTaskExecutionStore.getState().executions[executionId];
+        if (execState) {
+          const linkedPlanned = execState.plannedSteps.find(s => s.linkedStepId === stepId);
+          if (linkedPlanned) {
+            useTaskExecutionStore.getState().updatePlannedStepStatus(
+              executionId,
+              linkedPlanned.index,
+              error ? 'error' : 'completed'
+            );
+            // Auto-advance: link the next pending planned step to the next
+            // tool call's execution step (using collectedToolCalls index for reliability)
+            const nextPending = useTaskExecutionStore.getState().executions[executionId]
+              ?.plannedSteps.find(s => s.status === 'pending');
+            if (nextPending) {
+              for (let j = i + 1; j < collectedToolCalls.length; j++) {
+                const nextStepId = toolCallToStepId.get(collectedToolCalls[j].id);
+                if (nextStepId) {
+                  useTaskExecutionStore.getState().linkPlannedStep(executionId, nextPending.index, nextStepId);
+                  useTaskExecutionStore.getState().updatePlannedStepStatus(executionId, nextPending.index, 'running');
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+    } else {
+      // Use index to find the corresponding tool call
+      const tc = collectedToolCalls[i];
+      if (tc) {
+        chatStore.updateToolCall(conversationId, assistantMsgId, tc.id, `Error: ${result.reason}`, undefined, true);
+
+        // Update TaskExecutionStore via EventRouter
+        const stepId = toolCallToStepId.get(tc.id);
+        if (stepId) {
+          eventRouter.route({ type: 'step-error', loopId, stepId, error: String(result.reason) });
+
+          // Update linked planned step status
+          const execState = useTaskExecutionStore.getState().executions[executionId];
+          if (execState) {
+            const linkedPlanned = execState.plannedSteps.find(s => s.linkedStepId === stepId);
+            if (linkedPlanned) {
+              useTaskExecutionStore.getState().updatePlannedStepStatus(
+                executionId,
+                linkedPlanned.index,
+                'error'
+              );
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Clear loop context after tool execution
+  clearLoopContext(loopId);
+
+  // Detect tool changes (e.g. manage_mcp_server install)
+  const mcpChanged = continueLoop && collectedToolCalls.some(tc =>
+    tc.name === TOOL_NAMES.MANAGE_MCP_SERVER && (tc.input as Record<string, unknown>)?.action === 'install' ||
+    tc.name === 'install_mcp_server' || tc.name === 'uninstall_mcp_server'
+  );
+
+  return { mcpChanged };
+}

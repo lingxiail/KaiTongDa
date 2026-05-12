@@ -1,0 +1,299 @@
+/**
+ * Context Window Manager — prevent context overflow
+ *
+ * Strategy:
+ * 1. Always keep system prompt
+ * 2. Always keep first user message (task context)
+ * 3. Keep last 4 complete conversation rounds
+ * 4. Older messages: keep user messages, compress assistant to summary
+ * 5. If still over limit, drop middle messages keeping first + last
+ */
+
+import type { Message, ToolCallForContext, ToolResultContent } from '../../types';
+import { estimateTokens, estimateMessageTokens } from './tokenEstimator';
+import { getMessageText, identifyRounds, RECENT_ROUNDS_TO_KEEP } from './contextUtils';
+import { createLogger } from '../logging/logger';
+
+const logger = createLogger('contextManager');
+
+const ASSISTANT_SUMMARY_MAX_CHARS = 200;
+
+/**
+ * If the first round is older than this, treat it as stale and include it
+ * in the compressible middle rounds instead of preserving it unconditionally.
+ * This prevents very old "task context" from wasting tokens in long-lived
+ * IM sessions where the original topic is no longer relevant.
+ */
+const FIRST_ROUND_MAX_AGE_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+
+/**
+ * Dynamic screenshot retention based on context usage.
+ * When context is plentiful, keep more screenshots for better computer-use continuity.
+ * When context is tight, keep fewer to leave room for messages.
+ *
+ * @param usagePercent - current context usage as 0-100 (optional, defaults to conservative)
+ */
+function getMaxScreenshots(usagePercent?: number): number {
+  if (usagePercent === undefined) return 3;  // default: moderate
+  if (usagePercent < 40) return 4;   // plenty of room
+  if (usagePercent < 60) return 3;   // moderate
+  return 2;                          // tight — aggressive trimming
+}
+
+/**
+ * Strip old screenshot images from messages, keeping only the N most recent.
+ * This prevents context overflow from accumulated screenshot base64 data.
+ * Modifies messages in-place for efficiency (called before LLM send).
+ *
+ * @param usagePercent - optional context usage percent for dynamic retention
+ */
+export function trimOldScreenshots(messages: Message[], usagePercent?: number): Message[] {
+  const maxScreenshots = getMaxScreenshots(usagePercent);
+  // Collect all screenshot image locations (message index + toolCall index)
+  const imageLocations: { msgIdx: number; tcIdx: number }[] = [];
+
+  for (let i = 0; i < messages.length; i++) {
+    const msg = messages[i];
+    if (msg.role !== 'assistant' || !msg.toolCalls) continue;
+    for (let j = 0; j < msg.toolCalls.length; j++) {
+      const tc = msg.toolCalls[j];
+      if (tc.resultContent && Array.isArray(tc.resultContent) && tc.resultContent.some((b: ToolResultContent) => b.type === 'image')) {
+        imageLocations.push({ msgIdx: i, tcIdx: j });
+      }
+    }
+  }
+
+  if (imageLocations.length <= maxScreenshots) return messages;
+
+  // Strip images from older screenshots, keep only the most recent N
+  const toStrip = imageLocations.slice(0, -maxScreenshots);
+  const result = messages.map((msg, i) => {
+    const strippedTcIndices = toStrip.filter(loc => loc.msgIdx === i).map(loc => loc.tcIdx);
+    if (strippedTcIndices.length === 0) return msg;
+
+    // Clone message and strip images from old tool calls
+    const newToolCalls = msg.toolCalls!.map((tc, j) => {
+      if (!strippedTcIndices.includes(j)) return tc;
+      // Replace image content with text placeholder, keep text parts
+      const textParts = tc.resultContent?.filter((b: ToolResultContent) => b.type === 'text') || [];
+      const imageCount = tc.resultContent?.filter((b: ToolResultContent) => b.type === 'image').length || 0;
+      return {
+        ...tc,
+        resultContent: [
+          ...textParts,
+          { type: 'text' as const, text: `[${imageCount} screenshot(s) removed from history to save context]` },
+        ],
+      };
+    });
+
+    // Also strip from toolCallsForContext if present
+    const newToolCallsForContext = msg.toolCallsForContext?.map((tc, j) => {
+      if (!strippedTcIndices.includes(j)) return tc;
+      const textParts = tc.resultContent?.filter((b: ToolResultContent) => b.type === 'text') || [];
+      return {
+        ...tc,
+        resultContent: [
+          ...textParts,
+          { type: 'text' as const, text: `[screenshot removed from history]` },
+        ],
+      };
+    });
+
+    return { ...msg, toolCalls: newToolCalls, toolCallsForContext: newToolCallsForContext || msg.toolCallsForContext };
+  });
+
+  return result;
+}
+
+/**
+ * Ensure compressed/truncated messages don't produce orphaned tool_use blocks.
+ *
+ * After truncation, an assistant message with toolCalls might lose its
+ * corresponding tool results (which live in the next user message) if the
+ * next round is kept but the current round's context is broken.
+ *
+ * This function strips tool data from any assistant message whose tool
+ * results are incomplete — the normalizer will handle the rest at send time.
+ */
+function sanitizeToolPairs(messages: Message[]): Message[] {
+  return messages.map((msg) => {
+    if (msg.role !== 'assistant') return msg;
+    // If toolCalls exist but all results are missing, strip them
+    // (they were likely orphaned by truncation)
+    const tc = msg.toolCallsForContext || msg.toolCalls;
+    if (!tc || tc.length === 0) return msg;
+
+    const allMissing = tc.every((t) => {
+      const result = 'result' in t ? t.result : undefined;
+      return result === undefined;
+    });
+
+    if (allMissing) {
+      // Convert to a compressed summary instead of leaving orphaned tool_use
+      const toolNames = tc.map((t) => `[${t.name}]`).join(', ');
+      const text = getMessageText(msg.content);
+      const summary = text
+        ? `${toolNames}\n${text.slice(0, ASSISTANT_SUMMARY_MAX_CHARS)}`
+        : `${toolNames} [tool results lost during context compression]`;
+      return {
+        ...msg,
+        content: summary,
+        toolCalls: undefined,
+        toolCallsForContext: undefined,
+      };
+    }
+    return msg;
+  });
+}
+
+/**
+ * Compress an assistant message to a brief summary
+ */
+function compressAssistantMessage(msg: Message): Message {
+  const text = getMessageText(msg.content);
+  const truncatedText = text.length > ASSISTANT_SUMMARY_MAX_CHARS
+    ? text.slice(0, ASSISTANT_SUMMARY_MAX_CHARS) + '...'
+    : text;
+
+  // Summarize tool calls
+  const toolSummary = msg.toolCallsForContext?.map(
+    (tc: ToolCallForContext) => `[${tc.name}]`
+  ).join(', ') || msg.toolCalls?.map(
+    (tc) => `[${tc.name}]`
+  ).join(', ') || '';
+
+  const compressed = toolSummary
+    ? `${toolSummary}\n${truncatedText}`
+    : truncatedText;
+
+  return {
+    ...msg,
+    content: compressed,
+    thinking: undefined,
+    toolCalls: undefined,
+    toolCallsForContext: undefined,
+  };
+}
+
+/**
+ * Prepare messages for LLM call, fitting within context window limit
+ *
+ * @param messages Full conversation messages
+ * @param systemPrompt The system prompt text
+ * @param contextWindowSize Total context window size (tokens)
+ * @param reserveForOutput Tokens to reserve for model output
+ * @returns Trimmed messages array
+ */
+export function prepareContextMessages(
+  messages: Message[],
+  systemPrompt: string,
+  contextWindowSize: number,
+  reserveForOutput: number,
+  toolSchemaTokens?: number
+): Message[] {
+  const maxInputTokens = contextWindowSize - reserveForOutput;
+  const systemTokens = estimateTokens(systemPrompt);
+
+  // Fast path: everything fits
+  const messageTokens = estimateMessageTokens(messages);
+  const totalTokens = systemTokens + messageTokens + (toolSchemaTokens ?? 0);
+  if (totalTokens <= maxInputTokens) {
+    return messages;
+  }
+
+  const usagePercent = Math.round((totalTokens / maxInputTokens) * 100);
+  logger.info('Hard truncation needed', {
+    systemTokens,
+    messageTokens,
+    toolSchemaTokens: toolSchemaTokens ?? 0,
+    totalTokens,
+    maxInputTokens,
+    usagePercent,
+  });
+
+  const rounds = identifyRounds(messages);
+  if (rounds.length <= 1) return messages; // Can't compress further
+
+  // Keep first round only if it's recent enough to be relevant context.
+  // In long-lived IM sessions, the first round from weeks ago is stale noise.
+  const firstRoundAge = Date.now() - (rounds[0]?.[0]?.timestamp ?? Date.now());
+  const keepFirstRound = firstRoundAge < FIRST_ROUND_MAX_AGE_MS;
+
+  const firstRound = keepFirstRound ? rounds[0] : [];
+  const recentRounds = rounds.slice(-RECENT_ROUNDS_TO_KEEP);
+  const middleStart = keepFirstRound ? 1 : 0;
+  const middleRounds = rounds.slice(middleStart, rounds.length - RECENT_ROUNDS_TO_KEEP);
+
+  // If no middle rounds, we can only return what we have
+  if (middleRounds.length === 0) {
+    return messages;
+  }
+
+  // Step 1: Compress middle assistant messages, keep user messages
+  const compressedMiddle: Message[] = [];
+  for (const round of middleRounds) {
+    for (const msg of round) {
+      if (msg.role === 'user') {
+        compressedMiddle.push(msg);
+      } else if (msg.role === 'assistant') {
+        compressedMiddle.push(compressAssistantMessage(msg));
+      }
+    }
+  }
+
+  const result1 = [
+    ...firstRound,
+    ...compressedMiddle,
+    ...recentRounds.flat(),
+  ];
+
+  const tokens1 = systemTokens + (toolSchemaTokens ?? 0) + estimateMessageTokens(sanitizeToolPairs(result1));
+  if (tokens1 <= maxInputTokens) {
+    return stripOldThinking(sanitizeToolPairs(result1));
+  }
+
+  // Step 2: Drop middle entirely, keep first + recent
+  const result2 = [
+    ...firstRound,
+    ...recentRounds.flat(),
+  ];
+
+  const tokens2 = systemTokens + (toolSchemaTokens ?? 0) + estimateMessageTokens(sanitizeToolPairs(result2));
+  if (tokens2 <= maxInputTokens) {
+    return stripOldThinking(sanitizeToolPairs(result2));
+  }
+
+  // Step 3: Aggressive — keep first user message (if recent) + last 2 rounds
+  const lastTwoRounds = rounds.slice(-2);
+  if (keepFirstRound) {
+    const firstUserMsg = messages.find((m) => m.role === 'user');
+    if (firstUserMsg) {
+      return stripOldThinking(sanitizeToolPairs([firstUserMsg, ...lastTwoRounds.flat()]));
+    }
+  }
+  return stripOldThinking(sanitizeToolPairs(lastTwoRounds.flat()));
+}
+
+/**
+ * Strip thinking content from all but the most recent assistant message.
+ * Thinking blocks are valuable for the current turn but waste 10-50% of
+ * context when accumulated across many turns.
+ */
+function stripOldThinking(messages: Message[]): Message[] {
+  // Find the last assistant message with thinking
+  let lastThinkingIdx = -1;
+  for (let i = messages.length - 1; i >= 0; i--) {
+    if (messages[i].role === 'assistant' && messages[i].thinking) {
+      lastThinkingIdx = i;
+      break;
+    }
+  }
+  if (lastThinkingIdx === -1) return messages;
+
+  return messages.map((msg, i) => {
+    if (i < lastThinkingIdx && msg.role === 'assistant' && msg.thinking) {
+      return { ...msg, thinking: undefined };
+    }
+    return msg;
+  });
+}

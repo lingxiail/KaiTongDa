@@ -1,0 +1,261 @@
+/**
+ * IM Channel Store — Phase 2: manage IM channel connections and sessions
+ */
+
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { immer } from 'zustand/middleware/immer';
+import type {
+  IMChannel,
+  IMChannelStatus,
+  IMSession,
+  IMCapabilityLevel,
+} from '../types/imChannel';
+import type { IMPlatform } from '../types/im';
+import { needsActiveConnection } from '../core/im/pluginRegistry';
+
+function generateId(): string {
+  return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+}
+
+// ── Store types ──
+
+interface IMChannelState {
+  channels: Record<string, IMChannel>;
+  /** Active sessions — now persisted for session continuity across restarts */
+  sessions: Record<string, IMSession>;
+  /** Archived sessions for "continue last" recovery */
+  archivedSessions: Record<string, IMSession>;
+}
+
+interface IMChannelActions {
+  // Channel CRUD
+  addChannel(data: {
+    platform: IMPlatform;
+    name: string;
+    appId: string;
+    appSecret: string;
+    capability?: IMCapabilityLevel;
+    allowedUsers?: string[];
+    workspacePaths?: string[];
+    sessionTimeoutMinutes?: number;
+  }): string;
+  updateChannel(id: string, data: Partial<Pick<IMChannel, 'name' | 'appId' | 'appSecret' | 'capability' | 'responseMode' | 'allowedUsers' | 'workspacePaths' | 'sessionTimeoutMinutes' | 'maxRoundsPerSession' | 'enabled'>>): void;
+  removeChannel(id: string): void;
+  setChannelStatus(id: string, status: IMChannelStatus, error?: string): void;
+
+  // Session management
+  upsertSession(key: string, session: Omit<IMSession, 'key'>): void;
+  removeSession(key: string): void;
+  touchSession(key: string): void;
+  incrementSessionRound(key: string): void;
+  clearExpiredSessions(): void;
+
+  // Archived session management
+  archiveSession(windowKey: string, session: IMSession): void;
+  removeArchivedSession(windowKey: string): void;
+
+  // Queries
+  getChannelsByPlatform(platform: IMPlatform): IMChannel[];
+  getActiveChannels(): IMChannel[];
+  getSessionsByChannel(channelId: string): IMSession[];
+}
+
+export type IMChannelStore = IMChannelState & IMChannelActions;
+
+export const useIMChannelStore = create<IMChannelStore>()(
+  persist(
+    immer((set, get) => ({
+      channels: {},
+      sessions: {},
+      archivedSessions: {},
+
+      // ── Channel CRUD ──
+
+      addChannel(data) {
+        const id = generateId();
+        const now = Date.now();
+        set((state) => {
+          state.channels[id] = {
+            id,
+            platform: data.platform,
+            name: data.name,
+            appId: data.appId,
+            appSecret: data.appSecret,
+            capability: data.capability ?? 'safe_tools',
+            responseMode: 'mention_only',
+            allowedUsers: data.allowedUsers ?? [],
+            workspacePaths: data.workspacePaths ?? [],
+            sessionTimeoutMinutes: data.sessionTimeoutMinutes ?? 0,
+            maxRoundsPerSession: 50,
+            enabled: true,
+            status: 'disconnected',
+            createdAt: now,
+            updatedAt: now,
+          };
+        });
+        return id;
+      },
+
+      updateChannel(id, data) {
+        set((state) => {
+          const channel = state.channels[id];
+          if (!channel) return;
+          // Guard: ensure enabled is always a boolean (never undefined)
+          if ('enabled' in data && typeof data.enabled !== 'boolean') return;
+          Object.assign(channel, data);
+          channel.updatedAt = Date.now();
+          // Webhook platforms: enabled = connected. Active-connection platforms
+          // (Feishu WS, DChat heartbeat, etc.) manage their own status lifecycle.
+          if ('enabled' in data && !needsActiveConnection(channel.platform)) {
+            channel.status = data.enabled ? 'connected' : 'disconnected';
+          }
+        });
+      },
+
+      removeChannel(id) {
+        set((state) => {
+          delete state.channels[id];
+          // Also remove all sessions for this channel
+          for (const [key, session] of Object.entries(state.sessions)) {
+            if (session.channelId === id) {
+              delete state.sessions[key];
+            }
+          }
+          // Also clean up archived sessions for this channel
+          for (const [key, session] of Object.entries(state.archivedSessions)) {
+            if (session.channelId === id) {
+              delete state.archivedSessions[key];
+            }
+          }
+        });
+      },
+
+      setChannelStatus(id, status, error) {
+        set((state) => {
+          const channel = state.channels[id];
+          if (!channel) return;
+          channel.status = status;
+          channel.lastError = error;
+        });
+      },
+
+      // ── Session management ──
+
+      upsertSession(key, session) {
+        set((state) => {
+          state.sessions[key] = { ...session, key };
+        });
+      },
+
+      removeSession(key) {
+        set((state) => {
+          delete state.sessions[key];
+        });
+      },
+
+      touchSession(key) {
+        set((state) => {
+          const session = state.sessions[key];
+          if (session) {
+            session.lastActiveAt = Date.now();
+          }
+        });
+      },
+
+      incrementSessionRound(key) {
+        set((state) => {
+          const session = state.sessions[key];
+          if (session) {
+            session.messageCount++;
+            session.lastActiveAt = Date.now();
+          }
+        });
+      },
+
+      clearExpiredSessions() {
+        const now = Date.now();
+        set((state) => {
+          for (const [key, session] of Object.entries(state.sessions)) {
+            const channel = state.channels[session.channelId];
+            const timeoutMs = (channel?.sessionTimeoutMinutes ?? 0) * 60 * 1000;
+            // timeout 0 = no timeout, skip expiration
+            if (timeoutMs > 0 && now - session.lastActiveAt > timeoutMs) {
+              delete state.sessions[key];
+            }
+          }
+        });
+      },
+
+      archiveSession(windowKey, session) {
+        set((state) => {
+          state.archivedSessions[windowKey] = session;
+        });
+      },
+
+      removeArchivedSession(windowKey) {
+        set((state) => {
+          delete state.archivedSessions[windowKey];
+        });
+      },
+
+      // ── Queries ──
+
+      getChannelsByPlatform(platform) {
+        return Object.values(get().channels).filter((c) => c.platform === platform);
+      },
+
+      getActiveChannels() {
+        return Object.values(get().channels).filter((c) => c.enabled);
+      },
+
+      getSessionsByChannel(channelId) {
+        return Object.values(get().sessions).filter((s) => s.channelId === channelId);
+      },
+    })),
+    {
+      name: 'abu-im-channel',
+      version: 2,
+      migrate(persisted: unknown, version: number) {
+        const state = persisted as Record<string, unknown>;
+        if (version < 2) {
+          // v1 didn't persist sessions/archivedSessions — initialize empty
+          state.archivedSessions = {};
+          // sessions will be empty from v1 (was cleared on rehydrate)
+        }
+        return state as unknown as IMChannelStore;
+      },
+      partialize: (state) => ({
+        channels: state.channels,
+        sessions: state.sessions,
+        archivedSessions: state.archivedSessions,
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (!state) return;
+        // Reset channel statuses on reload
+        for (const channel of Object.values(state.channels) as IMChannel[]) {
+          channel.lastError = undefined;
+          // Fix: repair enabled field if corrupted to undefined (from prior Toggle bug)
+          if (channel.enabled === undefined) channel.enabled = false;
+          // Webhook platforms are ready immediately when enabled;
+          // active-connection platforms (Feishu WS, DChat heartbeat) start disconnected
+          channel.status = (channel.enabled && !needsActiveConnection(channel.platform)) ? 'connected' : 'disconnected';
+        }
+        // Clean up archived sessions older than 24h
+        const now = Date.now();
+        const MAX_ARCHIVE_AGE_MS = 24 * 60 * 60 * 1000;
+        if (state.archivedSessions) {
+          for (const [key, s] of Object.entries(state.archivedSessions as Record<string, IMSession>)) {
+            if (now - s.lastActiveAt > MAX_ARCHIVE_AGE_MS) {
+              delete (state.archivedSessions as Record<string, IMSession>)[key];
+            }
+          }
+        } else {
+          state.archivedSessions = {};
+        }
+        // Sessions are now persisted — only ensure the field exists (v1 migration)
+        if (!state.sessions) state.sessions = {};
+      },
+    }
+  )
+);

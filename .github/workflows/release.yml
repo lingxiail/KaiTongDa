@@ -1,0 +1,237 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+          shared-key: ${{ matrix.target }}
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup embedded Python runtime
+        run: bash scripts/setup-python-runtime.sh
+        shell: bash
+
+      - name: Build Tauri app
+        env:
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          RAW_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+        shell: bash
+        run: |
+          # Write signing key to file. GitHub Secrets injection or shell expansion
+          # can append trailing bytes (observed: extra %/\n at end). Use Python to
+          # strip all non-base64 chars then truncate to a multiple of 4, which is
+          # the only valid length for base64.
+          #
+          # Tauri 2 only reads TAURI_SIGNING_PRIVATE_KEY; it auto-detects file path vs content.
+          python3 <<'PYEOF' > "$RUNNER_TEMP/tauri-signing-key.txt"
+          import os, sys, re
+          raw = os.environ.get('RAW_KEY', '')
+          cleaned = re.sub(r'[^A-Za-z0-9+/=]', '', raw)
+          valid_len = (len(cleaned) // 4) * 4
+          sys.stdout.write(cleaned[:valid_len])
+          PYEOF
+          echo "Key file size: $(wc -c < "$RUNNER_TEMP/tauri-signing-key.txt") bytes"
+          echo "Last 16 bytes (hex):"
+          tail -c 16 "$RUNNER_TEMP/tauri-signing-key.txt" | od -c | head -2
+          export TAURI_SIGNING_PRIVATE_KEY="$RUNNER_TEMP/tauri-signing-key.txt"
+          npx tauri build --target ${{ matrix.target }}
+          rm -f "$RUNNER_TEMP/tauri-signing-key.txt"
+
+      - name: Create GitHub Release (idempotent)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --repo "${{ github.repository }}" \
+            --title "Abu ${{ github.ref_name }}" \
+            --notes "See the assets below for download links." \
+            || true
+
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          TAG="${{ github.ref_name }}"
+          TARGET="${{ matrix.target }}"
+          BUNDLE="src-tauri/target/${TARGET}/release/bundle"
+
+          echo "=== Bundle contents ==="
+          ls -la "$BUNDLE"/macos/ 2>/dev/null || true
+          ls -la "$BUNDLE"/dmg/ 2>/dev/null || true
+          ls -la "$BUNDLE"/nsis/ 2>/dev/null || true
+
+          if [[ "$TARGET" == *"apple"* ]]; then
+            # macOS .app.tar.gz has the same filename across architectures —
+            # rename to include arch suffix to avoid Release upload collision.
+            if [[ "$TARGET" == *"aarch64"* ]]; then
+              ARCH_SUFFIX="aarch64"
+            else
+              ARCH_SUFFIX="x64"
+            fi
+            cp "$BUNDLE"/macos/Abu.app.tar.gz "$BUNDLE"/macos/Abu_${ARCH_SUFFIX}.app.tar.gz
+            cp "$BUNDLE"/macos/Abu.app.tar.gz.sig "$BUNDLE"/macos/Abu_${ARCH_SUFFIX}.app.tar.gz.sig
+
+            gh release upload "$TAG" "$BUNDLE"/dmg/*.dmg --clobber || true
+            gh release upload "$TAG" "$BUNDLE"/macos/Abu_${ARCH_SUFFIX}.app.tar.gz --clobber
+            gh release upload "$TAG" "$BUNDLE"/macos/Abu_${ARCH_SUFFIX}.app.tar.gz.sig --clobber
+          else
+            # Tauri 2 signs the NSIS .exe installer directly (not a separate .nsis.zip).
+            # The .exe is both the installer and the updater bundle.
+            gh release upload "$TAG" "$BUNDLE"/nsis/*-setup.exe --clobber
+            gh release upload "$TAG" "$BUNDLE"/nsis/*-setup.exe.sig --clobber
+          fi
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout FIRST: actions/checkout@v6 defaults to clean: true which runs
+      # `git clean -ffdx` and would wipe any untracked dirs (like release-assets/)
+      # created by a prior step. Keep checkout ahead of the download.
+      - uses: actions/checkout@v6
+
+      - name: Download updater assets from GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p release-assets
+
+          echo "=== All release assets ==="
+          gh release view "${{ github.ref_name }}" --repo "${{ github.repository }}" --json assets --jq '.assets[].name'
+
+          gh release download "${{ github.ref_name }}" \
+            --repo "${{ github.repository }}" \
+            -D release-assets \
+            -p "*.tar.gz" -p "*.tar.gz.sig" -p "*-setup.exe" -p "*-setup.exe.sig"
+
+          echo "=== Downloaded ==="
+          ls -la release-assets/
+
+      - name: Generate latest.json
+        shell: bash
+        env:
+          VERSION_TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
+          OSS_REGION: ${{ secrets.OSS_REGION }}
+        run: |
+          AARCH64_SIG=$(cat release-assets/*aarch64*.tar.gz.sig 2>/dev/null || echo "")
+          X86_64_SIG=$(cat release-assets/*x64*.tar.gz.sig 2>/dev/null || echo "")
+          WINDOWS_SIG=$(cat release-assets/*-setup.exe.sig 2>/dev/null || echo "")
+
+          AARCH64_FILE=$(ls release-assets/*aarch64*.tar.gz 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo "")
+          X86_64_FILE=$(ls release-assets/*x64*.tar.gz 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo "")
+          WINDOWS_FILE=$(ls release-assets/*-setup.exe 2>/dev/null | grep -v '.sig' | head -1 | xargs basename 2>/dev/null || echo "")
+
+          export AARCH64_SIG X86_64_SIG WINDOWS_SIG AARCH64_FILE X86_64_FILE WINDOWS_FILE
+          python3 <<'PYEOF'
+          import json, os, re
+          from datetime import datetime, timezone
+
+          version_tag = os.environ['VERSION_TAG']  # e.g. "v0.11.2"
+          version_num = version_tag.lstrip('v')
+          repo = os.environ['REPO']
+          oss_base = f"https://{os.environ['OSS_BUCKET']}.{os.environ['OSS_REGION']}.aliyuncs.com/releases/{version_tag}"
+
+          # Extract release notes for this version from CHANGELOG.md.
+          # Falls back to a GitHub link if the entry is missing.
+          notes = f"See https://github.com/{repo}/releases/tag/{version_tag}"
+          try:
+              with open('CHANGELOG.md', encoding='utf-8') as f:
+                  cl = f.read()
+              # Match "## v0.11.2 ..." through just before the next "## v" or EOF
+              pattern = rf'^## v{re.escape(version_num)}[^\n]*\n(.*?)(?=^## v|\Z)'
+              m = re.search(pattern, cl, re.MULTILINE | re.DOTALL)
+              if m:
+                  body = m.group(1).strip()
+                  if body:
+                      notes = body
+          except FileNotFoundError:
+              pass
+
+          platforms = {}
+          for key, fname, sig in [
+              ('darwin-aarch64', os.environ['AARCH64_FILE'], os.environ['AARCH64_SIG']),
+              ('darwin-x86_64',  os.environ['X86_64_FILE'],  os.environ['X86_64_SIG']),
+              ('windows-x86_64', os.environ['WINDOWS_FILE'], os.environ['WINDOWS_SIG']),
+          ]:
+              if fname and sig.strip():
+                  platforms[key] = {'signature': sig.strip(), 'url': f'{oss_base}/{fname}'}
+
+          data = {
+              'version': version_tag,
+              'notes': notes,
+              'pub_date': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+              'platforms': platforms,
+          }
+          with open('latest.json', 'w', encoding='utf-8') as f:
+              json.dump(data, f, indent=2, ensure_ascii=False)
+          print(json.dumps(data, indent=2, ensure_ascii=False))
+          PYEOF
+
+      - name: Install ossutil
+        run: curl -fsSL https://gosspublic.alicdn.com/ossutil/install.sh | sudo bash
+
+      - name: Configure ossutil
+        run: |
+          ossutil config \
+            -e ${{ secrets.OSS_REGION }}.aliyuncs.com \
+            -i ${{ secrets.ALIYUN_ACCESS_KEY_ID }} \
+            -k ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+
+      - name: Upload to OSS
+        run: |
+          VERSION="${{ github.ref_name }}"
+          BUCKET="oss://${{ secrets.OSS_BUCKET }}"
+
+          for file in release-assets/*; do
+            [ -f "$file" ] || continue
+            ossutil cp "$file" "${BUCKET}/releases/${VERSION}/$(basename $file)" -f
+          done
+
+          ossutil cp latest.json "${BUCKET}/latest.json" -f --meta "Cache-Control:no-cache"
+
+          echo "Done. Listing:"
+          ossutil ls "${BUCKET}/releases/${VERSION}/"

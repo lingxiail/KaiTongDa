@@ -1,0 +1,76 @@
+{
+  "productName": "Abu",
+  "version": "0.15.6",
+  "identifier": "com.abu.app",
+  "build": {
+    "beforeDevCommand": "npm run copy-resources && npm run dev",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "npm run build && npm run copy-resources",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "macOSPrivateApi": true,
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "label": "main",
+        "title": "",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 900,
+        "minHeight": 600,
+        "resizable": true,
+        "center": true,
+        "titleBarStyle": "Overlay",
+        "trafficLightPosition": { "x": 20, "y": 18 },
+        "acceptFirstMouse": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://esm.sh; connect-src 'self' https: http:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: asset: https://asset.localhost http://asset.localhost",
+      "dangerousDisableAssetCspModification": ["script-src"],
+      "assetProtocol": {
+        "scope": ["**"]
+      }
+    }
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    },
+    "updater": {
+      "endpoints": [
+        "https://abu-agent.oss-cn-beijing.aliyuncs.com/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDhEMDY1MTJCQ0QzN0QwNEMKUldSTTBEZk5LMUVHalQ2V0EwZnpoaFJtQ2hHTmF2VDZiVFRmKzBOWnZHVk1pTFZjcFhFdDNoMVoK"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "createUpdaterArtifacts": true,
+    "targets": ["dmg", "app", "nsis"],
+    "resources": [
+      "builtin-skills/",
+      "builtin-agents/",
+      "python-runtime/",
+      "browser-extension/"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "category": "Productivity",
+    "shortDescription": "AI-powered desktop office assistant",
+    "macOS": {
+      "infoPlist": "Info.plist"
+    },
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser"
+      }
+    }
+  }
+}

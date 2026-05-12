@@ -1,0 +1,440 @@
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
+import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { oneLight } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx';
+import python from 'react-syntax-highlighter/dist/esm/languages/prism/python';
+import bash from 'react-syntax-highlighter/dist/esm/languages/prism/bash';
+import json from 'react-syntax-highlighter/dist/esm/languages/prism/json';
+import markdown from 'react-syntax-highlighter/dist/esm/languages/prism/markdown';
+import { useState, memo, useMemo, useCallback, Suspense, type ReactNode } from 'react';
+import { Copy, Check, Download, ChevronDown, ChevronUp } from 'lucide-react';
+import { useI18n, format } from '@/i18n';
+import { cn } from '@/lib/utils';
+import type { SearchResult } from '@/types';
+
+import { getCodeBlockRenderer } from './codeBlockRenderers';
+
+SyntaxHighlighter.registerLanguage('tsx', tsx);
+SyntaxHighlighter.registerLanguage('typescript', tsx);
+SyntaxHighlighter.registerLanguage('javascript', tsx);
+SyntaxHighlighter.registerLanguage('python', python);
+SyntaxHighlighter.registerLanguage('bash', bash);
+SyntaxHighlighter.registerLanguage('shell', bash);
+SyntaxHighlighter.registerLanguage('json', json);
+SyntaxHighlighter.registerLanguage('markdown', markdown);
+
+// --- Citation utilities ---
+
+const CITATION_REGEX = /\[(\d{1,2})\]/g;
+
+/** Inline citation badge — small grounded pill that sits on the text baseline */
+function CitationBadge({ index, title, onClick }: {
+  index: number;
+  title?: string;
+  onClick?: (index: number) => void;
+}) {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onClick?.(index);
+  };
+  return (
+    <span
+      onClick={handleClick}
+      className="inline-flex items-center justify-center mx-[2px] px-[5px] py-[1px] text-[11px] text-[var(--abu-clay)] bg-[var(--abu-clay-bg)] rounded cursor-pointer hover:bg-[var(--abu-clay-bg-15)] transition-colors leading-tight align-baseline"
+      title={title}
+    >
+      {index}
+    </span>
+  );
+}
+
+/** Split text to replace [1]-style citation markers with CitationBadge components */
+function splitTextWithCitations(
+  text: string,
+  searchResults: SearchResult[],
+  onCitationClick?: (index: number) => void
+): ReactNode[] {
+  const parts: ReactNode[] = [];
+  let lastIndex = 0;
+  let keyIdx = 0;
+
+  CITATION_REGEX.lastIndex = 0;
+  let match;
+  while ((match = CITATION_REGEX.exec(text)) !== null) {
+    const citNum = parseInt(match[1], 10);
+    if (citNum < 1 || citNum > searchResults.length) continue;
+
+    const idx = match.index;
+    if (idx > lastIndex) {
+      parts.push(text.slice(lastIndex, idx));
+    }
+    parts.push(
+      <CitationBadge
+        key={`cite-${keyIdx++}`}
+        index={citNum}
+        title={searchResults[citNum - 1]?.title}
+        onClick={onCitationClick}
+      />
+    );
+    lastIndex = idx + match[0].length;
+  }
+
+  if (parts.length === 0) return [text];
+  if (lastIndex < text.length) {
+    parts.push(text.slice(lastIndex));
+  }
+  return parts;
+}
+
+/** Process a single text node: split by paths, then optionally by citations */
+function splitTextNode(
+  text: string,
+  searchResults: SearchResult[] | null,
+  onCitationClick?: (index: number) => void
+): ReactNode[] {
+  let parts: ReactNode[] = [text];
+  if (searchResults && searchResults.length > 0) {
+    const expanded: ReactNode[] = [];
+    for (const part of parts) {
+      if (typeof part === 'string') {
+        expanded.push(...splitTextWithCitations(part, searchResults, onCitationClick));
+      } else {
+        expanded.push(part);
+      }
+    }
+    parts = expanded;
+  }
+  return parts;
+}
+
+/** Process react-markdown children: detect file paths and citations in text nodes */
+function processChildren(
+  children: ReactNode,
+  searchResults: SearchResult[] | null,
+  onCitationClick?: (index: number) => void
+): ReactNode {
+  if (typeof children === 'string') {
+    const parts = splitTextNode(children, searchResults, onCitationClick);
+    return parts.length === 1 ? parts[0] : parts;
+  }
+  if (!Array.isArray(children)) return children;
+
+  let modified = false;
+  const result: ReactNode[] = [];
+
+  for (const child of children) {
+    if (typeof child === 'string') {
+      const parts = splitTextNode(child, searchResults, onCitationClick);
+      if (parts.length > 1 || parts[0] !== child) {
+        modified = true;
+        result.push(...parts);
+      } else {
+        result.push(child);
+      }
+    } else {
+      result.push(child);
+    }
+  }
+
+  return modified ? result : children;
+}
+
+// --- Language to file extension map ---
+const LANG_EXT_MAP: Record<string, string> = {
+  typescript: '.ts', tsx: '.tsx', javascript: '.js', jsx: '.jsx',
+  python: '.py', bash: '.sh', shell: '.sh', json: '.json',
+  html: '.html', css: '.css', sql: '.sql', rust: '.rs',
+  go: '.go', java: '.java', kotlin: '.kt', swift: '.swift',
+  ruby: '.rb', php: '.php', yaml: '.yml', toml: '.toml',
+  xml: '.xml', markdown: '.md', c: '.c', cpp: '.cpp',
+};
+
+const COLLAPSE_THRESHOLD = 15;
+
+export function CollapsibleCodeBlock({ codeString, language }: { codeString: string; language: string | null }) {
+  const { t } = useI18n();
+  const [collapsed, setCollapsed] = useState(true);
+  const [copied, setCopied] = useState(false);
+
+  const lineCount = codeString.split('\n').length;
+  const shouldCollapse = lineCount > COLLAPSE_THRESHOLD;
+  const isCollapsed = shouldCollapse && collapsed;
+
+  const handleCopy = useCallback(async () => {
+    await navigator.clipboard.writeText(codeString);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [codeString]);
+
+  const handleSaveAs = useCallback(async () => {
+    try {
+      const { save } = await import('@tauri-apps/plugin-dialog');
+      const { writeTextFile } = await import('@tauri-apps/plugin-fs');
+      const ext = (language && LANG_EXT_MAP[language]) || '.txt';
+      const filePath = await save({
+        defaultPath: `code${ext}`,
+        filters: [{ name: 'Code File', extensions: [ext.slice(1)] }],
+      });
+      if (filePath) {
+        await writeTextFile(filePath, codeString);
+        // Snapshot the saved file so it survives later user-initiated deletion.
+        // Fire-and-forget; never block the save flow.
+        const { useChatStore } = await import('@/stores/chatStore');
+        const convId = useChatStore.getState().activeConversationId;
+        if (convId) {
+          import('@/core/session/outputSnapshots').then(({ snapshotCodeBlockSave }) => {
+            snapshotCodeBlockSave(convId, filePath, language ?? undefined).catch(() => {});
+          }).catch(() => {});
+        }
+      }
+    } catch { /* ignore in non-Tauri env */ }
+  }, [codeString, language]);
+
+  return (
+    <div className="relative my-3 rounded-lg overflow-hidden max-w-full">
+      {/* Code area */}
+      <div className="relative">
+        <div
+          style={
+            isCollapsed
+              ? { maxHeight: '360px', overflow: 'hidden' }
+              : { maxHeight: '70vh', overflow: 'auto' }
+          }
+        >
+          <SyntaxHighlighter
+            style={oneLight}
+            language={language || 'text'}
+            PreTag="div"
+            wrapLongLines={true}
+            customStyle={{
+              margin: 0,
+              borderRadius: 0,
+              fontSize: '13px',
+              padding: '12px 16px',
+              overflowX: 'auto',
+              maxWidth: '100%',
+              background: 'var(--abu-bg-muted)',
+            }}
+            codeTagProps={{ style: { background: 'transparent' } }}
+          >
+            {codeString}
+          </SyntaxHighlighter>
+        </div>
+        {/* Gradient overlay when collapsed */}
+        {isCollapsed && (
+          <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[var(--abu-bg-muted)] to-transparent flex items-end justify-center pb-2">
+            <button
+              onClick={() => setCollapsed(false)}
+              className="flex items-center gap-1 px-3 py-1 rounded-full bg-black/5 hover:bg-black/10 text-xs text-[var(--abu-text-secondary)] transition-colors"
+            >
+              <ChevronDown className="h-3.5 w-3.5" />
+              {format(t.chat.codeBlockExpand, { lines: String(lineCount) })}
+            </button>
+          </div>
+        )}
+      </div>
+      {/* Bottom toolbar — always visible */}
+      <div className="flex items-center justify-between px-3 py-1.5 bg-[var(--abu-bg-active)] text-xs text-[var(--abu-text-tertiary)] border-t border-[var(--abu-border-subtle)]">
+        <div className="flex items-center gap-2">
+          {language && <span>{language}</span>}
+          {shouldCollapse && !isCollapsed && (
+            <button
+              onClick={() => setCollapsed(true)}
+              className="flex items-center gap-0.5 hover:text-[var(--abu-text-primary)] transition-colors"
+            >
+              <ChevronUp className="h-3.5 w-3.5" />
+              {t.chat.codeBlockCollapse}
+            </button>
+          )}
+        </div>
+        <div className="flex items-center gap-1">
+          <button
+            onClick={handleCopy}
+            className="p-1 rounded hover:bg-black/5 transition-colors"
+            title={copied ? '✓' : 'Copy'}
+          >
+            {copied ? (
+              <Check className="h-3.5 w-3.5 text-[var(--abu-success)]" />
+            ) : (
+              <Copy className="h-3.5 w-3.5" />
+            )}
+          </button>
+          <button
+            onClick={handleSaveAs}
+            className="p-1 rounded hover:bg-black/5 transition-colors"
+            title={t.chat.codeBlockSaveAs}
+          >
+            <Download className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Close any unclosed code fence so interrupted streams don't spill content as plain text.
+// Counts fence-opening lines (starting with 3+ backticks); appends a closing fence if odd.
+function closeOpenFences(text: string): string {
+  let inFence = false;
+  for (const line of text.split('\n')) {
+    if (/^`{3,}/.test(line)) inFence = !inFence;
+  }
+  return inFence ? text + '\n```' : text;
+}
+
+// Stable references — avoid recreating on every render
+const remarkPluginsStable = [remarkGfm, remarkBreaks];
+const SAFE_URL_PATTERN = /^(https?:\/\/|mailto:|tel:|#)/i;
+
+type MarkdownVariant = 'assistant' | 'user';
+
+/** Build markdown component overrides, optionally citation-aware */
+function buildMarkdownComponents(
+  searchResults: SearchResult[] | null,
+  onCitationClick?: (index: number) => void,
+  variant: MarkdownVariant = 'assistant',
+) {
+  const sr = searchResults && searchResults.length > 0 ? searchResults : null;
+  const isUser = variant === 'user';
+  return {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    code({ className, children, ...props }: any) {
+      const match = /language-(\w+)/.exec(className || '');
+      const codeString = String(children).replace(/\n$/, '');
+      const isInline = !match && !codeString.includes('\n');
+
+      if (isInline) {
+        // Detect hex color codes and show a swatch
+        const hexMatch = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.exec(codeString.trim());
+        return (
+          <code
+            className={isUser
+              ? 'px-1 py-0.5 rounded bg-white/15 text-white text-[0.9em]'
+              : 'px-1 py-0.5 rounded bg-[var(--abu-bg-active)] text-[var(--abu-text-secondary)] text-[0.9em]'
+            }
+            {...props}
+          >
+            {hexMatch && (
+              <span
+                className="inline-block w-3 h-3 rounded-sm mr-1 align-middle border border-black/10"
+                style={{ backgroundColor: hexMatch[0] }}
+              />
+            )}
+            {children}
+          </code>
+        );
+      }
+
+      const renderer = match?.[1] ? getCodeBlockRenderer(match[1]) : undefined;
+      if (renderer) {
+        const BlockComponent = renderer.component;
+        return (
+          <Suspense fallback={<div className="my-3 rounded-lg bg-[var(--abu-bg-muted)] p-6 text-center text-sm text-[var(--abu-text-muted)]">…</div>}>
+            <BlockComponent code={codeString} />
+          </Suspense>
+        );
+      }
+
+      return (
+        <CollapsibleCodeBlock
+          codeString={codeString}
+          language={match?.[1] || null}
+        />
+      );
+    },
+
+    img() {
+      return null;
+    },
+    p({ children }: { children?: ReactNode }) {
+      return <p className={isUser ? 'my-1 leading-relaxed text-[14.5px]' : 'my-2 leading-7 text-[15px]'}>{processChildren(children, sr, onCitationClick)}</p>;
+    },
+    h1({ children }: { children?: ReactNode }) {
+      return <h1 className={cn('text-xl font-semibold mt-5 mb-2', isUser ? 'text-white' : 'text-[var(--abu-text-primary)]')}>{children}</h1>;
+    },
+    h2({ children }: { children?: ReactNode }) {
+      return <h2 className={cn('text-lg font-semibold mt-4 mb-2', isUser ? 'text-white' : 'text-[var(--abu-text-primary)]')}>{children}</h2>;
+    },
+    h3({ children }: { children?: ReactNode }) {
+      return <h3 className={cn('text-base font-semibold mt-3 mb-1', isUser ? 'text-white' : 'text-[var(--abu-text-primary)]')}>{children}</h3>;
+    },
+    ul({ children }: { children?: ReactNode }) {
+      return <ul className="my-2 pl-6 list-outside list-disc space-y-1">{children}</ul>;
+    },
+    ol({ children }: { children?: ReactNode }) {
+      return <ol className="my-2 pl-6 list-outside list-decimal space-y-1">{children}</ol>;
+    },
+    li({ children }: { children?: ReactNode }) {
+      return <li className={isUser ? 'leading-relaxed text-[14.5px]' : 'leading-7 text-[15px]'}>{processChildren(children, sr, onCitationClick)}</li>;
+    },
+    blockquote({ children }: { children?: ReactNode }) {
+      return (
+        <blockquote className={cn('my-3 pl-3 border-l-2 italic', isUser ? 'border-white/40 text-white/80' : 'border-orange-300 text-[var(--abu-text-tertiary)]')}>
+          {children}
+        </blockquote>
+      );
+    },
+    a({ href, children }: { href?: string; children?: ReactNode }) {
+      const isLocalPath = /^(\/|[A-Za-z]:[/\\]|~\/)/.test(href ?? '');
+      const safeHref = SAFE_URL_PATTERN.test(href ?? '') ? href : undefined;
+      return (
+        <a href={safeHref} target="_blank" rel="noopener noreferrer" className={isUser ? 'underline decoration-[var(--abu-text-tertiary)]' : isLocalPath ? 'text-[var(--abu-text-tertiary)] hover:underline hover:text-[var(--abu-text-secondary)]' : 'text-[var(--abu-text-tertiary)] hover:underline hover:text-[var(--abu-text-secondary)]'}>
+          {children}
+        </a>
+      );
+    },
+    strong({ children }: { children?: ReactNode }) {
+      return <strong className={cn('font-semibold', isUser ? 'text-white' : 'text-[var(--abu-text-primary)]')}>{children}</strong>;
+    },
+    table({ children }: { children?: ReactNode }) {
+      return (
+        <div className="my-3 overflow-x-auto rounded-lg bg-white border border-[var(--abu-border-subtle)]">
+          <table className="w-full text-sm">{children}</table>
+        </div>
+      );
+    },
+    thead({ children }: { children?: ReactNode }) {
+      return <thead className="bg-[var(--abu-bg-muted)]">{children}</thead>;
+    },
+    th({ children }: { children?: ReactNode }) {
+      return <th className="px-3 py-2 text-left font-medium text-[var(--abu-text-secondary)]">{children}</th>;
+    },
+    td({ children }: { children?: ReactNode }) {
+      return <td className="px-3 py-2 text-[var(--abu-text-secondary)]">{children}</td>;
+    },
+    hr() {
+      return <hr className={cn('my-4', isUser ? 'border-white/30' : 'border-[var(--abu-border)]')} />;
+    },
+  };
+}
+
+// Stable references for the default (no citations) cases
+const defaultAssistantComponents = buildMarkdownComponents(null, undefined, 'assistant');
+const defaultUserComponents = buildMarkdownComponents(null, undefined, 'user');
+
+interface MarkdownRendererProps {
+  content: string;
+  searchResults?: SearchResult[];
+  onCitationClick?: (index: number) => void;
+  variant?: MarkdownVariant;
+}
+
+export default memo(function MarkdownRenderer({ content, searchResults, onCitationClick, variant = 'assistant' }: MarkdownRendererProps) {
+  const components = useMemo(
+    () => (searchResults && searchResults.length > 0)
+      ? buildMarkdownComponents(searchResults ?? null, onCitationClick, variant)
+      : variant === 'user' ? defaultUserComponents : defaultAssistantComponents,
+    [searchResults, onCitationClick, variant]
+  );
+
+  return (
+    <ReactMarkdown
+      remarkPlugins={remarkPluginsStable}
+      components={components}
+    >
+      {closeOpenFences(content)}
+    </ReactMarkdown>
+  );
+});
