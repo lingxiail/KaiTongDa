@@ -27,7 +27,7 @@
 | 自主规划并执行复杂任务 | :white_check_mark: | :x: | :x: |
 | 读写本地文件、执行命令 | :white_check_mark: | :x: | :white_check_mark: |
 | 自然语言交互 | :white_check_mark: | :white_check_mark: | :x: |
-| 28 个内置技能 + 自进化（灵犀自己攒新技能） | :white_check_mark: | :x: | :x: |
+| 29 个内置技能 + 自进化（灵犀自己攒新技能） | :white_check_mark: | :x: | :x: |
 | 多对话按项目聚合（Projects） | :white_check_mark: | :x: | :x: |
 | 定时任务 & 事件触发 | :white_check_mark: | :x: | :white_check_mark: |
 | IM 机器人（飞书/钉钉/企微/Slack） | :white_check_mark: | :x: | 部分 |
@@ -59,7 +59,7 @@
 <td align="center"><b>IM 频道对话</b><br/>在飞书/钉钉中 @灵犀 即可交互<br/><br/><img src="website/assets/screenshot-im-chat.png" width="100%" /></td>
 </tr>
 <tr>
-<td align="center"><b>Skill 技能</b><br/>28 个内置技能，支持自定义扩展 + 自进化<br/><br/><img src="website/assets/screenshot-skills.png" width="100%" /></td>
+<td align="center"><b>Skill 技能</b><br/>29 个内置技能，支持自定义扩展 + 自进化<br/><br/><img src="website/assets/screenshot-skills.png" width="100%" /></td>
 <td align="center"><b>MCP 连接器</b><br/>一键接入 Playwright、GitHub 等外部工具<br/><br/><img src="website/assets/screenshot-mcp.png" width="100%" /></td>
 </tr>
 <tr>
@@ -95,7 +95,7 @@
 - **多 Agent 后台并行** — 支持同时运行多个后台 Agent（最多 5 个），各自独立执行任务，进度实时可见
 - **桌宠模式** — 透明圆形浮窗常驻桌面，跨 Spaces 跟随，随手呼出对话不抢焦点
 - **对话分享 / 导出** — 一键把对话导出成 JSON 分享给同事；自动脱敏 API Key 与本地路径
-- **28 个内置技能** — PDF/PPTX/DOCX/Excel 生成、前端设计、画布设计、算法艺术、Mermaid/SVG/信息图、Web Artifacts、Chrome 自动化（LingXi-Browser）、深度研究、Agent 自我反思（reflect）、工作流自动化等，一键安装，支持自定义
+- **29 个内置技能** — PDF/PPTX/DOCX/Excel 生成、前端设计、画布设计、算法艺术、Mermaid/SVG/信息图、Web Artifacts、Chrome 自动化（LingXi-Browser）、互联网检索（agent-reach）、深度研究、Agent 自我反思（reflect）、工作流自动化等，一键安装，支持自定义
 - **MCP 工具协议** — 通过 Model Context Protocol 连接数据库、搜索引擎、GitHub 等外部服务
 - **浏览器自动化** — 内置 Browser Bridge + Chrome 扩展，实现网页元素操作、表单填写、截图、JS 执行
 - **电脑操控** — 通过截屏 + 键鼠控制完成桌面级任务，内置敏感应用拦截、危险按键拦截、5 分钟超时熔断等多重防护
@@ -343,7 +343,7 @@ src/
 ├── types/            # TypeScript 类型定义
 └── utils/            # 工具函数
 
-builtin-skills/       # 28 个内置技能（每个为独立目录）
+builtin-skills/       # 29 个内置技能（每个为独立目录）
 builtin-agents/       # 内置 Agent 定义（预留）
 lingxi-browser-bridge/   # 浏览器桥接 MCP Server
 lingxi-chrome-extension/ # Chrome 扩展（LingXi-Browser 技能依赖）
