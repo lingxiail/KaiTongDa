@@ -261,27 +261,37 @@
 - Rust >= 1.75（[安装 Rust](https://rustup.rs/)）
 - Tauri 2.0 系统依赖（[参考文档](https://v2.tauri.app/start/prerequisites/)）
 
-### 开发
+### Windows 本地构建
 
-```bash
-# 克隆仓库
-git clone https://github.com/vking0804-spec/lingxi.git
-cd lingxi
-
-# 安装依赖
+```powershell
+# 1. 安装前端依赖
 npm install
 
-# 启动桌面应用（dev 隔离配置，与正式安装的 LingXi 完全隔离）
+# 2. 生成 Windows 版 Python 运行时（首次克隆或删除后必需）
+# 说明：此命令需要仓库提供对应的 package.json script
+npm run setup-python:win
+
+# 3. 开发模式（热更新）
 npm run tauri:dev
 
-# 仅启动前端（不需要 Rust）
-npm run dev
+# 4. 生产打包（输出 .exe 安装包）
+npm run tauri:build
 ```
 
-### 构建
+### macOS 本地构建
 
 ```bash
-npm run tauri build
+# 1. 安装前端依赖
+npm install
+
+# 2. 生成 macOS 版 Python 运行时（首次克隆或删除后必需）
+bash scripts/setup-python-runtime.sh
+
+# 3. 开发模式
+npm run tauri:dev
+
+# 4. 生产打包（输出 .dmg 镜像）
+npm run tauri:build
 ```
 
 构建产物位于 `src-tauri/target/release/bundle/`。

@@ -21,6 +21,7 @@
     "eval:report": "tsx src/eval/run.ts report",
     "copy-resources": "node scripts/copy-resources.js",
     "setup-python": "bash scripts/setup-python-runtime.sh",
+    "setup-python:win": "powershell -ExecutionPolicy Bypass -File scripts/setup-python-runtime.ps1",
     "prepare": "husky"
   },
   "dependencies": {
