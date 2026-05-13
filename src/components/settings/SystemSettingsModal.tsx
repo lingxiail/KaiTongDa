@@ -1,6 +1,6 @@
 import { useSettingsStore, type SystemSettingsTab } from '@/stores/settingsStore';
 import { useI18n } from '@/i18n';
-import { Settings2, Info, Shield, Check, SlidersHorizontal, MessageCircle, Radio, Brain, Heart, Activity } from 'lucide-react';
+import { Settings2, Shield, Check, SlidersHorizontal, Radio, Brain, Heart, Activity } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AIServicesSection, AboutSection, SandboxSection, GeneralSection, IMChannelSection } from './sections';
 import FeedbackSection from './sections/FeedbackSection';
@@ -23,8 +23,6 @@ export default function SystemSettingsView() {
     { id: 'sandbox', label: t.settings.sandbox, icon: Shield },
     { id: 'general', label: t.settings.general, icon: SlidersHorizontal },
     { id: 'diagnostic', label: t.diagnostic.title, icon: Activity },
-    { id: 'feedback', label: t.about.feedback, icon: MessageCircle },
-    { id: 'about', label: t.common.version, icon: Info },
   ];
 
   const renderContent = () => {

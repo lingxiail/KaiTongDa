@@ -1,5 +1,5 @@
 {
-  "productName": "Abu",
+  "productName": "LingXi",
   "version": "0.15.6",
   "identifier": "com.abu.app",
   "build": {
@@ -14,7 +14,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "",
+        "title": "LingXi",
         "width": 1200,
         "height": 800,
         "minWidth": 900,

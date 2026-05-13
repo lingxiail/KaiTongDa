@@ -174,7 +174,7 @@ export function ModelSelector({ open, onClose, anchorRef }: ModelSelectorProps) 
   }, [open, onClose, anchorRef]);
 
   const enabledProviders = useMemo(
-    () => providers.filter((p) => p.enabled && p.models.length > 0),
+    () => providers.filter((p) => p.source === 'custom' && p.enabled && p.models.length > 0),
     [providers]
   );
 

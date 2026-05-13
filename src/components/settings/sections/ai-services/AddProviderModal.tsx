@@ -58,7 +58,6 @@ const CLOUD_PROVIDERS: { id: LLMProvider; label: string }[] = [
   { id: 'volcengine', label: 'Volcengine' },
   { id: 'bailian', label: 'Bailian' },
   { id: 'siliconflow', label: 'SiliconFlow' },
-  { id: 'qiniu', label: 'Qiniu' },
   { id: 'openrouter', label: 'OpenRouter' },
 ];
 
@@ -405,8 +404,10 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
       });
     }
 
-    // Auto-select first model if this is the first enabled provider
-    const hasOtherEnabled = providers.some(p => p.enabled && p.id !== providerId);
+    // Auto-select first model if this is the first visible enabled provider.
+    // Qiniu is hidden from this branded build, so it should not block selecting
+    // the custom deployment the user just added.
+    const hasOtherEnabled = providers.some(p => p.id !== 'qiniu' && p.enabled && p.id !== providerId);
     if (!hasOtherEnabled && modelInfos.length > 0) {
       selectModel(providerId, modelInfos[0].id);
     }

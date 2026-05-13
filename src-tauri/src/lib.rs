@@ -1157,7 +1157,7 @@ fn update_tray_menu(app: AppHandle, im_channels: Vec<IMTrayStatus>, trigger_coun
     if let Ok(sep) = MenuItem::with_id(&app, "sep", "────────────", false, None::<&str>) {
         items.push(sep);
     }
-    if let Ok(show) = MenuItem::with_id(&app, "show", "Show Abu / 显示窗口", true, None::<&str>) {
+    if let Ok(show) = MenuItem::with_id(&app, "show", "Show LingXi / 显示窗口", true, None::<&str>) {
         items.push(show);
     }
     if let Ok(quit) = MenuItem::with_id(&app, "quit", "Quit / 退出", true, None::<&str>) {
@@ -1189,9 +1189,9 @@ fn update_tray_notice_count(app: AppHandle, count: u32) {
     let _ = tray.set_title(Some(&title));
 
     let tooltip = if count > 0 {
-        format!("Abu — {} pending", count)
+        format!("LingXi — {} pending", count)
     } else {
-        "Abu".to_string()
+        "LingXi".to_string()
     };
     let _ = tray.set_tooltip(Some(&tooltip));
 }
