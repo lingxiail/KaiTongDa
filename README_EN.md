@@ -2,16 +2,16 @@
 
 [中文](README.md) | **English**
 
-<img src="website/assets/abu-avatar.png" width="120" height="120" style="border-radius: 24px" />
+<img src="website/assets/lingxi-logo.png" width="120" height="120" style="border-radius: 24px" />
 
-# Abu (阿布)
+# LingXi (灵犀)
 
-**Your AI Desktop Office Assistant — Just Leave It to Abu**
+**Your AI Desktop Office Assistant — Just Leave It to LingXi**
 
 A locally-run AI desktop assistant inspired by Claude Code's Cowork mode.
-Tell Abu what you need — it reads files, runs commands, writes docs, and builds reports, all on your machine.
+Tell LingXi what you need — it reads files, runs commands, writes docs, and builds reports, all on your machine.
 
-[![Release](https://img.shields.io/github/v/release/PM-Shawn/Abu-Cowork?style=flat-square)](https://github.com/PM-Shawn/Abu-Cowork/releases)
+[![Release](https://img.shields.io/github/v/release/vking0804-spec/lingxi?style=flat-square)](https://github.com/vking0804-spec/lingxi/releases)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](LICENSE)
 
 [Download](#-download) · [Quick Start](#-quick-start) · [Features](#-features) · [User Guide](docs/User-Guide_EN.md) · [Build from Source](#-build-from-source)
@@ -20,14 +20,14 @@ Tell Abu what you need — it reads files, runs commands, writes docs, and build
 
 ---
 
-## Why Abu?
+## Why LingXi?
 
-| Feature | Abu | Regular AI Chat | Traditional Automation |
+| Feature | LingXi | Regular AI Chat | Traditional Automation |
 |---------|-----|----------------|----------------------|
 | Autonomous planning & task execution | :white_check_mark: | :x: | :x: |
 | Read/write local files, run commands | :white_check_mark: | :x: | :white_check_mark: |
 | Natural language interaction | :white_check_mark: | :white_check_mark: | :x: |
-| 28 built-in skills + self-evolving (Abu grows its own) | :white_check_mark: | :x: | :x: |
+| 28 built-in skills + self-evolving (LingXi grows its own) | :white_check_mark: | :x: | :x: |
 | Multi-conversation Project aggregation | :white_check_mark: | :x: | :x: |
 | Scheduled tasks & event triggers | :white_check_mark: | :x: | :white_check_mark: |
 | IM bot (Lark/DingTalk/WeCom/Slack) | :white_check_mark: | :x: | Partial |
@@ -43,7 +43,7 @@ Tell Abu what you need — it reads files, runs commands, writes docs, and build
 - **v0.13.12** — **Diagnostic panel**: one-click self-check across AI services / data & permissions / MCP / skills / network / app, plus diagnostic-bundle export
 - **v0.13** — **Self-Evolving Skills**, **Projects** (multi-conversation aggregation), **Notification Center**, **Persistent Todos**
 
-> Full changelog: [Releases](https://github.com/PM-Shawn/Abu-Cowork/releases).
+> Full changelog: [Releases](https://github.com/vking0804-spec/lingxi/releases).
 
 ## Preview
 
@@ -56,7 +56,7 @@ Tell Abu what you need — it reads files, runs commands, writes docs, and build
 </tr>
 <tr>
 <td align="center"><b>Permission Control</b><br/>File access requires user authorization<br/><br/><img src="website/assets/screenshot-permission.png" width="100%" /></td>
-<td align="center"><b>IM Channel Chat</b><br/>@Abu in Lark/DingTalk to interact<br/><br/><img src="website/assets/screenshot-im-chat.png" width="100%" /></td>
+<td align="center"><b>IM Channel Chat</b><br/>@LingXi in Lark/DingTalk to interact<br/><br/><img src="website/assets/screenshot-im-chat.png" width="100%" /></td>
 </tr>
 <tr>
 <td align="center"><b>Skills</b><br/>28 built-in skills + self-evolving + custom<br/><br/><img src="website/assets/screenshot-skills.png" width="100%" /></td>
@@ -88,14 +88,14 @@ Tell Abu what you need — it reads files, runs commands, writes docs, and build
 ### Core Capabilities
 
 - **Autonomous Agent** — More than chat: plans, invokes tools, reads/writes files, executes commands, and completes complex tasks end-to-end
-- **Soul Personality System** — Three proactivity presets (Quiet / Buddy / Butler) decide when Abu speaks up; customize tone, address, reply style, and boundaries via `SOUL.md`
-- **Self-Evolving Skills** — After you run a multi-step complex flow, Abu proactively offers "want to crystallize this into a skill?" — one click drafts it, you review, you accept. Next time, just name the skill; no need to re-explain
+- **Soul Personality System** — Three proactivity presets (Quiet / Buddy / Butler) decide when LingXi speaks up; customize tone, address, reply style, and boundaries via `SOUL.md`
+- **Self-Evolving Skills** — After you run a multi-step complex flow, LingXi proactively offers "want to crystallize this into a skill?" — one click drafts it, you review, you accept. Next time, just name the skill; no need to re-explain
 - **Smart Notification System** — Menubar unread count / sidebar badge / system notification auto-routed; notices queued to inbox while you're in fullscreen / DnD, surfaced via badges once you're back; audit trail kept for 180 days
 - **Projects** — Promote a workspace into a Project: conversations in the same direction auto-aggregate; each project gets its own default model, skill set, and MCP connectors
 - **Multi-Agent Parallel Execution** — Run up to 5 background agents simultaneously, each executing tasks independently with real-time progress tracking
 - **Desktop Pet** — Transparent circular floater pinned to your desktop, follows you across Spaces, summon a quick chat without stealing focus
 - **Conversation Sharing** — Export any conversation to JSON in one click; API keys and local paths are auto-redacted before sharing
-- **28 Built-in Skills** — PDF/PPTX/DOCX/Excel generation, frontend design, canvas design, algorithmic art, Mermaid/SVG/infographics, Web Artifacts, Chrome automation (Abu-Browser), deep research, Agent self-reflection (reflect), workflow automation, and more — one-click install, fully customizable
+- **28 Built-in Skills** — PDF/PPTX/DOCX/Excel generation, frontend design, canvas design, algorithmic art, Mermaid/SVG/infographics, Web Artifacts, Chrome automation (LingXi-Browser), deep research, Agent self-reflection (reflect), workflow automation, and more — one-click install, fully customizable
 - **MCP Protocol** — Connect to databases, search engines, GitHub, and other external services via Model Context Protocol
 - **Browser Automation** — Built-in Browser Bridge + Chrome extension for web element interaction, form filling, screenshots, and JS execution
 - **Computer Use** — Screenshot + mouse/keyboard control for desktop-level tasks, with sensitive app blocking, dangerous key interception, and a 5-minute session timeout
@@ -128,7 +128,7 @@ Tell Abu what you need — it reads files, runs commands, writes docs, and build
 
 ### IM Channel Integration
 
-Turn Abu into your team bot — just @Abu in your chat:
+Turn LingXi into your team bot — just @LingXi in your chat:
 
 - **Supported Platforms** — D-Chat, Feishu (Lark), DingTalk, WeCom, Slack
 - **Session Management** — Auto-isolate conversations by user/group/thread, auto-archive on timeout, "continue last" recovery
@@ -138,13 +138,13 @@ Turn Abu into your team bot — just @Abu in your chat:
 ### Memory & Context
 
 - **Three-tier file-based memory (Memdir architecture)**:
-  - **Personal Memory** — `~/.abu/memory/` multi-file directory, applies across all projects, auto-organized by topic with `MEMORY.md` index injected into the prompt
-  - **Project Memory** — `~/.abu/projects/<workspace>/memory/` auto-isolated per workspace, each entry is a separate `.md` file for easy reading, search, and pruning
-  - **Auto-migration** — Legacy `~/.abu/agents/abu/memory.md` and `{workspace}/.abu/MEMORY.md` are migrated automatically on startup
+  - **Personal Memory** — `~/.lingxi/memory/` multi-file directory, applies across all projects, auto-organized by topic with `MEMORY.md` index injected into the prompt
+  - **Project Memory** — `~/.lingxi/projects/<workspace>/memory/` auto-isolated per workspace, each entry is a separate `.md` file for easy reading, search, and pruning
+  - **Auto-migration** — Legacy `~/.lingxi/agents/lingxi/memory.md` and `{workspace}/.lingxi/MEMORY.md` are migrated automatically on startup
 - **Project Rules** (hand-written):
-  - `~/.abu/ABU.md` — User-level rules (cross-project)
-  - `{workspace}/.abu/ABU.md` — Project-level rules
-  - `{workspace}/.abu/rules/*.md` — Modular rules (loaded alphabetically, max 20 files)
+  - `~/.lingxi/LINGXI.md` — User-level rules (cross-project)
+  - `{workspace}/.lingxi/LINGXI.md` — Project-level rules
+  - `{workspace}/.lingxi/rules/*.md` — Modular rules (loaded alphabetically, max 20 files)
 - **Project Aggregation** — Promote a workspace into a Project to aggregate its conversations; older conversations auto-backfilled with `projectId` on startup. Each project can independently configure default model, skill set, and MCP connectors
 - **Session Memory** — Large tool outputs automatically persisted to disk; compact summaries kept in-context to prevent context explosion
 - **Persistent Todos** — Per-conversation `todo_write` plans persisted to disk and survive app restarts
@@ -171,24 +171,24 @@ Turn Abu into your team bot — just @Abu in your chat:
 
 ## Download
 
-Head to [GitHub Releases](https://github.com/PM-Shawn/Abu-Cowork/releases) to download the latest version:
+Head to [GitHub Releases](https://github.com/vking0804-spec/lingxi/releases) to download the latest version:
 
 | Platform | File |
 |----------|------|
-| macOS (Apple Silicon) | `Abu_x.x.x_aarch64.dmg` |
-| macOS (Intel) | `Abu_x.x.x_x64.dmg` |
-| Windows | `Abu_x.x.x_x64-setup.exe` |
+| macOS (Apple Silicon) | `LingXi_x.x.x_aarch64.dmg` |
+| macOS (Intel) | `LingXi_x.x.x_x64.dmg` |
+| Windows | `LingXi_x.x.x_x64-setup.exe` |
 
-> **macOS Users**: If you see a "damaged" warning on first launch, run `xattr -cr /Applications/Abu.app`. See the [Installation Guide](docs/Installation-Guide_EN.md) for details.
+> **macOS Users**: If you see a "damaged" warning on first launch, run `xattr -cr /Applications/LingXi.app`. See the [Installation Guide](docs/Installation-Guide_EN.md) for details.
 
 ## Quick Start
 
 ### 1. Configure AI Service
 
-Open Abu → Settings → **AI Service Management**:
+Open LingXi → Settings → **AI Service Management**:
 
 - **Quickest setup**: Choose a provider (e.g., DeepSeek, Anthropic), enter your API Key, click verify
-- **Local models**: Install [Ollama](https://ollama.com) — Abu auto-discovers local models, no API key needed
+- **Local models**: Install [Ollama](https://ollama.com) — LingXi auto-discovers local models, no API key needed
 - **Custom endpoint**: Enter any OpenAI-compatible API's Base URL and Key
 
 ### 2. Start Chatting
@@ -217,8 +217,8 @@ Create a weekly report PPT for this week
 
 - **Install skills**: Settings → Customize → Skill Store — install PDF, PPT, frontend design, and more
 - **Connect MCP**: Settings → MCP Connectors — one-click integration with GitHub, Playwright, etc.
-- **Set up schedules**: Have Abu automatically search news, run data, send reports daily
-- **Connect IM**: Settings → IM Channels — let your team @Abu directly in Lark/DingTalk
+- **Set up schedules**: Have LingXi automatically search news, run data, send reports daily
+- **Connect IM**: Settings → IM Channels — let your team @LingXi directly in Lark/DingTalk
 
 > For more use cases, see the [User Guide](docs/User-Guide_EN.md)
 
@@ -228,7 +228,7 @@ Create a weekly report PPT for this week
 |----------|--------|
 | Document Generation | PDF, PPTX, DOCX, XLSX |
 | Design & Creative | Frontend Design, Canvas Design, Algorithmic Art, SVG Diagram, Mermaid Diagram, Infographic, Slack GIF Creator, HTML Widget |
-| Browser Automation | **Abu-Browser** (Chrome bridge with auto extension setup, drives a real browser) |
+| Browser Automation | **LingXi-Browser** (Chrome bridge with auto extension setup, drives a real browser) |
 | Developer Tools | Claude API, MCP Builder, Web Artifacts Builder, Webapp Testing (Playwright) |
 | Content Writing | Doc Co-authoring, Brand Guidelines, Internal Comms |
 | Automation | Schedule, Trigger, Alert SOP |
@@ -236,7 +236,7 @@ Create a weekly report PPT for this week
 | Agent Reflection | Reflect — lets the agent look back on a run and distill learnings |
 | Theming | Theme Factory (10+ preset themes applicable to any artifact) |
 
-> Beyond built-ins, Abu also supports **Self-Evolving Skills** — after multi-step complex flows, Abu proactively suggests "crystallize this into a skill" and grows a library tailored to your workflow. See [User Guide → Skill System](docs/User-Guide_EN.md#skill-system).
+> Beyond built-ins, LingXi also supports **Self-Evolving Skills** — after multi-step complex flows, LingXi proactively suggests "crystallize this into a skill" and grows a library tailored to your workflow. See [User Guide → Skill System](docs/User-Guide_EN.md#skill-system).
 
 ## Tech Stack
 
@@ -265,13 +265,13 @@ Create a weekly report PPT for this week
 
 ```bash
 # Clone the repo
-git clone https://github.com/PM-Shawn/Abu-Cowork.git
-cd Abu-Cowork
+git clone https://github.com/vking0804-spec/lingxi.git
+cd lingxi
 
 # Install dependencies
 npm install
 
-# Launch desktop app (uses dev-isolated config, fully separate from your installed Abu)
+# Launch desktop app (uses dev-isolated config, fully separate from your installed LingXi)
 npm run tauri:dev
 
 # Frontend only (no Rust required)
@@ -335,8 +335,8 @@ src/
 
 builtin-skills/       # 28 built-in skills (one directory each)
 builtin-agents/       # Built-in agent definitions (placeholder)
-abu-browser-bridge/   # Browser bridge MCP Server
-abu-chrome-extension/ # Chrome extension (used by the Abu-Browser skill)
+lingxi-browser-bridge/   # Browser bridge MCP Server
+lingxi-chrome-extension/ # Chrome extension (used by the LingXi-Browser skill)
 src-tauri/
 ├── src/
 │   ├── computer_use.rs    # Screenshot + mouse/keyboard + sensitive app blocking
@@ -374,10 +374,10 @@ Got questions or ideas? Scan the QR code to join the WeChat group:
 
 ## Support
 
-If Abu has been helpful to you, feel free to buy the author a coffee:
+If LingXi has been helpful to you, feel free to buy the author a coffee:
 
 <img src="src/assets/sponsor-qr.png" width="200" />
 
 ## License
 
-[Abu License](LICENSE) — Free for personal, educational, and non-commercial use. Copyright notices must be retained and may not be modified or removed. Commercial use requires authorization. See [LICENSE](LICENSE) for details.
+[Apache License 2.0](LICENSE) — Free to use, modify, and distribute, including for commercial use, as long as copyright notices are retained.

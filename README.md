@@ -2,16 +2,16 @@
 
 **中文** | [English](README_EN.md)
 
-<img src="website/assets/abu-avatar.png" width="120" height="120" style="border-radius: 24px" />
+<img src="website/assets/lingxi-logo.png" width="120" height="120" style="border-radius: 24px" />
 
-# Abu (阿布)
+# LingXi (灵犀)
 
-**你的 AI 桌面办公搭子 — 交给阿布就行啦**
+**你的 AI 桌面办公搭子 — 交给灵犀就行啦**
 
 本地运行的 AI 桌面办公助手，灵感来自 Claude Code 的 Cowork 模式。
-你说需求，阿布干活 — 读文件、跑命令、写文档、做报表，全在本地完成。
+你说需求，灵犀干活 — 读文件、跑命令、写文档、做报表，全在本地完成。
 
-[![Release](https://img.shields.io/github/v/release/PM-Shawn/Abu-Cowork?style=flat-square)](https://github.com/PM-Shawn/Abu-Cowork/releases)
+[![Release](https://img.shields.io/github/v/release/vking0804-spec/lingxi?style=flat-square)](https://github.com/vking0804-spec/lingxi/releases)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue?style=flat-square)](LICENSE)
 
 [下载安装](#-下载安装) · [快速开始](#-快速开始) · [功能介绍](#-功能介绍) · [使用指南](docs/User-Guide.md) · [从源码构建](#-从源码构建)
@@ -20,14 +20,14 @@
 
 ---
 
-## 为什么选择 Abu？
+## 为什么选择 LingXi？
 
-| 特性 | Abu | 普通 AI 聊天 | 传统自动化工具 |
+| 特性 | LingXi | 普通 AI 聊天 | 传统自动化工具 |
 |------|-----|-------------|---------------|
 | 自主规划并执行复杂任务 | :white_check_mark: | :x: | :x: |
 | 读写本地文件、执行命令 | :white_check_mark: | :x: | :white_check_mark: |
 | 自然语言交互 | :white_check_mark: | :white_check_mark: | :x: |
-| 28 个内置技能 + 自进化（阿布自己攒新技能） | :white_check_mark: | :x: | :x: |
+| 28 个内置技能 + 自进化（灵犀自己攒新技能） | :white_check_mark: | :x: | :x: |
 | 多对话按项目聚合（Projects） | :white_check_mark: | :x: | :x: |
 | 定时任务 & 事件触发 | :white_check_mark: | :x: | :white_check_mark: |
 | IM 机器人（飞书/钉钉/企微/Slack） | :white_check_mark: | :x: | 部分 |
@@ -43,7 +43,7 @@
 - **v0.13.12** — **诊断面板**：AI 服务 / 数据&权限 / MCP / 技能 / 网络 / 应用 一键自检，遇到问题一键导出诊断包
 - **v0.13** — **自进化 Skills**、**Projects 多对话聚合**、**通知中心**、**Todo 跨重启**
 
-> 完整 changelog 见 [Releases](https://github.com/PM-Shawn/Abu-Cowork/releases)。
+> 完整 changelog 见 [Releases](https://github.com/vking0804-spec/lingxi/releases)。
 
 ## 产品预览
 
@@ -56,14 +56,14 @@
 </tr>
 <tr>
 <td align="center"><b>权限控制</b><br/>文件访问需用户授权，安全可控<br/><br/><img src="website/assets/screenshot-permission.png" width="100%" /></td>
-<td align="center"><b>IM 频道对话</b><br/>在飞书/钉钉中 @阿布 即可交互<br/><br/><img src="website/assets/screenshot-im-chat.png" width="100%" /></td>
+<td align="center"><b>IM 频道对话</b><br/>在飞书/钉钉中 @灵犀 即可交互<br/><br/><img src="website/assets/screenshot-im-chat.png" width="100%" /></td>
 </tr>
 <tr>
 <td align="center"><b>Skill 技能</b><br/>28 个内置技能，支持自定义扩展 + 自进化<br/><br/><img src="website/assets/screenshot-skills.png" width="100%" /></td>
 <td align="center"><b>MCP 连接器</b><br/>一键接入 Playwright、GitHub 等外部工具<br/><br/><img src="website/assets/screenshot-mcp.png" width="100%" /></td>
 </tr>
 <tr>
-<td align="center"><b>定时任务</b><br/>Cron 定时执行，让阿布每天自动工作<br/><br/><img src="website/assets/screenshot-schedule-create.png" width="100%" /></td>
+<td align="center"><b>定时任务</b><br/>Cron 定时执行，让灵犀每天自动工作<br/><br/><img src="website/assets/screenshot-schedule-create.png" width="100%" /></td>
 <td align="center"><b>触发器 / 值班</b><br/>HTTP、文件变更、IM 消息等事件自动触发<br/><br/><img src="website/assets/screenshot-triggers.png" width="100%" /></td>
 </tr>
 <tr>
@@ -88,14 +88,14 @@
 ### 核心能力
 
 - **Agent 自主执行** — 不只是聊天，能自主规划、调用工具、读写文件、执行命令，完成复杂任务
-- **性格系统（Soul）** — 三档主动度预设（寡言 / 伙伴 / 管家）控制阿布何时主动出手；`SOUL.md` 自定义语气、称呼、回复风格、边界
-- **自进化 Skills** — 跑完一段复杂流程后，阿布会主动提议"这套要不要固化成技能"，一键生成草稿 → 你审阅 → 采纳上架；下次直接叫技能名字调用，不用重讲
+- **性格系统（Soul）** — 三档主动度预设（寡言 / 伙伴 / 管家）控制灵犀何时主动出手；`SOUL.md` 自定义语气、称呼、回复风格、边界
+- **自进化 Skills** — 跑完一段复杂流程后，灵犀会主动提议"这套要不要固化成技能"，一键生成草稿 → 你审阅 → 采纳上架；下次直接叫技能名字调用，不用重讲
 - **智能通知系统** — 菜单栏未读数 / sidebar 小红点 / 系统通知 三条兜底通道自动选择；全屏 / 勿扰时通知暂存进 inbox，回主窗口通过 badge 感知；打扰记录可审计半年
 - **Projects 管理** — 工作区可升级成 Project，同一方向的对话自动聚合，每个项目独立配置图标、默认模型、技能集、MCP
 - **多 Agent 后台并行** — 支持同时运行多个后台 Agent（最多 5 个），各自独立执行任务，进度实时可见
 - **桌宠模式** — 透明圆形浮窗常驻桌面，跨 Spaces 跟随，随手呼出对话不抢焦点
 - **对话分享 / 导出** — 一键把对话导出成 JSON 分享给同事；自动脱敏 API Key 与本地路径
-- **28 个内置技能** — PDF/PPTX/DOCX/Excel 生成、前端设计、画布设计、算法艺术、Mermaid/SVG/信息图、Web Artifacts、Chrome 自动化（Abu-Browser）、深度研究、Agent 自我反思（reflect）、工作流自动化等，一键安装，支持自定义
+- **28 个内置技能** — PDF/PPTX/DOCX/Excel 生成、前端设计、画布设计、算法艺术、Mermaid/SVG/信息图、Web Artifacts、Chrome 自动化（LingXi-Browser）、深度研究、Agent 自我反思（reflect）、工作流自动化等，一键安装，支持自定义
 - **MCP 工具协议** — 通过 Model Context Protocol 连接数据库、搜索引擎、GitHub 等外部服务
 - **浏览器自动化** — 内置 Browser Bridge + Chrome 扩展，实现网页元素操作、表单填写、截图、JS 执行
 - **电脑操控** — 通过截屏 + 键鼠控制完成桌面级任务，内置敏感应用拦截、危险按键拦截、5 分钟超时熔断等多重防护
@@ -128,7 +128,7 @@
 
 ### IM 频道集成
 
-让阿布成为你的团队机器人 — 在 IM 中 @阿布 即可对话：
+让灵犀成为你的团队机器人 — 在 IM 中 @灵犀 即可对话：
 
 - **支持平台** — D-Chat、飞书、钉钉、企业微信、Slack
 - **会话管理** — 自动按用户/群/线程隔离对话，超时自动归档，支持"继续上次"恢复
@@ -138,13 +138,13 @@
 ### 记忆与上下文
 
 - **三层记忆体系（Memdir 文件化架构）**：
-  - **个人记忆** — `~/.abu/memory/` 多文件目录，跨项目生效，自动按主题分文件存储，`MEMORY.md` 作为索引注入对话
-  - **项目记忆** — `~/.abu/projects/<工作区>/memory/` 自动按工作区隔离，每条记忆为独立 `.md` 文件，便于阅读、搜索和回收
-  - **历史升级自动迁移** — 老版本的 `~/.abu/agents/abu/memory.md` 和 `{workspace}/.abu/MEMORY.md` 启动时自动迁移到新结构
+  - **个人记忆** — `~/.lingxi/memory/` 多文件目录，跨项目生效，自动按主题分文件存储，`MEMORY.md` 作为索引注入对话
+  - **项目记忆** — `~/.lingxi/projects/<工作区>/memory/` 自动按工作区隔离，每条记忆为独立 `.md` 文件，便于阅读、搜索和回收
+  - **历史升级自动迁移** — 老版本的 `~/.lingxi/agents/lingxi/memory.md` 和 `{workspace}/.lingxi/MEMORY.md` 启动时自动迁移到新结构
 - **项目规则**（手写）：
-  - `~/.abu/ABU.md` — 用户级规则（跨项目）
-  - `{workspace}/.abu/ABU.md` — 项目级规则
-  - `{workspace}/.abu/rules/*.md` — 模块化规则（按字母序加载，最多 20 个文件）
+  - `~/.lingxi/LINGXI.md` — 用户级规则（跨项目）
+  - `{workspace}/.lingxi/LINGXI.md` — 项目级规则
+  - `{workspace}/.lingxi/rules/*.md` — 模块化规则（按字母序加载，最多 20 个文件）
 - **Projects 聚合** — 工作区可升级成 Project，同一文件夹下的对话自动归到一起，老对话启动时自动回填 projectId；每个项目可独立配置默认模型、技能集、MCP 连接器
 - **会话记忆** — 大体积工具输出自动落盘，会话内保留紧凑摘要，防止上下文爆炸
 - **Todo 跨重启** — 对话里的 todo_write 计划持久化到本地磁盘，重启续聊直接接着用
@@ -171,24 +171,24 @@
 
 ## 下载安装
 
-前往 [GitHub Releases](https://github.com/PM-Shawn/Abu-Cowork/releases) 下载最新版本：
+前往 [GitHub Releases](https://github.com/vking0804-spec/lingxi/releases) 下载最新版本：
 
 | 平台 | 文件 |
 |------|------|
-| macOS (Apple Silicon) | `Abu_x.x.x_aarch64.dmg` |
-| macOS (Intel) | `Abu_x.x.x_x64.dmg` |
-| Windows | `Abu_x.x.x_x64-setup.exe` |
+| macOS (Apple Silicon) | `LingXi_x.x.x_aarch64.dmg` |
+| macOS (Intel) | `LingXi_x.x.x_x64.dmg` |
+| Windows | `LingXi_x.x.x_x64-setup.exe` |
 
-> **macOS 用户注意**：首次打开如提示"已损坏"，需执行 `xattr -cr /Applications/Abu.app`，详见 [安装指南](docs/Installation-Guide.md)。
+> **macOS 用户注意**：首次打开如提示"已损坏"，需执行 `xattr -cr /Applications/LingXi.app`，详见 [安装指南](docs/Installation-Guide.md)。
 
 ## 快速开始
 
 ### 1. 配置 AI 服务
 
-打开 Abu → 设置 → **AI 服务管理**：
+打开 LingXi → 设置 → **AI 服务管理**：
 
 - **最快上手**：选择一个 API 厂商（如 DeepSeek、Anthropic），填入 API Key，点击验证
-- **本地模型**：安装 [Ollama](https://ollama.com)，Abu 自动发现本地模型，无需 API Key
+- **本地模型**：安装 [Ollama](https://ollama.com)，LingXi 自动发现本地模型，无需 API Key
 - **自定义接入**：填入任意 OpenAI 兼容 API 的 Base URL 和 Key
 
 ### 2. 开始对话
@@ -217,8 +217,8 @@
 
 - **安装技能**：设置 → 自定义 → 技能商店，按需安装 PDF、PPT、前端设计等技能
 - **连接 MCP**：设置 → MCP 连接器，一键接入 GitHub、Playwright 等外部工具
-- **配置定时任务**：让阿布每天自动搜新闻、跑数据、发报告
-- **连接 IM**：设置 → IM 频道，让团队在飞书/钉钉里直接 @阿布
+- **配置定时任务**：让灵犀每天自动搜新闻、跑数据、发报告
+- **连接 IM**：设置 → IM 频道，让团队在飞书/钉钉里直接 @灵犀
 
 > 更多使用场景请查看 [使用指南](docs/User-Guide.md)
 
@@ -228,7 +228,7 @@
 |------|------|
 | 文档生成 | PDF、PPTX、DOCX、XLSX |
 | 设计创作 | 前端设计 (frontend-design)、画布设计 (canvas-design)、算法艺术 (algorithmic-art)、SVG 图表 (svg-diagram)、Mermaid 图表 (mermaid-diagram)、信息图 (infographic)、Slack GIF (slack-gif-creator)、HTML 小组件 (html-widget) |
-| 浏览器自动化 | **Abu-Browser**（Chrome 桥接，自动安装扩展，操控真实浏览器） |
+| 浏览器自动化 | **LingXi-Browser**（Chrome 桥接，自动安装扩展，操控真实浏览器） |
 | 开发工具 | Claude API、MCP Server 构建 (mcp-builder)、Web Artifacts (web-artifacts-builder)、Web 应用测试 (webapp-testing) |
 | 内容写作 | 文档协作 (doc-coauthoring)、品牌规范 (brand-guidelines)、内部通讯 (internal-comms) |
 | 自动化 | 定时任务 (schedule)、触发器 (trigger)、告警 SOP (alert-sop) |
@@ -236,7 +236,7 @@
 | Agent 反思 | 自省技能 (reflect) — agent 跑完任务后回溯沉淀 |
 | 主题 | 主题工厂 (theme-factory)（10+ 预设主题，应用到任何产出物） |
 
-> 除了内置技能，阿布还支持**自进化 Skills** — 在你跑完多轮复杂流程后主动提议"固化成技能"，自己攒出专属于你工作流的能力库。详见 [使用指南 · Skill 技能系统](docs/User-Guide.md#skill-技能系统)。
+> 除了内置技能，灵犀还支持**自进化 Skills** — 在你跑完多轮复杂流程后主动提议"固化成技能"，自己攒出专属于你工作流的能力库。详见 [使用指南 · Skill 技能系统](docs/User-Guide.md#skill-技能系统)。
 
 ## 技术栈
 
@@ -265,13 +265,13 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/PM-Shawn/Abu-Cowork.git
-cd Abu-Cowork
+git clone https://github.com/vking0804-spec/lingxi.git
+cd lingxi
 
 # 安装依赖
 npm install
 
-# 启动桌面应用（dev 隔离配置，与正式安装的 Abu 完全隔离）
+# 启动桌面应用（dev 隔离配置，与正式安装的 LingXi 完全隔离）
 npm run tauri:dev
 
 # 仅启动前端（不需要 Rust）
@@ -335,8 +335,8 @@ src/
 
 builtin-skills/       # 28 个内置技能（每个为独立目录）
 builtin-agents/       # 内置 Agent 定义（预留）
-abu-browser-bridge/   # 浏览器桥接 MCP Server
-abu-chrome-extension/ # Chrome 扩展（Abu-Browser 技能依赖）
+lingxi-browser-bridge/   # 浏览器桥接 MCP Server
+lingxi-chrome-extension/ # Chrome 扩展（LingXi-Browser 技能依赖）
 src-tauri/
 ├── src/
 │   ├── computer_use.rs    # 截屏 + 键鼠控制 + 敏感应用拦截
@@ -374,7 +374,7 @@ src-tauri/
 
 ## 赞赏支持
 
-如果阿布对你有帮助，欢迎请作者喝杯咖啡：
+如果灵犀对你有帮助，欢迎请作者喝杯咖啡：
 
 <img src="src/assets/sponsor-qr.png" width="200" />
 
