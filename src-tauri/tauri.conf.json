@@ -48,7 +48,7 @@
   "bundle": {
     "active": true,
     "createUpdaterArtifacts": false,
-    "targets": ["nsis"],
+    "targets": ["nsis", "dmg"],
     "resources": [
       "builtin-skills/",
       "builtin-agents/",
