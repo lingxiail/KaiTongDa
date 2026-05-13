@@ -49,6 +49,7 @@ jobs:
             brew install create-dmg
           fi
           npm ci
+        shell: bash
 
       - name: Setup embedded Python runtime
         run: bash scripts/setup-python-runtime.sh
