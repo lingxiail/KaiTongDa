@@ -42,6 +42,14 @@ jobs:
           brew install create-dmg
           npm ci
 
+      - name: Setup Python runtime
+        run: npm run setup-python
+
+      - name: Copy resources for bundling
+        run: |
+          npm run copy-resources
+          node scripts/copy-python-runtime.cjs
+
       - name: Build Tauri app
         run: npm run tauri build -- --target ${{ matrix.target }}
 
@@ -69,6 +77,14 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Setup Python runtime
+        run: bash scripts/setup-python-runtime.sh
+
+      - name: Copy resources for bundling
+        run: |
+          npm run copy-resources
+          node scripts/copy-python-runtime.cjs
 
       - name: Build Tauri app
         run: npm run tauri build
