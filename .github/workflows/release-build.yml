@@ -1,0 +1,88 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g. v0.15.6)'
+        required: false
+        type: string
+
+env:
+  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
+jobs:
+  build-macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - aarch64-apple-darwin
+          - x86_64-apple-darwin
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Rust
+        run: rustup target add ${{ matrix.target }}
+
+      - name: Install dependencies
+        run: |
+          brew install create-dmg
+          npm ci
+
+      - name: Build Tauri app
+        run: npm run tauri build -- --target ${{ matrix.target }}
+
+      - name: Upload .dmg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lingxi-${{ matrix.target }}-${{ github.ref_name }}
+          path: src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+          retention-days: 30
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Setup Rust
+        run: rustup default stable
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Tauri app
+        run: npm run tauri build
+
+      - name: Upload NSIS installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: lingxi-windows-${{ github.ref_name }}
+          path: src-tauri/target/release/bundle/nsis/*.exe
+          retention-days: 30
+
+      - name: Upload standalone exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: lingxi-standalone-${{ github.ref_name }}
+          path: src-tauri/target/release/abu.exe
+          retention-days: 30
