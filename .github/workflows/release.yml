@@ -142,8 +142,8 @@ jobs:
         env:
           VERSION_TAG: ${{ github.ref_name }}
           REPO: ${{ github.repository }}
-          OSS_BUCKET: ${{ secrets.OSS_BUCKET }}
-          OSS_REGION: ${{ secrets.OSS_REGION }}
+          COS_BUCKET: lingxi-1303034624
+          COS_REGION: ap-guangzhou
         run: |
           AARCH64_FILE=$(ls release-assets/*aarch64*.dmg 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo "")
           WINDOWS_FILE=$(ls release-assets/*-setup.exe 2>/dev/null | grep -v '.sig' | head -1 | xargs basename 2>/dev/null || echo "")
@@ -153,10 +153,12 @@ jobs:
           import json, os, re
           from datetime import datetime, timezone
 
-          version_tag = os.environ['VERSION_TAG']  # e.g. "v0.11.2"
+          version_tag = os.environ['VERSION_TAG']  # e.g. "v0.15.9"
           version_num = version_tag.lstrip('v')
           repo = os.environ['REPO']
-          oss_base = f"https://{os.environ['OSS_BUCKET']}.{os.environ['OSS_REGION']}.aliyuncs.com/releases/{version_tag}"
+          cos_bucket = os.environ['COS_BUCKET']
+          cos_region = os.environ['COS_REGION']
+          cos_base = f"https://{cos_bucket}.cos.{cos_region}.myqcloud.com/releases/{version_tag}"
 
           notes = f"See https://github.com/{repo}/releases/tag/{version_tag}"
           try:
@@ -177,7 +179,7 @@ jobs:
               ('windows-x86_64', os.environ['WINDOWS_FILE']),
           ]:
               if fname:
-                  platforms[key] = {'url': f'{oss_base}/{fname}'}
+                  platforms[key] = {'url': f'{cos_base}/{fname}'}
 
           data = {
               'version': version_tag,
@@ -190,27 +192,35 @@ jobs:
           print(json.dumps(data, indent=2, ensure_ascii=False))
           PYEOF
 
-      - name: Install ossutil
-        run: curl -fsSL https://gosspublic.alicdn.com/ossutil/install.sh | sudo bash
-
-      - name: Configure ossutil
+      - name: Install coscli
         run: |
-          ossutil config \
-            -e ${{ secrets.OSS_REGION }}.aliyuncs.com \
-            -i ${{ secrets.ALIYUN_ACCESS_KEY_ID }} \
-            -k ${{ secrets.ALIYUN_ACCESS_KEY_SECRET }}
+          curl -fSL https://github.com/TencentCloud/cos-cli/releases/latest/download/coscli-linux-amd64 -o /usr/local/bin/coscli
+          chmod +x /usr/local/bin/coscli
+          coscli version
 
-      - name: Upload to OSS
+      - name: Configure coscli
+        run: |
+          mkdir -p ~/.cosclicfg
+          cat > ~/.cosclicfg/coscli_config.yaml <<EOF
+          base:
+            secretid: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
+            secretkey: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
+          sessions:
+            default:
+              bucket: lingxi-1303034624
+              region: ap-guangzhou
+          EOF
+
+      - name: Upload to COS
         run: |
           VERSION="${{ github.ref_name }}"
-          BUCKET="oss://${{ secrets.OSS_BUCKET }}"
 
           for file in release-assets/*; do
             [ -f "$file" ] || continue
-            ossutil cp "$file" "${BUCKET}/releases/${VERSION}/$(basename $file)" -f
+            coscli cp "$file" "cos://lingxi-1303034624/releases/${VERSION}/$(basename $file)"
           done
 
-          ossutil cp latest.json "${BUCKET}/latest.json" -f --meta "Cache-Control:no-cache"
+          coscli cp latest.json "cos://lingxi-1303034624/latest.json" --meta "Cache-Control:no-cache"
 
           echo "Done. Listing:"
-          ossutil ls "${BUCKET}/releases/${VERSION}/"
+          coscli ls "cos://lingxi-1303034624/releases/${VERSION}/"

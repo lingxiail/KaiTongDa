@@ -1,6 +1,6 @@
 {
   "productName": "LingXi",
-  "version": "0.15.6",
+  "version": "0.15.9",
   "identifier": "com.abu.app",
   "build": {
     "beforeDevCommand": "npm run copy-resources && npm run dev",
