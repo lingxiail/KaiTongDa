@@ -194,7 +194,8 @@ jobs:
 
       - name: Install coscli
         run: |
-          curl -fSL https://github.com/TencentCloud/cos-cli/releases/latest/download/coscli-linux-amd64 -o /usr/local/bin/coscli
+          COSCLI_VERSION="v1.0.8"
+          curl -fSL "https://github.com/tencentyun/coscli/releases/download/${COSCLI_VERSION}/coscli-${COSCLI_VERSION}-linux-amd64" -o /usr/local/bin/coscli
           chmod +x /usr/local/bin/coscli
           coscli version
 
