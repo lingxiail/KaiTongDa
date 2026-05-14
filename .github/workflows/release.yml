@@ -16,8 +16,6 @@ jobs:
         include:
           - platform: macos-latest
             target: aarch64-apple-darwin
-          - platform: macos-latest
-            target: x86_64-apple-darwin
           - platform: windows-latest
             target: x86_64-pc-windows-msvc
 
@@ -148,10 +146,9 @@ jobs:
           OSS_REGION: ${{ secrets.OSS_REGION }}
         run: |
           AARCH64_FILE=$(ls release-assets/*aarch64*.dmg 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo "")
-          X86_64_FILE=$(ls release-assets/*x64*.dmg 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo "")
           WINDOWS_FILE=$(ls release-assets/*-setup.exe 2>/dev/null | grep -v '.sig' | head -1 | xargs basename 2>/dev/null || echo "")
 
-          export AARCH64_FILE X86_64_FILE WINDOWS_FILE
+          export AARCH64_FILE WINDOWS_FILE
           python3 <<'PYEOF'
           import json, os, re
           from datetime import datetime, timezone
@@ -177,7 +174,6 @@ jobs:
           platforms = {}
           for key, fname in [
               ('darwin-aarch64', os.environ['AARCH64_FILE']),
-              ('darwin-x86_64',  os.environ['X86_64_FILE']),
               ('windows-x86_64', os.environ['WINDOWS_FILE']),
           ]:
               if fname:
