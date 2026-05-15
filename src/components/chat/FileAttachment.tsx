@@ -8,7 +8,7 @@ import { cn } from '@/lib/utils';
 import { loadLocalImage, getBaseName, isLocalFilePath } from '@/utils/pathUtils';
 import { resolveFileSource, type ResolvedSource } from '@/core/session/outputSnapshots';
 
-const IMAGE_EXTENSIONS = new Set(['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp']);
+const IMAGE_EXTENSIONS = Object.freeze(['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp']);
 
 // Get file type info for display
 function getFileTypeInfo(filePath: string): { icon: typeof File; label: string; category: string } {
@@ -35,7 +35,7 @@ function getFileTypeInfo(filePath: string): { icon: typeof File; label: string; 
     return { icon: FileText, label: ext.toUpperCase(), category: 'Text' };
   }
   // Images
-  if (IMAGE_EXTENSIONS.has(ext) || ext === 'svg') {
+  if (IMAGE_EXTENSIONS.includes(ext) || ext === 'svg') {
     return { icon: FileImage, label: ext.toUpperCase(), category: 'Image' };
   }
   // CSS
@@ -79,7 +79,7 @@ function getOpenWithInfo(filePath: string): { label: string; icon: typeof File }
 
 function isImageFile(filePath: string): boolean {
   const ext = filePath.split('.').pop()?.toLowerCase() || '';
-  return IMAGE_EXTENSIONS.has(ext);
+  return IMAGE_EXTENSIONS.includes(ext);
 }
 
 

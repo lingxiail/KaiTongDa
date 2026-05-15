@@ -73,10 +73,13 @@ export default function SandboxSection() {
       {macOS ? (
         <>
           {/* Sandbox Toggle */}
-          <button
+          <div
+            role="button"
+            tabIndex={0}
             onClick={handleToggle}
+            onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); handleToggle(); } }}
             className={cn(
-              'w-full flex items-center justify-between p-4 rounded-xl border transition-all text-left',
+              'w-full flex items-center justify-between p-4 rounded-xl border transition-all text-left cursor-pointer select-none',
               sandboxEnabled
                 ? 'border-emerald-500/50 bg-emerald-50'
                 : 'border-[var(--abu-border)] bg-[var(--abu-bg-muted)]'
@@ -118,15 +121,18 @@ export default function SandboxSection() {
               onChange={handleToggle}
               size="md"
             />
-          </button>
+          </div>
 
           {/* Network Isolation */}
           {sandboxEnabled && (
             <div className="space-y-3">
-              <button
+              <div
+                role="button"
+                tabIndex={0}
                 onClick={handleNetworkIsolationToggle}
+                onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); handleNetworkIsolationToggle(); } }}
                 className={cn(
-                  'w-full flex items-center justify-between p-4 rounded-xl border transition-all text-left',
+                  'w-full flex items-center justify-between p-4 rounded-xl border transition-all text-left cursor-pointer select-none',
                   networkIsolationEnabled
                     ? 'border-blue-500/50 bg-blue-50'
                     : 'border-[var(--abu-border)] bg-[var(--abu-bg-muted)]'
@@ -148,7 +154,7 @@ export default function SandboxSection() {
                   onChange={handleNetworkIsolationToggle}
                   size="md"
                 />
-              </button>
+              </div>
 
               {/* Network whitelist config */}
               {networkIsolationEnabled && (
@@ -299,10 +305,13 @@ function ContentGuardToggle() {
 
   return (
     <>
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={handleClick}
+        onKeyDown={(e) => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); handleClick(); } }}
         className={cn(
-          'w-full flex items-center justify-between p-4 rounded-xl border transition-all text-left',
+          'w-full flex items-center justify-between p-4 rounded-xl border transition-all text-left cursor-pointer select-none',
           enabled
             ? 'border-emerald-500/50 bg-emerald-50'
             : 'border-amber-500/50 bg-amber-50',
@@ -320,7 +329,7 @@ function ContentGuardToggle() {
           </div>
         </div>
         <Toggle checked={enabled} onChange={handleClick} size="md" />
-      </button>
+      </div>
       <ConfirmDialog
         open={showDisableConfirm}
         title={t.settings.contentGuardDisableTitle}
