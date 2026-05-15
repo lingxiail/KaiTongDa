@@ -1,9 +1,9 @@
 {
-  "name": "abu",
+  "name": "lingxi",
   "private": false,
   "license": "Apache-2.0",
-  "version": "0.15.6",
-  "description": "Abu - AI Desktop Office Assistant",
+  "version": "0.15.10",
+  "description": "LingXi - AI Desktop Office Assistant",
   "type": "module",
   "scripts": {
     "dev": "vite",

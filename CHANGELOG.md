@@ -1,6 +1,12 @@
 # 更新日志
 
-本文档记录阿布的每次版本更新。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/)。
+本文档记录灵犀的每次版本更新。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/)。
+
+## v0.15.10 · 2026-05-15
+
+### 重构
+
+- **品牌重命名： Abu → LingXi**：全栈配置同步更新（package.json、Cargo.toml、tauri.conf.json、密钥服务标识、i18n 文本、Tray 菜单等），应用名正式切换为 LingXi。
 
 ## v0.13.5 · 2026-04-24
 

@@ -1486,6 +1486,7 @@ const zhCN: TranslationDict = {
   },
 
   about: {
+    title: '关于',
     feedback: '反馈',
     feedbackDesc: '扫码添加微信，反馈问题或交流想法',
     sponsor: '支持',

@@ -1,12 +1,12 @@
 [package]
-name = "abu"
-version = "0.15.6"
-description = "ABU - AI Desktop Assistant"
-authors = ["you"]
+name = "lingxi"
+version = "0.15.10"
+description = "LingXi - AI Desktop Assistant"
+authors = ["LingXi Team"]
 edition = "2021"
 
 [lib]
-name = "abu_lib"
+name = "lingxi_lib"
 crate-type = ["lib", "cdylib", "staticlib"]
 
 [build-dependencies]

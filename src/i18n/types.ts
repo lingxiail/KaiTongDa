@@ -1501,6 +1501,7 @@ export interface TranslationDict {
 
   // About
   about: {
+    title: string;
     feedback: string;
     feedbackDesc: string;
     sponsor: string;

@@ -1,7 +1,7 @@
 {
   "productName": "LingXi",
-  "version": "0.15.9",
-  "identifier": "com.abu.app",
+  "version": "0.15.10",
+  "identifier": "com.lingxi.app",
   "build": {
     "beforeDevCommand": "npm run copy-resources && npm run dev",
     "devUrl": "http://localhost:5173",
