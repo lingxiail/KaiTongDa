@@ -200,8 +200,7 @@ jobs:
 
       - name: Configure coscli
         run: |
-          mkdir -p ~/.cosclicfg
-          cat > ~/.cosclicfg/coscli_config.yaml <<EOF
+          cat > ~/.cos.yaml <<EOF
           base:
             secretid: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
             secretkey: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
