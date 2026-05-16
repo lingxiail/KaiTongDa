@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -202,19 +203,23 @@ jobs:
         run: |
           python3 -c "
 import os
-cfg_path = os.path.expanduser('~/.cos.yaml')
+cfg_path = '/home/runner/.cos.yaml'
+secret_id = os.environ['TENCENT_SECRET_ID']
+secret_key = os.environ['TENCENT_SECRET_KEY']
 content = (
-    'base:\\n'
-    '  secretID: ' + os.environ['TENCENT_SECRET_ID'] + '\\n'
-    '  secretKey: ' + os.environ['TENCENT_SECRET_KEY'] + '\\n'
-    'sessions:\\n'
-    '  default:\\n'
-    '    bucket: lingxi-1303034624\\n'
-    '    region: ap-guangzhou\\n'
+    'base:\n'
+    '  secretID: ' + secret_id + '\n'
+    '  secretKey: ' + secret_key + '\n'
+    'sessions:\n'
+    '  default:\n'
+    '    bucket: lingxi-1303034624\n'
+    '    region: ap-guangzhou\n'
 )
-open(cfg_path, 'w').write(content)
-print('Written to:', cfg_path)
-print(open(cfg_path).read())
+with open(cfg_path, 'w') as f:
+    f.write(content)
+print('Written:', cfg_path)
+with open(cfg_path) as f:
+    print(f.read())
 "
         env:
           TENCENT_SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
