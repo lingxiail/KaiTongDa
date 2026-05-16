@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -197,31 +198,40 @@ jobs:
           COSCLI_VERSION="v1.0.8"
           curl -fSL "https://github.com/tencentyun/coscli/releases/download/${COSCLI_VERSION}/coscli-${COSCLI_VERSION}-linux-amd64" -o /usr/local/bin/coscli
           chmod +x /usr/local/bin/coscli
-          coscli version
 
-      - name: Configure coscli
+      - name: Write coscli config
         run: |
-          mkdir -p ~/.cosclicfg
-          cat > ~/.cosclicfg/coscli_config.yaml <<EOF
-          base:
-            secretid: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
-            secretkey: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
-          sessions:
-            default:
-              bucket: lingxi-1303034624
-              region: ap-guangzhou
-          EOF
+          python3 -c "
+import os
+cfg_path = '/home/runner/.cos.yaml'
+secret_id = os.environ['TENCENT_SECRET_ID']
+secret_key = os.environ['TENCENT_SECRET_KEY']
+content = (
+    'base:\n'
+    '  secretID: ' + secret_id + '\n'
+    '  secretKey: ' + secret_key + '\n'
+    'sessions:\n'
+    '  default:\n'
+    '    bucket: lingxi-1303034624\n'
+    '    region: ap-guangzhou\n'
+)
+with open(cfg_path, 'w') as f:
+    f.write(content)
+print('Written:', cfg_path)
+with open(cfg_path) as f:
+    print(f.read())
+"
+        env:
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
 
       - name: Upload to COS
         run: |
           VERSION="${{ github.ref_name }}"
-
           for file in release-assets/*; do
             [ -f "$file" ] || continue
             coscli cp "$file" "cos://lingxi-1303034624/releases/${VERSION}/$(basename $file)"
           done
-
           coscli cp latest.json "cos://lingxi-1303034624/latest.json" --meta "Cache-Control:no-cache"
-
           echo "Done. Listing:"
           coscli ls "cos://lingxi-1303034624/releases/${VERSION}/"
