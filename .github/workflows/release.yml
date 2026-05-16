@@ -201,19 +201,21 @@ jobs:
       - name: Write coscli config
         run: |
           python3 -c "
-          import os, pathlib
-          cfg = pathlib.Path.home() / '.cos.yaml'
-          cfg.write_text(
-              'base:\\n'
-              '  secret_id: ' + os.environ['TENCENT_SECRET_ID'] + '\\n'
-              '  secret_key: ' + os.environ['TENCENT_SECRET_KEY'] + '\\n'
-              'sessions:\\n'
-              '  default:\\n'
-              '    bucket: lingxi-1303034624\\n'
-              '    region: ap-guangzhou\\n'
-          )
-          print(cfg.read_text())
-          "
+import os
+cfg_path = os.path.expanduser('~/.cos.yaml')
+content = (
+    'base:\\n'
+    '  secretID: ' + os.environ['TENCENT_SECRET_ID'] + '\\n'
+    '  secretKey: ' + os.environ['TENCENT_SECRET_KEY'] + '\\n'
+    'sessions:\\n'
+    '  default:\\n'
+    '    bucket: lingxi-1303034624\\n'
+    '    region: ap-guangzhou\\n'
+)
+open(cfg_path, 'w').write(content)
+print('Written to:', cfg_path)
+print(open(cfg_path).read())
+"
         env:
           TENCENT_SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
           TENCENT_SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
