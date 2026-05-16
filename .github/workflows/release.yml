@@ -228,6 +228,7 @@ with open(cfg_path) as f:
       - name: Upload to COS
         run: |
           VERSION="${{ github.ref_name }}"
+          set -x
           for file in release-assets/*; do
             [ -f "$file" ] || continue
             coscli cp "$file" "cos://lingxi-1303034624/releases/${VERSION}/$(basename $file)"
