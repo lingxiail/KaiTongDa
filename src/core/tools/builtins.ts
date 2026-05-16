@@ -34,6 +34,7 @@ import { getSystemInfoTool, clipboardReadTool, clipboardWriteTool, systemNotifyT
 import { testSkillTriggerTool, improveSkillDescriptionTool } from './definitions/skillEvalTools';
 import { skillViewTool } from './definitions/skillViewTools';
 import { skillManageTool } from './definitions/skillManageTool';
+import { feishuAuthStatusTool, feishuConnectTool, feishuDisconnectTool } from './definitions/feishuTools';
 
 // --- Tool discovery ---
 import { toolSearchTool } from './definitions/toolSearchTool';
@@ -80,4 +81,7 @@ export function registerBuiltinTools(): void {
   toolRegistry.register(skillViewTool);
   toolRegistry.register(skillManageTool);
   toolRegistry.register(toolSearchTool);
+  toolRegistry.register(feishuConnectTool);
+  toolRegistry.register(feishuAuthStatusTool);
+  toolRegistry.register(feishuDisconnectTool);
 }

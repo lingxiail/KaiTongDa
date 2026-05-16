@@ -66,6 +66,11 @@ export const TOOL_NAMES = {
 
   // Tool discovery
   TOOL_SEARCH: 'tool_search',
+
+  // Feishu integration
+  FEISHU_CONNECT: 'feishu_connect',
+  FEISHU_AUTH_STATUS: 'feishu_auth_status',
+  FEISHU_DISCONNECT: 'feishu_disconnect',
 } as const;
 
 export type ToolName = typeof TOOL_NAMES[keyof typeof TOOL_NAMES];

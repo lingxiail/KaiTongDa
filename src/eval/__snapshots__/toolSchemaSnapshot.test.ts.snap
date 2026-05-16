@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Tool count stability > total builtin tool count matches snapshot 1`] = `37`;
+exports[`Tool count stability > total builtin tool count matches snapshot 1`] = `40`;
 
 exports[`Tool schema snapshot > all tool schemas match snapshot 1`] = `
 [
@@ -68,6 +68,38 @@ exports[`Tool schema snapshot > all tool schemas match snapshot 1`] = `
       "old_content",
       "new_content",
     ],
+  },
+  {
+    "name": "feishu_auth_status",
+    "paramNames": [
+      "appId",
+      "domain",
+    ],
+    "requiredParams": [],
+  },
+  {
+    "name": "feishu_connect",
+    "paramNames": [
+      "appId",
+      "appSecret",
+      "domain",
+      "interactive",
+      "port",
+      "preferredScopes",
+      "waitForMs",
+    ],
+    "requiredParams": [
+      "appId",
+      "appSecret",
+    ],
+  },
+  {
+    "name": "feishu_disconnect",
+    "paramNames": [
+      "appId",
+      "domain",
+    ],
+    "requiredParams": [],
   },
   {
     "name": "find_files",
