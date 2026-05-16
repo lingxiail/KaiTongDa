@@ -200,15 +200,27 @@ jobs:
 
       - name: Configure coscli
         run: |
-          cat > ~/.cos.yaml <<EOF
-          base:
-            secretid: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
-            secretkey: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
+          python3 -c "
+          import os, pathlib
+          cfg = pathlib.Path.home() / '.cos.yaml'
+          content = '''base:
+            secretid: {secretid}
+            secretkey: {secretkey}
           sessions:
             default:
               bucket: lingxi-1303034624
               region: ap-guangzhou
-          EOF
+          '''.format(
+              secretid=os.environ['TENCENT_SECRET_ID'],
+              secretkey=os.environ['TENCENT_SECRET_KEY'],
+          )
+          cfg.write_text(content)
+          print('Written:', cfg, flush=True)
+          print(cfg.read_text(), flush=True)
+          "
+        env:
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
 
       - name: Upload to COS
         run: |
