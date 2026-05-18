@@ -133,7 +133,7 @@ jobs:
           gh release download "${{ github.ref_name }}" \
             --repo "${{ github.repository }}" \
             -D release-assets \
-            -p "*-setup.exe" -p "*.dmg"
+            -p "*-setup.exe" -p "*.dmg" -p "*.sig"
 
           echo "=== Downloaded ==="
           ls -la release-assets/
