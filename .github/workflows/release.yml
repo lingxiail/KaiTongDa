@@ -209,13 +209,13 @@ jobs:
             [ -f "$file" ] || continue
             coscli cp "$file" "cos://lingxi-1303034624/releases/${VERSION}/$(basename $file)" \
               -i "$SECRET_ID" -k "$SECRET_KEY" \
-              --bucket lingxi-1303034624 --region ap-guangzhou
+              -b lingxi-1303034624 -r ap-guangzhou
           done
           coscli cp latest.json "cos://lingxi-1303034624/latest.json" \
             -i "$SECRET_ID" -k "$SECRET_KEY" \
-            --bucket lingxi-1303034624 --region ap-guangzhou \
+            -b lingxi-1303034624 -r ap-guangzhou \
             --meta "Cache-Control:no-cache"
           echo "Done. Listing:"
           coscli ls "cos://lingxi-1303034624/releases/${VERSION}/" \
             -i "$SECRET_ID" -k "$SECRET_KEY" \
-            --bucket lingxi-1303034624 --region ap-guangzhou
+            -b lingxi-1303034624 -r ap-guangzhou
