@@ -1,6 +1,6 @@
 [package]
 name = "lingxi"
-version = "0.15.10"
+version = "0.15.18"
 description = "LingXi - AI Desktop Assistant"
 authors = ["LingXi Team"]
 edition = "2021"
