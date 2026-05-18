@@ -200,9 +200,11 @@ jobs:
           chmod +x /usr/local/bin/coscli
 
       - name: Upload to COS
+        env:
+          VERSION: ${{ github.ref_name }}
+          SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
+          SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
         run: |
-          SECRET_ID="${{ secrets.TENCENT_CLOUD_SECRET_ID }}"
-          SECRET_KEY="${{ secrets.TENCENT_CLOUD_SECRET_KEY }}"
           for file in release-assets/*; do
             [ -f "$file" ] || continue
             coscli cp "$file" "cos://lingxi-1303034624/releases/${VERSION}/$(basename $file)" \
