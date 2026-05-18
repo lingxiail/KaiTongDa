@@ -197,7 +197,6 @@ jobs:
         run: |
           wget -q "https://cosbrowser.cloud.tencent.com/software/coscli/coscli-linux-amd64" -O /usr/local/bin/coscli
           chmod +x /usr/local/bin/coscli
-          coscli version
 
       - name: Upload to COS
         env:
