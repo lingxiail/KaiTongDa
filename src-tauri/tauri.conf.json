@@ -42,7 +42,7 @@
       "endpoints": [
         "https://lingxi-1303034624.cos.ap-guangzhou.myqcloud.com/latest.json"
       ],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDlCM0JBMEE0ODA2RkY0NDMKUldSRDlHK0FwS0E3bXpWRTMxQllNcDdlRTlLSjBWeGhGNTIrSzM3eDNFbDRzOVpBbmNUUmVBU3MK"
+      "pubkey": "AAAAB3NzaC1yc2EAAAADAQABAAABAQCPJi42/goHp7TAK+DLSGQQ29PWTSeLLNYWr0lARiR/zNWWIoGJBUJb9vpedemYcuaTmv1vzhZV9GDuh6i09JQfghVKRxsbxpIwzT7wg47+8nFLj/xULzGEdLmusFzg39niyE1+nk5+u5bfTua176/VNbLJm7v1/xUYWsmvPI/R0XdntVe2Sejx0F8Et5SkDNzZ0bRiVXNYOtyLkcxJlUt5pFD6xMN25L4mRHAnTwkMXAofJcOu7qbBfwy1JATM55fVVtAAazH/xoMSn6IkGjTql3FzK3pkR3rmGpP8v76/HkNgt0navqkXbTGCu+BmIFpJCdeSrbyyAVOI7ZstHh3R"
     }
   },
   "bundle": {

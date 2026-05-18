@@ -199,39 +199,21 @@ jobs:
           curl -fSL "https://github.com/tencentyun/coscli/releases/download/${COSCLI_VERSION}/coscli-${COSCLI_VERSION}-linux-amd64" -o /usr/local/bin/coscli
           chmod +x /usr/local/bin/coscli
 
-      - name: Write coscli config
-        run: |
-          python3 -c "
-import os
-cfg_path = '/home/runner/.cos.yaml'
-secret_id = os.environ['TENCENT_SECRET_ID']
-secret_key = os.environ['TENCENT_SECRET_KEY']
-content = (
-    'base:\n'
-    '  secretID: ' + secret_id + '\n'
-    '  secretKey: ' + secret_key + '\n'
-    'sessions:\n'
-    '  default:\n'
-    '    bucket: lingxi-1303034624\n'
-    '    region: ap-guangzhou\n'
-)
-with open(cfg_path, 'w') as f:
-    f.write(content)
-print('Written:', cfg_path)
-with open(cfg_path) as f:
-    print(f.read())
-"
-        env:
-          TENCENT_SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
-          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
-
       - name: Upload to COS
         run: |
-          VERSION="${{ github.ref_name }}"
+          SECRET_ID="${{ secrets.TENCENT_CLOUD_SECRET_ID }}"
+          SECRET_KEY="${{ secrets.TENCANT_CLOUD_SECRET_KEY }}"
           for file in release-assets/*; do
             [ -f "$file" ] || continue
-            coscli cp "$file" "cos://lingxi-1303034624/releases/${VERSION}/$(basename $file)"
+            coscli cp "$file" "cos://lingxi-1303034624/releases/${VERSION}/$(basename $file)" \
+              -i "$SECRET_ID" -k "$SECRET_KEY" \
+              --bucket lingxi-1303034624 --region ap-guangzhou
           done
-          coscli cp latest.json "cos://lingxi-1303034624/latest.json" --meta "Cache-Control:no-cache"
+          coscli cp latest.json "cos://lingxi-1303034624/latest.json" \
+            -i "$SECRET_ID" -k "$SECRET_KEY" \
+            --bucket lingxi-1303034624 --region ap-guangzhou \
+            --meta "Cache-Control:no-cache"
           echo "Done. Listing:"
-          coscli ls "cos://lingxi-1303034624/releases/${VERSION}/"
+          coscli ls "cos://lingxi-1303034624/releases/${VERSION}/" \
+            -i "$SECRET_ID" -k "$SECRET_KEY" \
+            --bucket lingxi-1303034624 --region ap-guangzhou
