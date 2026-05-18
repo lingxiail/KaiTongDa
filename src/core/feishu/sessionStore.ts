@@ -1,4 +1,12 @@
-import type { FeishuConnectionStatus, FeishuPersistedLoginState, FeishuPersistedSession } from './types';
+import type {
+  FeishuConnectionStatus,
+  FeishuFieldSchema,
+  FeishuPagedResult,
+  FeishuBaseSummary,
+  FeishuPersistedLoginState,
+  FeishuPersistedSession,
+  FeishuTableSummary,
+} from './types';
 
 const memoryStore = new Map<string, FeishuPersistedSession>();
 
@@ -31,6 +39,30 @@ export class FeishuSessionStore {
     return this.getSession(appId).connection ?? null;
   }
 
+  setRuntimeConfig(input: {
+    appId?: string;
+    appSecret?: string;
+    domain?: string;
+    preferredScopes?: string[];
+  }): void {
+    const current = this.getSession(input.appId);
+    current.appId = input.appId?.trim() || current.appId;
+    current.appSecret = input.appSecret?.trim() || current.appSecret;
+    current.domain = input.domain?.trim() || current.domain;
+    current.preferredScopes = input.preferredScopes ? [...input.preferredScopes] : current.preferredScopes;
+    this.setSession(input.appId, current);
+  }
+
+  getRuntimeConfig(appId?: string): Pick<FeishuPersistedSession, 'appId' | 'appSecret' | 'domain' | 'preferredScopes'> {
+    const session = this.getSession(appId);
+    return {
+      appId: session.appId,
+      appSecret: session.appSecret,
+      domain: session.domain,
+      preferredScopes: session.preferredScopes ? [...session.preferredScopes] : undefined,
+    };
+  }
+
   setActiveLogin(appId: string | undefined, login: FeishuPersistedLoginState | null): void {
     const current = this.getSession(appId);
     current.activeLogin = login ? JSON.parse(JSON.stringify(login)) as FeishuPersistedLoginState : null;
@@ -39,6 +71,52 @@ export class FeishuSessionStore {
 
   getActiveLogin(appId?: string): FeishuPersistedLoginState | null {
     return this.getSession(appId).activeLogin ?? null;
+  }
+
+  setCachedBases(appId: string | undefined, result: FeishuPagedResult<FeishuBaseSummary> | null): void {
+    const current = this.getSession(appId);
+    current.cachedBases = result ? JSON.parse(JSON.stringify(result)) as FeishuPagedResult<FeishuBaseSummary> : null;
+    this.setSession(appId, current);
+  }
+
+  getCachedBases(appId?: string): FeishuPagedResult<FeishuBaseSummary> | null {
+    return this.getSession(appId).cachedBases ?? null;
+  }
+
+  setCachedTables(appId: string | undefined, baseId: string, result: FeishuPagedResult<FeishuTableSummary> | null): void {
+    const current = this.getSession(appId);
+    current.cachedTables ||= {};
+    if (result) {
+      current.cachedTables[baseId] = JSON.parse(JSON.stringify(result)) as FeishuPagedResult<FeishuTableSummary>;
+    } else {
+      delete current.cachedTables[baseId];
+    }
+    this.setSession(appId, current);
+  }
+
+  getCachedTables(appId: string | undefined, baseId: string): FeishuPagedResult<FeishuTableSummary> | null {
+    return this.getSession(appId).cachedTables?.[baseId] ?? null;
+  }
+
+  setCachedSchema(
+    appId: string | undefined,
+    baseId: string,
+    tableId: string,
+    result: FeishuPagedResult<FeishuFieldSchema> | null,
+  ): void {
+    const current = this.getSession(appId);
+    current.cachedSchemas ||= {};
+    const cacheKey = `${baseId}:${tableId}`;
+    if (result) {
+      current.cachedSchemas[cacheKey] = JSON.parse(JSON.stringify(result)) as FeishuPagedResult<FeishuFieldSchema>;
+    } else {
+      delete current.cachedSchemas[cacheKey];
+    }
+    this.setSession(appId, current);
+  }
+
+  getCachedSchema(appId: string | undefined, baseId: string, tableId: string): FeishuPagedResult<FeishuFieldSchema> | null {
+    return this.getSession(appId).cachedSchemas?.[`${baseId}:${tableId}`] ?? null;
   }
 
   clear(appId?: string): void {

@@ -147,6 +147,13 @@ export class FeishuAuthService {
       });
     }
 
+    this.store.setRuntimeConfig({
+      appId,
+      appSecret,
+      domain,
+      preferredScopes: input.preferredScopes,
+    });
+
     const environment = await detectFeishuEnvironment(this.adapter);
     if (!environment.nodeAvailable || !environment.cliAvailable) {
       const failure = toEnvironmentFailureStatus(environment, appId, domain);

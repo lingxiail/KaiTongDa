@@ -71,6 +71,10 @@ export const TOOL_NAMES = {
   FEISHU_CONNECT: 'feishu_connect',
   FEISHU_AUTH_STATUS: 'feishu_auth_status',
   FEISHU_DISCONNECT: 'feishu_disconnect',
+  FEISHU_LIST_BASES: 'feishu_list_bases',
+  FEISHU_LIST_TABLES: 'feishu_list_tables',
+  FEISHU_GET_TABLE_SCHEMA: 'feishu_get_table_schema',
+  FEISHU_QUERY_RECORDS: 'feishu_query_records',
 } as const;
 
 export type ToolName = typeof TOOL_NAMES[keyof typeof TOOL_NAMES];

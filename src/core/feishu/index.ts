@@ -4,5 +4,6 @@ export * from './cliAdapter';
 export * from './env';
 export * from './sessionStore';
 export * from './authService';
+export * from './baseService';
 export * from './errorNormalizer';
 export * from './facade';

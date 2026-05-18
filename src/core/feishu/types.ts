@@ -58,6 +58,13 @@ export interface FeishuEnvironmentStatus {
   message: string;
 }
 
+export interface FeishuPagedResult<T> {
+  items: T[];
+  pageToken?: string | null;
+  hasMore: boolean;
+  total?: number;
+}
+
 export interface FeishuBaseSummary {
   id: string;
   name: string;
@@ -84,6 +91,47 @@ export interface FeishuRecordQueryResult {
   pageToken?: string | null;
   hasMore: boolean;
   total?: number;
+}
+
+export interface FeishuListBasesInput {
+  appId?: string;
+  pageSize?: number;
+  pageToken?: string;
+  refresh?: boolean;
+}
+
+export interface FeishuListTablesInput {
+  appId?: string;
+  baseId: string;
+  pageSize?: number;
+  pageToken?: string;
+  refresh?: boolean;
+}
+
+export interface FeishuGetTableSchemaInput {
+  appId?: string;
+  baseId: string;
+  tableId: string;
+  pageSize?: number;
+  pageToken?: string;
+  refresh?: boolean;
+}
+
+export interface FeishuRecordSortRule {
+  fieldName: string;
+  desc?: boolean;
+}
+
+export interface FeishuQueryRecordsInput {
+  appId?: string;
+  baseId: string;
+  tableId: string;
+  filter?: Record<string, unknown>;
+  sort?: FeishuRecordSortRule[];
+  viewId?: string;
+  fieldNames?: string[];
+  pageSize?: number;
+  pageToken?: string;
 }
 
 export interface FeishuRecordWriteFailure {
@@ -150,8 +198,12 @@ export interface FeishuPersistedLoginState {
 
 export interface FeishuPersistedSession {
   appId?: string;
+  appSecret?: string;
   domain?: string;
   preferredScopes?: string[];
   connection?: FeishuConnectionStatus | null;
   activeLogin?: FeishuPersistedLoginState | null;
+  cachedBases?: FeishuPagedResult<FeishuBaseSummary> | null;
+  cachedTables?: Record<string, FeishuPagedResult<FeishuTableSummary>>;
+  cachedSchemas?: Record<string, FeishuPagedResult<FeishuFieldSchema>>;
 }

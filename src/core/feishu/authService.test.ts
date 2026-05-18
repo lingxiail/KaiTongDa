@@ -3,7 +3,17 @@ import { FEISHU_ERROR_CODES } from './errorCodes';
 import { FeishuAuthService } from './authService';
 import { FeishuSessionStore } from './sessionStore';
 import type { FeishuCliAdapter, FeishuCliLoginHandle, FeishuCliRawResult } from './cliAdapter';
-import type { FeishuCreateRecordsInput, FeishuLoginStartInput, FeishuRecordWriteResult, FeishuUpdateRecordsByFilterInput, FeishuUpsertRecordsInput } from './types';
+import type {
+  FeishuCreateRecordsInput,
+  FeishuGetTableSchemaInput,
+  FeishuListBasesInput,
+  FeishuListTablesInput,
+  FeishuLoginStartInput,
+  FeishuQueryRecordsInput,
+  FeishuRecordWriteResult,
+  FeishuUpdateRecordsByFilterInput,
+  FeishuUpsertRecordsInput,
+} from './types';
 
 class MockFeishuCliAdapter implements FeishuCliAdapter {
   nodeResult: FeishuCliRawResult = { command: 'node --version', stdout: 'v22.0.0', stderr: '', code: 0 };
@@ -39,19 +49,19 @@ class MockFeishuCliAdapter implements FeishuCliAdapter {
     return { command: 'logout', stdout: 'ok', stderr: '', code: 0 };
   }
 
-  async listBases(): Promise<FeishuCliRawResult> {
+  async listBases(_input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
     throw new Error('not implemented');
   }
 
-  async listTables(_baseId: string): Promise<FeishuCliRawResult> {
+  async listTables(_input: FeishuListTablesInput): Promise<FeishuCliRawResult> {
     throw new Error('not implemented');
   }
 
-  async getTableSchema(_baseId: string, _tableId: string): Promise<FeishuCliRawResult> {
+  async getTableSchema(_input: FeishuGetTableSchemaInput): Promise<FeishuCliRawResult> {
     throw new Error('not implemented');
   }
 
-  async queryRecords(_baseId: string, _tableId: string, _input?: Record<string, unknown>): Promise<FeishuCliRawResult> {
+  async queryRecords(_input: FeishuQueryRecordsInput): Promise<FeishuCliRawResult> {
     throw new Error('not implemented');
   }
 
