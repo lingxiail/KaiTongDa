@@ -2565,7 +2565,7 @@ dependencies = [
 
 [[package]]
 name = "lingxi"
-version = "0.15.10"
+version = "0.15.18"
 dependencies = [
  "aes-gcm",
  "base64 0.22.1",
