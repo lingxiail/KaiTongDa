@@ -195,7 +195,7 @@ jobs:
 
       - name: Install coscli
         run: |
-          COSCLI_VERSION="v1.0.8"
+          COSCLI_VERSION="v2.3.3"
           curl -fSL "https://github.com/tencentyun/coscli/releases/download/${COSCLI_VERSION}/coscli-${COSCLI_VERSION}-linux-amd64" -o /usr/local/bin/coscli
           chmod +x /usr/local/bin/coscli
 
@@ -205,17 +205,24 @@ jobs:
           SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
           SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
         run: |
+          # Write coscli config with credentials
+          mkdir -p ~/.coscli
+          cat > ~/.coscli/config.yaml <<EOF
+          cos:
+            base:
+              secretid: $SECRET_ID
+              secretkey: $SECRET_KEY
+              sessiontoken: ""
+            buckets:
+              - name: lingxi-1303034624
+                alias: lingxi
+                region: ap-guangzhou
+          EOF
+
           for file in release-assets/*; do
             [ -f "$file" ] || continue
-            coscli cp "$file" "cos://lingxi-1303034624/releases/${VERSION}/$(basename $file)" \
-              -i "$SECRET_ID" -k "$SECRET_KEY" \
-              -b lingxi-1303034624 -r ap-guangzhou
+            coscli cp "$file" "cos://lingxi/releases/${VERSION}/$(basename $file)"
           done
-          coscli cp latest.json "cos://lingxi-1303034624/latest.json" \
-            -i "$SECRET_ID" -k "$SECRET_KEY" \
-            -b lingxi-1303034624 -r ap-guangzhou \
-            --meta "Cache-Control:no-cache"
+          coscli cp latest.json "cos://lingxi/latest.json" --meta "Cache-Control:no-cache"
           echo "Done. Listing:"
-          coscli ls "cos://lingxi-1303034624/releases/${VERSION}/" \
-            -i "$SECRET_ID" -k "$SECRET_KEY" \
-            -b lingxi-1303034624 -r ap-guangzhou
+          coscli ls "cos://lingxi/releases/${VERSION}/"
