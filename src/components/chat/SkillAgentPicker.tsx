@@ -147,12 +147,6 @@ export default function SkillAgentPicker({
   );
 
   const hasSelected = selectedSkill !== null || selectedAgent !== null;
-  const _selectedSkillItem = allItems.find(
-    (i) => i.type === 'skill' && i.name === selectedSkill,
-  );
-  const _selectedAgentItem = allItems.find(
-    (i) => i.type === 'agent' && i.name === selectedAgent,
-  );
 
   if (compact) {
     return (
