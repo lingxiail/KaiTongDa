@@ -195,9 +195,7 @@ jobs:
 
       - name: Install coscli
         run: |
-          # Install via Go (no GitHub download dependency)
-          go install github.com/tencentyun/coscli/coscli@latest
-          mv "$HOME/go/bin/coscli" /usr/local/bin/coscli
+          wget -q "https://cosbrowser.cloud.tencent.com/software/coscli/coscli-linux-amd64" -O /usr/local/bin/coscli
           chmod +x /usr/local/bin/coscli
           coscli version
 
@@ -207,9 +205,8 @@ jobs:
           SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
           SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
         run: |
-          # Write coscli config with credentials
-          mkdir -p ~/.coscli
-          cat > ~/.coscli/config.yaml <<EOF
+          mkdir -p ~/.cos
+          cat > ~/.cos.yaml <<EOF
           cos:
             base:
               secretid: $SECRET_ID
@@ -219,6 +216,7 @@ jobs:
               - name: lingxi-1303034624
                 alias: lingxi
                 region: ap-guangzhou
+                endpoint: cos.ap-guangzhou.myqcloud.com
           EOF
 
           for file in release-assets/*; do
