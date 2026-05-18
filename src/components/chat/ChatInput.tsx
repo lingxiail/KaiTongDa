@@ -724,6 +724,50 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                   anchorRef={modelPickerRef as React.RefObject<HTMLElement>}
                 />
               </div>
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    if (suggestionType === 'skill') {
+                      setSuggestionsDismissed(!suggestionsDismissed);
+                    } else {
+                      setText('/');
+                      setSelectedSkill(null);
+                      setSelectedAgent(null);
+                      textareaRef.current?.focus();
+                    }
+                  }}
+                  className={cn(
+                    'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors',
+                    selectedSkill && 'text-purple-600'
+                  )}
+                  title="选择技能"
+                >
+                  <span className="w-5 text-center">/</span>
+                  <span>{selectedSkill?.name ?? '技能'}</span>
+                </button>
+              </div>
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    if (suggestionType === 'agent') {
+                      setSuggestionsDismissed(!suggestionsDismissed);
+                    } else {
+                      setText('@');
+                      setSelectedAgent(null);
+                      setSelectedSkill(null);
+                      textareaRef.current?.focus();
+                    }
+                  }}
+                  className={cn(
+                    'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors',
+                    selectedAgent && 'text-blue-600'
+                  )}
+                  title="选择代理"
+                >
+                  <span className="w-5 text-center">@</span>
+                  <span>{selectedAgent?.name ?? '代理'}</span>
+                </button>
+              </div>
               <FolderSelector
                 currentPath={localWorkspace}
                 recentPaths={recentPaths}
@@ -780,7 +824,50 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                     anchorRef={modelPickerRef as React.RefObject<HTMLElement>}
                   />
                 </div>
-
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      if (suggestionType === 'skill') {
+                        setSuggestionsDismissed(!suggestionsDismissed);
+                      } else {
+                        setText('/');
+                        setSelectedSkill(null);
+                        setSelectedAgent(null);
+                        textareaRef.current?.focus();
+                      }
+                    }}
+                    className={cn(
+                      'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors',
+                      selectedSkill && 'text-purple-600'
+                    )}
+                    title="选择技能"
+                  >
+                    <span className="w-5 text-center">/</span>
+                    <span>{selectedSkill?.name ?? '技能'}</span>
+                  </button>
+                </div>
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      if (suggestionType === 'agent') {
+                        setSuggestionsDismissed(!suggestionsDismissed);
+                      } else {
+                        setText('@');
+                        setSelectedAgent(null);
+                        setSelectedSkill(null);
+                        textareaRef.current?.focus();
+                      }
+                    }}
+                    className={cn(
+                      'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors',
+                      selectedAgent && 'text-blue-600'
+                    )}
+                    title="选择代理"
+                  >
+                    <span className="w-5 text-center">@</span>
+                    <span>{selectedAgent?.name ?? '代理'}</span>
+                  </button>
+                </div>
                 <Button
                   variant="ghost"
                   size="icon"
