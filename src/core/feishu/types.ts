@@ -139,19 +139,49 @@ export interface FeishuRecordWriteFailure {
   reason: string;
 }
 
+export type FeishuWriteAction = 'create' | 'upsert' | 'update_by_filter';
+
+export interface FeishuWriteConfirmation {
+  required: boolean;
+  confirmed: boolean;
+  reason?: string;
+  threshold?: number;
+}
+
+export interface FeishuWriteAuditSummary {
+  action: FeishuWriteAction;
+  baseId: string;
+  tableId: string;
+  successCount: number;
+  failureCount: number;
+  createdCount?: number;
+  updatedCount?: number;
+  matchedCount?: number;
+  timestamp: number;
+}
+
 export interface FeishuRecordWriteResult {
+  success: boolean;
+  action: FeishuWriteAction;
+  baseId: string;
+  tableId: string;
   successCount: number;
   failureCount: number;
   createdCount?: number;
   updatedCount?: number;
   matchedCount?: number;
   failures: FeishuRecordWriteFailure[];
+  message: string;
+  confirmation?: FeishuWriteConfirmation;
+  audit?: FeishuWriteAuditSummary;
 }
 
 export interface FeishuCreateRecordsInput {
+  appId?: string;
   baseId: string;
   tableId: string;
   records: Array<Record<string, unknown>>;
+  confirmed?: boolean;
 }
 
 export interface FeishuUpsertRecordsInput extends FeishuCreateRecordsInput {
@@ -159,10 +189,23 @@ export interface FeishuUpsertRecordsInput extends FeishuCreateRecordsInput {
 }
 
 export interface FeishuUpdateRecordsByFilterInput {
+  appId?: string;
   baseId: string;
   tableId: string;
-  filter: string;
+  filter: Record<string, unknown>;
   fields: Record<string, unknown>;
+  confirmed?: boolean;
+}
+
+export interface FeishuRecentContext {
+  appId?: string;
+  baseId?: string;
+  baseName?: string;
+  tableId?: string;
+  tableName?: string;
+  fieldNames?: string[];
+  intent?: string;
+  updatedAt: number;
 }
 
 export interface FeishuConnectInput {
@@ -206,4 +249,5 @@ export interface FeishuPersistedSession {
   cachedBases?: FeishuPagedResult<FeishuBaseSummary> | null;
   cachedTables?: Record<string, FeishuPagedResult<FeishuTableSummary>>;
   cachedSchemas?: Record<string, FeishuPagedResult<FeishuFieldSchema>>;
+  recentContext?: FeishuRecentContext | null;
 }

@@ -14,6 +14,10 @@ describe('feishu tools', () => {
     expect(toolRegistry.get('feishu_connect')).toBeDefined();
     expect(toolRegistry.get('feishu_auth_status')).toBeDefined();
     expect(toolRegistry.get('feishu_disconnect')).toBeDefined();
+    expect(toolRegistry.get('feishu_create_records')).toBeDefined();
+    expect(toolRegistry.get('feishu_upsert_records')).toBeDefined();
+    expect(toolRegistry.get('feishu_update_records_by_filter')).toBeDefined();
+    expect(toolRegistry.get('feishu_handle_request')).toBeDefined();
   });
 
   it('feishu_connect returns structured json', async () => {
@@ -67,5 +71,79 @@ describe('feishu tools', () => {
     const parsed = JSON.parse(result as string) as { connected: boolean; account?: { name?: string } };
     expect(parsed.connected).toBe(true);
     expect(parsed.account?.name).toBe('Tom');
+  });
+
+  it('feishu_handle_request returns structured json', async () => {
+    vi.spyOn(feishuFacade, 'handleRequest').mockResolvedValue({
+      intent: {
+        kind: 'query_records',
+        confidence: 'high',
+        query: '帮我查客户表最近 5 条记录',
+        slots: [],
+        missingSlots: [],
+      },
+      resolvedContext: {
+        base: { id: 'app_sales', name: '销售Base' },
+        table: { id: 'tbl_customer', name: '客户表', baseId: 'app_sales' },
+      },
+      needClarification: false,
+      executionPlan: {
+        intent: 'query_records',
+        steps: [],
+      },
+      result: {
+        records: [{ recordId: 'rec_1', Name: 'Tom' }],
+        hasMore: false,
+        pageToken: null,
+      },
+      message: '已返回 1 条记录。',
+    });
+
+    const result = await toolRegistry.get('feishu_handle_request')!.execute({
+      query: '帮我查客户表最近 5 条记录',
+    });
+
+    const parsed = JSON.parse(result as string) as { intent: { kind: string }; result: { records: Array<{ recordId: string }> } };
+    expect(parsed.intent.kind).toBe('query_records');
+    expect(parsed.result.records[0]?.recordId).toBe('rec_1');
+  });
+
+  it('feishu_create_records returns structured json', async () => {
+    vi.spyOn(feishuFacade, 'createRecords').mockResolvedValue({
+      success: true,
+      action: 'create',
+      baseId: 'app_sales',
+      tableId: 'tbl_customer',
+      successCount: 1,
+      failureCount: 0,
+      createdCount: 1,
+      failures: [],
+      message: '已成功新增 1 条记录。',
+      confirmation: {
+        required: false,
+        confirmed: false,
+        threshold: 20,
+      },
+      audit: {
+        action: 'create',
+        baseId: 'app_sales',
+        tableId: 'tbl_customer',
+        successCount: 1,
+        failureCount: 0,
+        createdCount: 1,
+        timestamp: 1,
+      },
+    });
+
+    const result = await toolRegistry.get('feishu_create_records')!.execute({
+      baseId: 'app_sales',
+      tableId: 'tbl_customer',
+      records: [{ 客户名称: 'Tom' }],
+    });
+
+    const parsed = JSON.parse(result as string) as { action: string; createdCount?: number; audit?: { tableId?: string } };
+    expect(parsed.action).toBe('create');
+    expect(parsed.createdCount).toBe(1);
+    expect(parsed.audit?.tableId).toBe('tbl_customer');
   });
 });

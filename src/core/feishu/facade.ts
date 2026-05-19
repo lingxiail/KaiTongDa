@@ -1,6 +1,7 @@
 import type {
   FeishuConnectInput,
   FeishuConnectionStatus,
+  FeishuCreateRecordsInput,
   FeishuFieldSchema,
   FeishuGetTableSchemaInput,
   FeishuListBasesInput,
@@ -8,16 +9,22 @@ import type {
   FeishuPagedResult,
   FeishuQueryRecordsInput,
   FeishuRecordQueryResult,
+  FeishuRecordWriteResult,
   FeishuBaseSummary,
   FeishuTableSummary,
+  FeishuUpdateRecordsByFilterInput,
+  FeishuUpsertRecordsInput,
 } from './types';
+import type { FeishuHandleRequestInput, FeishuHandleRequestResult } from './intentTypes';
 import { FeishuAuthService, feishuAuthService } from './authService';
 import { FeishuBaseService, feishuBaseService } from './baseService';
+import { FeishuIntentOrchestrator, feishuIntentOrchestrator } from './orchestrator';
 
 export class FeishuFacade {
   constructor(
     private readonly authService: FeishuAuthService = feishuAuthService,
     private readonly baseService: FeishuBaseService = feishuBaseService,
+    private readonly intentOrchestrator: FeishuIntentOrchestrator = feishuIntentOrchestrator,
   ) {}
 
   async connect(input: FeishuConnectInput = {}): Promise<FeishuConnectionStatus> {
@@ -46,6 +53,22 @@ export class FeishuFacade {
 
   async queryRecords(input: FeishuQueryRecordsInput): Promise<FeishuRecordQueryResult> {
     return await this.baseService.queryRecords(input);
+  }
+
+  async createRecords(input: FeishuCreateRecordsInput): Promise<FeishuRecordWriteResult> {
+    return await this.baseService.createRecords(input);
+  }
+
+  async upsertRecords(input: FeishuUpsertRecordsInput): Promise<FeishuRecordWriteResult> {
+    return await this.baseService.upsertRecords(input);
+  }
+
+  async updateRecordsByFilter(input: FeishuUpdateRecordsByFilterInput): Promise<FeishuRecordWriteResult> {
+    return await this.baseService.updateRecordsByFilter(input);
+  }
+
+  async handleRequest(input: FeishuHandleRequestInput): Promise<FeishuHandleRequestResult> {
+    return await this.intentOrchestrator.handleRequest(input);
   }
 }
 

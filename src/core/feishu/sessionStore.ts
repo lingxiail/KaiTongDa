@@ -4,6 +4,7 @@ import type {
   FeishuPagedResult,
   FeishuBaseSummary,
   FeishuPersistedLoginState,
+  FeishuRecentContext,
   FeishuPersistedSession,
   FeishuTableSummary,
 } from './types';
@@ -117,6 +118,26 @@ export class FeishuSessionStore {
 
   getCachedSchema(appId: string | undefined, baseId: string, tableId: string): FeishuPagedResult<FeishuFieldSchema> | null {
     return this.getSession(appId).cachedSchemas?.[`${baseId}:${tableId}`] ?? null;
+  }
+
+  setRecentContext(appId: string | undefined, context: FeishuRecentContext | null): void {
+    const current = this.getSession(appId);
+    current.recentContext = context ? JSON.parse(JSON.stringify(context)) as FeishuRecentContext : null;
+    this.setSession(appId, current);
+  }
+
+  getRecentContext(appId?: string): FeishuRecentContext | null {
+    return this.getSession(appId).recentContext ?? null;
+  }
+
+  mergeRecentContext(appId: string | undefined, context: Partial<FeishuRecentContext>): FeishuRecentContext {
+    const merged: FeishuRecentContext = {
+      ...(this.getRecentContext(appId) ?? {}),
+      ...context,
+      updatedAt: context.updatedAt ?? Date.now(),
+    };
+    this.setRecentContext(appId, merged);
+    return merged;
   }
 
   clear(appId?: string): void {

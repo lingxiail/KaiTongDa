@@ -10,6 +10,17 @@ function toStringArray(value: unknown): string[] | undefined {
   return Array.isArray(value) ? value.map(String) : undefined;
 }
 
+function toObject(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : undefined;
+}
+
+function toRecordArray(value: unknown): Array<Record<string, unknown>> | undefined {
+  if (!Array.isArray(value)) return undefined;
+  return value
+    .filter((item) => item && typeof item === 'object' && !Array.isArray(item))
+    .map((item) => item as Record<string, unknown>);
+}
+
 function toSortArray(value: unknown): Array<{ fieldName: string; desc?: boolean }> | undefined {
   if (!Array.isArray(value)) return undefined;
   return value
@@ -236,4 +247,137 @@ export const feishuQueryRecordsTool: ToolDefinition = {
     return stringifyResult(result);
   },
   isConcurrencySafe: true,
+};
+
+export const feishuCreateRecordsTool: ToolDefinition = {
+  name: TOOL_NAMES.FEISHU_CREATE_RECORDS,
+  description: '向指定飞书多维表格批量新增记录，返回结构化写入结果与审计摘要。',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      appId: { type: 'string', description: '飞书应用 App ID；默认使用最近一次连接的应用。' },
+      baseId: { type: 'string', description: 'Base ID（即 app_token）。' },
+      tableId: { type: 'string', description: '数据表 ID。' },
+      records: {
+        type: 'array',
+        description: '待新增的记录数组，每个元素都是字段名到字段值的对象。',
+        items: { type: 'object' },
+      },
+      confirmed: { type: 'boolean', description: '若命中高风险阈值，显式确认后再执行。' },
+    },
+    required: ['baseId', 'tableId', 'records'],
+  },
+  execute: async (input) => {
+    const result = await feishuFacade.createRecords({
+      appId: input.appId as string | undefined,
+      baseId: input.baseId as string,
+      tableId: input.tableId as string,
+      records: toRecordArray(input.records) ?? [],
+      confirmed: input.confirmed as boolean | undefined,
+    });
+    return stringifyResult(result);
+  },
+  isConcurrencySafe: false,
+};
+
+export const feishuUpsertRecordsTool: ToolDefinition = {
+  name: TOOL_NAMES.FEISHU_UPSERT_RECORDS,
+  description: '按显式匹配字段执行飞书记录 upsert，返回新增/更新数量和失败明细。',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      appId: { type: 'string', description: '飞书应用 App ID；默认使用最近一次连接的应用。' },
+      baseId: { type: 'string', description: 'Base ID（即 app_token）。' },
+      tableId: { type: 'string', description: '数据表 ID。' },
+      records: {
+        type: 'array',
+        description: '待 upsert 的记录数组，每个元素都是字段名到字段值的对象。',
+        items: { type: 'object' },
+      },
+      matchByFields: {
+        type: 'array',
+        description: '显式匹配字段列表，用于判断新增还是更新。',
+        items: { type: 'string' },
+      },
+      confirmed: { type: 'boolean', description: '若命中高风险阈值，显式确认后再执行。' },
+    },
+    required: ['baseId', 'tableId', 'records', 'matchByFields'],
+  },
+  execute: async (input) => {
+    const result = await feishuFacade.upsertRecords({
+      appId: input.appId as string | undefined,
+      baseId: input.baseId as string,
+      tableId: input.tableId as string,
+      records: toRecordArray(input.records) ?? [],
+      matchByFields: toStringArray(input.matchByFields) ?? [],
+      confirmed: input.confirmed as boolean | undefined,
+    });
+    return stringifyResult(result);
+  },
+  isConcurrencySafe: false,
+};
+
+export const feishuUpdateRecordsByFilterTool: ToolDefinition = {
+  name: TOOL_NAMES.FEISHU_UPDATE_RECORDS_BY_FILTER,
+  description: '按筛选条件批量更新飞书记录，支持高风险阈值确认。',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      appId: { type: 'string', description: '飞书应用 App ID；默认使用最近一次连接的应用。' },
+      baseId: { type: 'string', description: 'Base ID（即 app_token）。' },
+      tableId: { type: 'string', description: '数据表 ID。' },
+      filter: { type: 'object', description: '结构化筛选条件对象。' },
+      fields: { type: 'object', description: '要更新的字段对象。' },
+      confirmed: { type: 'boolean', description: '若命中高风险阈值，显式确认后再执行。' },
+    },
+    required: ['baseId', 'tableId', 'filter', 'fields'],
+  },
+  execute: async (input) => {
+    const result = await feishuFacade.updateRecordsByFilter({
+      appId: input.appId as string | undefined,
+      baseId: input.baseId as string,
+      tableId: input.tableId as string,
+      filter: toObject(input.filter) ?? {},
+      fields: toObject(input.fields) ?? {},
+      confirmed: input.confirmed as boolean | undefined,
+    });
+    return stringifyResult(result);
+  },
+  isConcurrencySafe: false,
+};
+
+export const feishuHandleRequestTool: ToolDefinition = {
+  name: TOOL_NAMES.FEISHU_HANDLE_REQUEST,
+  description: [
+    '承接飞书多维表格自然语言请求。',
+    '适用于“连接飞书”“列出我的 Base”“查看客户表字段”“帮我查飞书客户表最近 10 条记录”等场景。',
+    '内部会完成意图识别、最近上下文补全、资源歧义澄清和只读执行编排。',
+  ].join(' '),
+  inputSchema: {
+    type: 'object',
+    properties: {
+      query: { type: 'string', description: '用户的飞书自然语言请求。' },
+      appId: { type: 'string', description: '可选飞书应用 App ID。连接或切换应用时使用。' },
+      appSecret: { type: 'string', description: '可选飞书应用 App Secret。连接时使用。' },
+      domain: { type: 'string', description: '可选飞书开放平台域名。' },
+      conversationContext: {
+        type: 'object',
+        description: '可选会话上下文，可提供 baseId、baseName、tableId、tableName 等最近资源信息。',
+      },
+    },
+    required: ['query'],
+  },
+  execute: async (input) => {
+    const result = await feishuFacade.handleRequest({
+      query: input.query as string,
+      appId: input.appId as string | undefined,
+      appSecret: input.appSecret as string | undefined,
+      domain: input.domain as string | undefined,
+      conversationContext: input.conversationContext && typeof input.conversationContext === 'object'
+        ? input.conversationContext as Record<string, unknown>
+        : undefined,
+    });
+    return stringifyResult(result);
+  },
+  isConcurrencySafe: false,
 };

@@ -11,6 +11,7 @@ import type {
   FeishuLoginStartInput,
   FeishuQueryRecordsInput,
   FeishuRecordWriteResult,
+  FeishuWriteAction,
   FeishuUpdateRecordsByFilterInput,
   FeishuUpsertRecordsInput,
 } from './types';
@@ -64,8 +65,123 @@ const FEISHU_MCP_TOOLS = [
   'bitable.v1.appTable.list',
   'bitable.v1.appTableField.list',
   'bitable.v1.appTableRecord.search',
+  'bitable.v1.appTableRecord.batchCreate',
+  'bitable.v1.appTableRecord.batchUpdate',
 ].join(' ');
 const MCP_SERVER_SIGNATURES = new Map<string, string>();
+
+function asObject(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+function pickString(source: Record<string, unknown>, keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = source[key];
+    if (typeof value === 'string' && value.trim()) {
+      return value.trim();
+    }
+  }
+  return undefined;
+}
+
+function pickBoolean(source: Record<string, unknown>, keys: string[]): boolean | undefined {
+  for (const key of keys) {
+    const value = source[key];
+    if (typeof value === 'boolean') {
+      return value;
+    }
+  }
+  return undefined;
+}
+
+function pickNumber(source: Record<string, unknown>, keys: string[]): number | undefined {
+  for (const key of keys) {
+    const value = source[key];
+    if (typeof value === 'number') {
+      return value;
+    }
+  }
+  return undefined;
+}
+
+function parseJsonPayload(raw: string): unknown {
+  const trimmed = raw.trim();
+  if (!trimmed) return {};
+
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    const arrayStart = trimmed.indexOf('[');
+    const objectStart = trimmed.indexOf('{');
+    const start = arrayStart === -1 ? objectStart : objectStart === -1 ? arrayStart : Math.min(arrayStart, objectStart);
+    const end = Math.max(trimmed.lastIndexOf(']'), trimmed.lastIndexOf('}'));
+    if (start >= 0 && end > start) {
+      return JSON.parse(trimmed.slice(start, end + 1));
+    }
+    throw new Error(`无法解析飞书返回结果: ${trimmed}`);
+  }
+}
+
+function unwrapData(payload: unknown): Record<string, unknown> {
+  const objectPayload = asObject(payload);
+  const nested = objectPayload.data;
+  return Object.keys(asObject(nested)).length > 0 ? asObject(nested) : objectPayload;
+}
+
+function extractItems(container: Record<string, unknown>): unknown[] {
+  for (const key of ['items', 'records']) {
+    if (Array.isArray(container[key])) {
+      return container[key] as unknown[];
+    }
+  }
+  return [];
+}
+
+function normalizeRecordItem(item: Record<string, unknown>): { recordId?: string; fields: Record<string, unknown> } {
+  return {
+    recordId: pickString(item, ['record_id', 'recordId', 'id']),
+    fields: asObject(item.fields),
+  };
+}
+
+function buildWriteResult(input: {
+  success: boolean;
+  action: FeishuWriteAction;
+  baseId: string;
+  tableId: string;
+  successCount: number;
+  failureCount: number;
+  createdCount?: number;
+  updatedCount?: number;
+  matchedCount?: number;
+  failures?: Array<{ index: number; reason: string }>;
+  message: string;
+}): FeishuRecordWriteResult {
+  return {
+    success: input.success,
+    action: input.action,
+    baseId: input.baseId,
+    tableId: input.tableId,
+    successCount: input.successCount,
+    failureCount: input.failureCount,
+    createdCount: input.createdCount,
+    updatedCount: input.updatedCount,
+    matchedCount: input.matchedCount,
+    failures: input.failures ?? [],
+    message: input.message,
+  };
+}
+
+function makeMatchKey(fields: Record<string, unknown>, matchByFields: string[]): string | null {
+  const parts: string[] = [];
+  for (const fieldName of matchByFields) {
+    if (!(fieldName in fields)) {
+      return null;
+    }
+    parts.push(`${fieldName}:${JSON.stringify(fields[fieldName])}`);
+  }
+  return parts.join('|');
+}
 
 function quoteShellArg(value: string): string {
   if (isWindows()) {
@@ -163,6 +279,99 @@ function toErrorResult(command: string, error: unknown): FeishuCliRawResult {
 }
 
 export class LarkMcpCliAdapter implements FeishuCliAdapter {
+  private async batchCreateRecordsInternal(input: FeishuCreateRecordsInput): Promise<FeishuCliRawResult> {
+    return await this.invokeMcpTool(input.appId, 'bitable.v1.appTableRecord.batchCreate', {
+      path: {
+        app_token: input.baseId,
+        table_id: input.tableId,
+      },
+      data: {
+        records: input.records.map((fields) => ({ fields })),
+      },
+      useUAT: true,
+    });
+  }
+
+  private async batchUpdateRecordsInternal(
+    appId: string | undefined,
+    baseId: string,
+    tableId: string,
+    records: Array<{ recordId: string; fields: Record<string, unknown> }>,
+  ): Promise<FeishuCliRawResult> {
+    return await this.invokeMcpTool(appId, 'bitable.v1.appTableRecord.batchUpdate', {
+      path: {
+        app_token: baseId,
+        table_id: tableId,
+      },
+      data: {
+        records: records.map((item) => ({
+          record_id: item.recordId,
+          fields: item.fields,
+        })),
+      },
+      useUAT: true,
+    });
+  }
+
+  private async listAllRecords(input: {
+    appId?: string;
+    baseId: string;
+    tableId: string;
+    filter?: Record<string, unknown>;
+  }): Promise<Array<{ recordId: string; fields: Record<string, unknown> }>> {
+    const records: Array<{ recordId: string; fields: Record<string, unknown> }> = [];
+    let pageToken: string | undefined;
+
+    do {
+      const raw = await this.queryRecords({
+        appId: input.appId,
+        baseId: input.baseId,
+        tableId: input.tableId,
+        filter: input.filter,
+        pageSize: 200,
+        pageToken,
+      });
+      if (raw.code !== 0) {
+        throw new Error(raw.stderr || raw.stdout || '飞书记录查询失败。');
+      }
+
+      const data = unwrapData(parseJsonPayload(raw.stdout));
+      const pageItems = extractItems(data)
+        .map((item) => normalizeRecordItem(asObject(item)))
+        .filter((item): item is { recordId: string; fields: Record<string, unknown> } => typeof item.recordId === 'string' && !!item.recordId);
+      records.push(...pageItems);
+      pageToken = pickString(data, ['page_token', 'pageToken', 'next_page_token']);
+      if (!(pickBoolean(data, ['has_more', 'hasMore']) ?? false)) {
+        pageToken = undefined;
+      }
+    } while (pageToken);
+
+    return records;
+  }
+
+  private toFailedWriteResult(
+    action: FeishuWriteAction,
+    baseId: string,
+    tableId: string,
+    totalCount: number,
+    error: unknown,
+  ): FeishuRecordWriteResult {
+    const reason = error instanceof Error ? error.message : String(error);
+    return buildWriteResult({
+      success: false,
+      action,
+      baseId,
+      tableId,
+      successCount: 0,
+      failureCount: totalCount,
+      createdCount: action === 'create' ? 0 : undefined,
+      updatedCount: action === 'create' ? undefined : 0,
+      matchedCount: action === 'update_by_filter' ? totalCount : undefined,
+      failures: totalCount > 0 ? [{ index: 0, reason }] : [],
+      message: reason,
+    });
+  }
+
   private getMcpRuntimeConfig(appId?: string): { appId: string; appSecret: string; domain?: string } {
     const runtimeConfig = feishuSessionStore.getRuntimeConfig(appId);
     if (!runtimeConfig.appId || !runtimeConfig.appSecret) {
@@ -361,15 +570,190 @@ export class LarkMcpCliAdapter implements FeishuCliAdapter {
   }
 
   async createRecords(_input: FeishuCreateRecordsInput): Promise<FeishuRecordWriteResult> {
-    throw new Error('Not implemented in stage A.');
+    if (_input.records.length === 0) {
+      return buildWriteResult({
+        success: true,
+        action: 'create',
+        baseId: _input.baseId,
+        tableId: _input.tableId,
+        successCount: 0,
+        failureCount: 0,
+        createdCount: 0,
+        message: '没有需要新增的记录。',
+      });
+    }
+
+    try {
+      const raw = await this.batchCreateRecordsInternal(_input);
+      if (raw.code !== 0) {
+        throw new Error(raw.stderr || raw.stdout || '飞书新增记录失败。');
+      }
+
+      const data = unwrapData(parseJsonPayload(raw.stdout));
+      const createdCount = extractItems(data).length || _input.records.length;
+      const failureCount = Math.max(0, _input.records.length - createdCount);
+      return buildWriteResult({
+        success: failureCount === 0,
+        action: 'create',
+        baseId: _input.baseId,
+        tableId: _input.tableId,
+        successCount: createdCount,
+        failureCount,
+        createdCount,
+        failures: failureCount > 0 ? [{ index: createdCount, reason: '部分记录未成功创建。' }] : [],
+        message: failureCount === 0
+          ? `已成功新增 ${createdCount} 条记录。`
+          : `已新增 ${createdCount} 条记录，另有 ${failureCount} 条失败。`,
+      });
+    } catch (error) {
+      return this.toFailedWriteResult('create', _input.baseId, _input.tableId, _input.records.length, error);
+    }
   }
 
-  async upsertRecords(_input: FeishuUpsertRecordsInput): Promise<FeishuRecordWriteResult> {
-    throw new Error('Not implemented in stage A.');
+  async upsertRecords(input: FeishuUpsertRecordsInput): Promise<FeishuRecordWriteResult> {
+    if (input.records.length === 0) {
+      return buildWriteResult({
+        success: true,
+        action: 'upsert',
+        baseId: input.baseId,
+        tableId: input.tableId,
+        successCount: 0,
+        failureCount: 0,
+        createdCount: 0,
+        updatedCount: 0,
+        matchedCount: 0,
+        message: '没有需要 upsert 的记录。',
+      });
+    }
+
+    try {
+      const existingRecords = await this.listAllRecords(input);
+      const existingByKey = new Map<string, string>();
+      for (const existing of existingRecords) {
+        const key = makeMatchKey(existing.fields, input.matchByFields);
+        if (key && existing.recordId && !existingByKey.has(key)) {
+          existingByKey.set(key, existing.recordId);
+        }
+      }
+
+      const toCreate: Array<Record<string, unknown>> = [];
+      const toUpdate: Array<{ recordId: string; fields: Record<string, unknown> }> = [];
+      const failures: Array<{ index: number; reason: string }> = [];
+
+      input.records.forEach((record, index) => {
+        const key = makeMatchKey(record, input.matchByFields);
+        if (!key) {
+          failures.push({
+            index,
+            reason: `第 ${index + 1} 条记录缺少 upsert 匹配字段 ${input.matchByFields.join(', ')}。`,
+          });
+          return;
+        }
+
+        const recordId = existingByKey.get(key);
+        if (recordId) {
+          toUpdate.push({ recordId, fields: record });
+          return;
+        }
+
+        toCreate.push(record);
+      });
+
+      let createdCount = 0;
+      let updatedCount = 0;
+
+      if (toCreate.length > 0) {
+        const createResult = await this.createRecords({
+          appId: input.appId,
+          baseId: input.baseId,
+          tableId: input.tableId,
+          records: toCreate,
+        });
+        createdCount = createResult.createdCount ?? createResult.successCount;
+        failures.push(...createResult.failures);
+      }
+
+      if (toUpdate.length > 0) {
+        const raw = await this.batchUpdateRecordsInternal(input.appId, input.baseId, input.tableId, toUpdate);
+        if (raw.code !== 0) {
+          throw new Error(raw.stderr || raw.stdout || '飞书批量更新记录失败。');
+        }
+        const data = unwrapData(parseJsonPayload(raw.stdout));
+        updatedCount = extractItems(data).length || toUpdate.length;
+      }
+
+      const successCount = createdCount + updatedCount;
+      const failureCount = Math.max(0, input.records.length - successCount);
+      return buildWriteResult({
+        success: failureCount === 0,
+        action: 'upsert',
+        baseId: input.baseId,
+        tableId: input.tableId,
+        successCount,
+        failureCount,
+        createdCount,
+        updatedCount,
+        matchedCount: toUpdate.length,
+        failures,
+        message: failureCount === 0
+          ? `upsert 完成：新增 ${createdCount} 条，更新 ${updatedCount} 条。`
+          : `upsert 完成：新增 ${createdCount} 条，更新 ${updatedCount} 条，失败 ${failureCount} 条。`,
+      });
+    } catch (error) {
+      return this.toFailedWriteResult('upsert', input.baseId, input.tableId, input.records.length, error);
+    }
   }
 
-  async updateRecordsByFilter(_input: FeishuUpdateRecordsByFilterInput): Promise<FeishuRecordWriteResult> {
-    throw new Error('Not implemented in stage A.');
+  async updateRecordsByFilter(input: FeishuUpdateRecordsByFilterInput): Promise<FeishuRecordWriteResult> {
+    try {
+      const matchedRecords = await this.listAllRecords(input);
+      if (matchedRecords.length === 0) {
+        return buildWriteResult({
+          success: true,
+          action: 'update_by_filter',
+          baseId: input.baseId,
+          tableId: input.tableId,
+          successCount: 0,
+          failureCount: 0,
+          updatedCount: 0,
+          matchedCount: 0,
+          message: '未匹配到需要更新的记录。',
+        });
+      }
+
+      const raw = await this.batchUpdateRecordsInternal(
+        input.appId,
+        input.baseId,
+        input.tableId,
+        matchedRecords.map((item) => ({
+          recordId: item.recordId,
+          fields: input.fields,
+        })),
+      );
+      if (raw.code !== 0) {
+        throw new Error(raw.stderr || raw.stdout || '飞书按条件更新记录失败。');
+      }
+
+      const data = unwrapData(parseJsonPayload(raw.stdout));
+      const updatedCount = pickNumber(data, ['total']) ?? (extractItems(data).length || matchedRecords.length);
+      const failureCount = Math.max(0, matchedRecords.length - updatedCount);
+      return buildWriteResult({
+        success: failureCount === 0,
+        action: 'update_by_filter',
+        baseId: input.baseId,
+        tableId: input.tableId,
+        successCount: updatedCount,
+        failureCount,
+        updatedCount,
+        matchedCount: matchedRecords.length,
+        failures: failureCount > 0 ? [{ index: updatedCount, reason: '部分命中记录未成功更新。' }] : [],
+        message: failureCount === 0
+          ? `已按条件更新 ${updatedCount} 条记录。`
+          : `命中 ${matchedRecords.length} 条记录，成功更新 ${updatedCount} 条，失败 ${failureCount} 条。`,
+      });
+    } catch (error) {
+      return this.toFailedWriteResult('update_by_filter', input.baseId, input.tableId, 1, error);
+    }
   }
 }
 

@@ -37,11 +37,15 @@ import { skillManageTool } from './definitions/skillManageTool';
 import {
   feishuAuthStatusTool,
   feishuConnectTool,
+  feishuCreateRecordsTool,
   feishuDisconnectTool,
   feishuGetTableSchemaTool,
+  feishuHandleRequestTool,
   feishuListBasesTool,
   feishuListTablesTool,
   feishuQueryRecordsTool,
+  feishuUpdateRecordsByFilterTool,
+  feishuUpsertRecordsTool,
 } from './definitions/feishuTools';
 
 // --- Tool discovery ---
@@ -96,4 +100,8 @@ export function registerBuiltinTools(): void {
   toolRegistry.register(feishuListTablesTool);
   toolRegistry.register(feishuGetTableSchemaTool);
   toolRegistry.register(feishuQueryRecordsTool);
+  toolRegistry.register(feishuCreateRecordsTool);
+  toolRegistry.register(feishuUpsertRecordsTool);
+  toolRegistry.register(feishuUpdateRecordsByFilterTool);
+  toolRegistry.register(feishuHandleRequestTool);
 }

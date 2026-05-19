@@ -75,6 +75,10 @@ export const TOOL_NAMES = {
   FEISHU_LIST_TABLES: 'feishu_list_tables',
   FEISHU_GET_TABLE_SCHEMA: 'feishu_get_table_schema',
   FEISHU_QUERY_RECORDS: 'feishu_query_records',
+  FEISHU_CREATE_RECORDS: 'feishu_create_records',
+  FEISHU_UPSERT_RECORDS: 'feishu_upsert_records',
+  FEISHU_UPDATE_RECORDS_BY_FILTER: 'feishu_update_records_by_filter',
+  FEISHU_HANDLE_REQUEST: 'feishu_handle_request',
 } as const;
 
 export type ToolName = typeof TOOL_NAMES[keyof typeof TOOL_NAMES];

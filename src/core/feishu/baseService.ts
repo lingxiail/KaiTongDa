@@ -1,9 +1,13 @@
 import type { FeishuCliAdapter, FeishuCliRawResult } from './cliAdapter';
 import { feishuCliAdapter } from './cliAdapter';
 import { FeishuAuthService, feishuAuthService } from './authService';
+import { buildFeishuWriteAuditSummary } from './audit';
+import { FeishuFieldMapper, feishuFieldMapper } from './fieldMapper';
 import { FeishuSessionStore, feishuSessionStore } from './sessionStore';
+import { FeishuWritePolicy, feishuWritePolicy } from './writePolicy';
 import type {
   FeishuBaseSummary,
+  FeishuCreateRecordsInput,
   FeishuFieldSchema,
   FeishuGetTableSchemaInput,
   FeishuListBasesInput,
@@ -11,7 +15,10 @@ import type {
   FeishuPagedResult,
   FeishuQueryRecordsInput,
   FeishuRecordQueryResult,
+  FeishuRecordWriteResult,
   FeishuTableSummary,
+  FeishuUpdateRecordsByFilterInput,
+  FeishuUpsertRecordsInput,
 } from './types';
 
 // 1. 容错JSON解析（兼容飞书不规范的返回值）
@@ -168,6 +175,8 @@ export class FeishuBaseService {
     private readonly adapter: FeishuCliAdapter = feishuCliAdapter,
     private readonly authService: FeishuAuthService = feishuAuthService,
     private readonly store: FeishuSessionStore = feishuSessionStore,
+    private readonly fieldMapper: FeishuFieldMapper = feishuFieldMapper,
+    private readonly writePolicy: FeishuWritePolicy = feishuWritePolicy,
   ) {}
 
   private async ensureConnected(appId?: string): Promise<void> {
@@ -239,6 +248,129 @@ export class FeishuBaseService {
       hasMore: pickBoolean(data, ['has_more', 'hasMore']) ?? false,
       total: pickNumber(data, ['total', 'total_count']),
     };
+  }
+
+  private async getSchemaForWrite(input: {
+    appId?: string;
+    baseId: string;
+    tableId: string;
+  }): Promise<FeishuFieldSchema[]> {
+    const schema = await this.getTableSchema({
+      appId: input.appId,
+      baseId: input.baseId,
+      tableId: input.tableId,
+    });
+    return schema.items;
+  }
+
+  private withAudit(result: FeishuRecordWriteResult): FeishuRecordWriteResult {
+    return {
+      ...result,
+      audit: buildFeishuWriteAuditSummary(result),
+    };
+  }
+
+  private buildConfirmationResult(input: {
+    action: FeishuRecordWriteResult['action'];
+    baseId: string;
+    tableId: string;
+    message: string;
+    threshold?: number;
+  }): FeishuRecordWriteResult {
+    return this.withAudit({
+      success: false,
+      action: input.action,
+      baseId: input.baseId,
+      tableId: input.tableId,
+      successCount: 0,
+      failureCount: 0,
+      failures: [],
+      message: input.message,
+      confirmation: {
+        required: true,
+        confirmed: false,
+        threshold: input.threshold,
+        reason: input.message,
+      },
+    });
+  }
+
+  async createRecords(input: FeishuCreateRecordsInput): Promise<FeishuRecordWriteResult> {
+    await this.ensureConnected(input.appId);
+    const schema = await this.getSchemaForWrite(input);
+    this.fieldMapper.validateRecords(schema, input.records);
+
+    const confirmation = this.writePolicy.evaluate('create', input.records.length, input.confirmed);
+    if (confirmation.required) {
+      return this.buildConfirmationResult({
+        action: 'create',
+        baseId: input.baseId,
+        tableId: input.tableId,
+        message: confirmation.reason || '本次新增需要确认后再执行。',
+        threshold: confirmation.threshold,
+      });
+    }
+
+    const result = await this.adapter.createRecords(input);
+    return this.withAudit({
+      ...result,
+      confirmation,
+    });
+  }
+
+  async upsertRecords(input: FeishuUpsertRecordsInput): Promise<FeishuRecordWriteResult> {
+    await this.ensureConnected(input.appId);
+    const schema = await this.getSchemaForWrite(input);
+    this.fieldMapper.validateMatchFields(schema, input.matchByFields);
+    this.fieldMapper.validateRecords(schema, input.records);
+
+    const confirmation = this.writePolicy.evaluate('upsert', input.records.length, input.confirmed);
+    if (confirmation.required) {
+      return this.buildConfirmationResult({
+        action: 'upsert',
+        baseId: input.baseId,
+        tableId: input.tableId,
+        message: confirmation.reason || '本次 upsert 需要确认后再执行。',
+        threshold: confirmation.threshold,
+      });
+    }
+
+    const result = await this.adapter.upsertRecords(input);
+    return this.withAudit({
+      ...result,
+      confirmation,
+    });
+  }
+
+  async updateRecordsByFilter(input: FeishuUpdateRecordsByFilterInput): Promise<FeishuRecordWriteResult> {
+    await this.ensureConnected(input.appId);
+    const schema = await this.getSchemaForWrite(input);
+    this.fieldMapper.validateFields(schema, input.fields);
+
+    const preview = await this.queryRecords({
+      appId: input.appId,
+      baseId: input.baseId,
+      tableId: input.tableId,
+      filter: input.filter,
+      pageSize: 200,
+    });
+    const matchedCount = preview.total ?? preview.records.length;
+    const confirmation = this.writePolicy.evaluate('update_by_filter', matchedCount, input.confirmed);
+    if (confirmation.required) {
+      return this.buildConfirmationResult({
+        action: 'update_by_filter',
+        baseId: input.baseId,
+        tableId: input.tableId,
+        message: confirmation.reason || '本次按条件更新需要确认后再执行。',
+        threshold: confirmation.threshold,
+      });
+    }
+
+    const result = await this.adapter.updateRecordsByFilter(input);
+    return this.withAudit({
+      ...result,
+      confirmation,
+    });
   }
 }
 
