@@ -89,8 +89,7 @@ export class FeishuResourceResolver {
     const baseName = input.baseName?.trim() || recent?.baseName;
 
     if (baseId) {
-      const bases = await this.getBases(input.appId);
-      const matched = bases.find((item) => item.id === baseId);
+      const matched = this.store.getCachedBases(input.appId)?.items.find((item) => item.id === baseId);
       return {
         resolved: {
           id: baseId,

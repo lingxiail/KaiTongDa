@@ -153,6 +153,17 @@ describe('Feishu stage E integration', () => {
     expect(writeCount).toBe(2);
   });
 
+  it('surfaces Feishu API errors instead of normalizing them as empty results', () => {
+    const normalizer = new FeishuResultNormalizer();
+    const payload = normalizer.parseJsonPayload(JSON.stringify({
+      code: 1254030,
+      msg: 'No permission to access this resource',
+    }));
+
+    expect(() => normalizer.toPagedResult(payload, (item) => normalizer.normalizeBase(item)))
+      .toThrow('飞书请求失败(1254030): No permission to access this resource');
+  });
+
   it('keeps natural language mapping stable for typical query request', () => {
     const mapper = new FeishuToolMapper();
     const intent = mapper.mapIntent('帮我查飞书客户表最近 10 条记录');
@@ -160,5 +171,13 @@ describe('Feishu stage E integration', () => {
     expect(intent.kind).toBe('query_records');
     expect(intent.slots.find((slot) => slot.name === 'tableName')?.value).toBe('客户');
     expect(intent.slots.find((slot) => slot.name === 'limit')?.value).toBe(10);
+  });
+
+  it('extracts Feishu base tokens from direct table-list requests', () => {
+    const mapper = new FeishuToolMapper();
+    const intent = mapper.mapIntent('列出LmXDbh8aCa1muPszAlgcCiXcnkh下的数据表');
+
+    expect(intent.kind).toBe('list_tables');
+    expect(intent.slots.find((slot) => slot.name === 'baseId')?.value).toBe('LmXDbh8aCa1muPszAlgcCiXcnkh');
   });
 });

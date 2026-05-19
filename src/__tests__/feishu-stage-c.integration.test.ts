@@ -135,6 +135,36 @@ class MockStageCAdapter implements FeishuCliAdapter {
   }
 }
 
+class DirectBaseTokenAdapter extends MockStageCAdapter {
+  listBasesCalls = 0;
+
+  async listBases(_input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
+    this.listBasesCalls += 1;
+    return {
+      command: 'drive.v1.file.list',
+      stdout: JSON.stringify({ code: 1254030, msg: 'Global drive list should not be required' }),
+      stderr: '',
+      code: 0,
+    };
+  }
+
+  async listTables(input: FeishuListTablesInput): Promise<FeishuCliRawResult> {
+    return {
+      command: 'bitable.v1.appTable.list',
+      stdout: JSON.stringify({
+        data: {
+          items: [
+            { table_id: 'tbl_direct', name: `${input.baseId}-Direct` },
+          ],
+          has_more: false,
+        },
+      }),
+      stderr: '',
+      code: 0,
+    };
+  }
+}
+
 function seedConnectedStore(store: FeishuSessionStore, appId = 'cli_stage_c'): void {
   store.setRuntimeConfig({
     appId,
@@ -157,8 +187,10 @@ function seedConnectedStore(store: FeishuSessionStore, appId = 'cli_stage_c'): v
   });
 }
 
-function createOrchestrator(store = new FeishuSessionStore()): FeishuIntentOrchestrator {
-  const adapter = new MockStageCAdapter();
+function createOrchestrator(
+  store = new FeishuSessionStore(),
+  adapter: FeishuCliAdapter = new MockStageCAdapter(),
+): FeishuIntentOrchestrator {
   const authService = new FeishuAuthService(adapter, store);
   const baseService = new FeishuBaseService(adapter, authService, store);
   const resolver = new FeishuResourceResolver(baseService, store);
@@ -185,6 +217,29 @@ describe('Feishu stage C integration', () => {
     expect(result.intent.kind).toBe('list_bases');
     expect(result.needClarification).toBe(false);
     expect((result.result as { items: Array<{ id: string }> }).items[0]?.id).toBe('app_sales');
+  });
+
+  it('lists tables from a direct Feishu base token without requiring global base listing', async () => {
+    const store = new FeishuSessionStore();
+    seedConnectedStore(store);
+    const adapter = new DirectBaseTokenAdapter();
+    const orchestrator = createOrchestrator(store, adapter);
+
+    const result = await orchestrator.handleRequest({
+      appId: 'cli_stage_c',
+      query: '列出LmXDbh8aCa1muPszAlgcCiXcnkh下的数据表',
+    });
+
+    const tables = result.result as { items: Array<{ id: string; name: string; baseId: string }> };
+    expect(result.intent.kind).toBe('list_tables');
+    expect(result.needClarification).toBe(false);
+    expect(result.resolvedContext.base?.id).toBe('LmXDbh8aCa1muPszAlgcCiXcnkh');
+    expect(tables.items[0]).toEqual({
+      id: 'tbl_direct',
+      name: 'LmXDbh8aCa1muPszAlgcCiXcnkh-Direct',
+      baseId: 'LmXDbh8aCa1muPszAlgcCiXcnkh',
+    });
+    expect(adapter.listBasesCalls).toBe(0);
   });
 
   it('uses recent context to read table schema', async () => {

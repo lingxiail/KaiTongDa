@@ -45,6 +45,32 @@ export class FeishuResultNormalizer {
     return undefined;
   }
 
+  private pickResponseCode(source: Record<string, unknown>): number | undefined {
+    const value = source.code;
+    if (typeof value === 'number') return value;
+    if (typeof value === 'string' && value.trim()) {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : undefined;
+    }
+    return undefined;
+  }
+
+  private pickErrorMessage(source: Record<string, unknown>): string {
+    const direct = this.pickString(source, ['msg', 'message', 'error_msg', 'errorMessage', 'error_description']);
+    if (direct) return direct;
+
+    const nestedError = this.asObject(source.error);
+    return this.pickString(nestedError, ['msg', 'message', 'description', 'error_msg'])
+      || '飞书请求失败';
+  }
+
+  private assertApiSuccess(source: Record<string, unknown>): void {
+    const code = this.pickResponseCode(source);
+    if (code !== undefined && code !== 0) {
+      throw new Error(`飞书请求失败(${code}): ${this.pickErrorMessage(source)}`);
+    }
+  }
+
   parseJsonPayload(raw: string): unknown {
     const trimmed = raw.trim();
     if (!trimmed) return {};
@@ -65,8 +91,15 @@ export class FeishuResultNormalizer {
 
   unwrapData(payload: unknown): Record<string, unknown> {
     const objectPayload = this.asObject(payload);
-    const nested = objectPayload.data;
-    return Object.keys(this.asObject(nested)).length > 0 ? this.asObject(nested) : objectPayload;
+    this.assertApiSuccess(objectPayload);
+
+    const nested = this.asObject(objectPayload.data);
+    if (Object.keys(nested).length > 0) {
+      this.assertApiSuccess(nested);
+      return nested;
+    }
+
+    return objectPayload;
   }
 
   extractItems(container: Record<string, unknown>): unknown[] {

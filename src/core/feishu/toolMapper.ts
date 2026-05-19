@@ -9,7 +9,21 @@ function extractNumber(query: string): number | undefined {
 }
 
 function extractBaseId(query: string): string | undefined {
-  return query.match(/\b(app_[a-z0-9_-]+)\b/i)?.[1];
+  const urlMatch = query.match(/\/base\/([A-Za-z0-9_-]+)(?:[/?#\s]|$)/i)?.[1];
+  if (urlMatch) return urlMatch;
+
+  const labeledMatch = query.match(/(?:base\s*id|baseId|app[_\s-]?token|多维表格?ID|表格ID)\s*[:：]?\s*([A-Za-z0-9_-]{8,})/i)?.[1];
+  if (labeledMatch) return labeledMatch;
+
+  const prefixedMatch = query.match(/\b(app_[a-z0-9_-]+)\b/i)?.[1];
+  if (prefixedMatch) return prefixedMatch;
+
+  const contextualMatch = query.match(/(?:列出|查看|显示|打开)\s*([A-Za-z0-9_-]{12,})\s*(?:下|里面|里的|中|内)的?(?:所有)?(?:表|数据表)/i)?.[1];
+  if (contextualMatch && !contextualMatch.toLowerCase().startsWith('tbl_')) {
+    return contextualMatch;
+  }
+
+  return undefined;
 }
 
 function extractTableId(query: string): string | undefined {
