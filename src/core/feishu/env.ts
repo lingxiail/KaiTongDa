@@ -1,6 +1,8 @@
+import { assessCliCompatibility } from './compat';
 import type { FeishuCliAdapter } from './cliAdapter';
 import { feishuCliAdapter } from './cliAdapter';
 import { FEISHU_ERROR_CODES } from './errorCodes';
+import { buildCliCompatibilityMessage } from './messages';
 import type { FeishuConnectionStatus, FeishuEnvironmentStatus } from './types';
 
 function trimVersion(raw: string): string | null {
@@ -55,12 +57,18 @@ export async function detectFeishuEnvironment(
     };
   }
 
+  const compatibility = assessCliCompatibility(cliVersion);
+  const message = compatibility.status === 'compatible'
+    ? `环境可用，CLI 版本：${cliVersion ?? 'unknown'}`
+    : buildCliCompatibilityMessage(compatibility.detectedVersion, compatibility.supportedRange);
+
   return {
     nodeAvailable: true,
     cliAvailable: true,
     nodeVersion,
     cliVersion,
-    message: `环境可用，CLI 版本：${cliVersion ?? 'unknown'}`,
+    compatibility,
+    message,
   };
 }
 

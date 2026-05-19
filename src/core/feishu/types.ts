@@ -50,11 +50,21 @@ export interface FeishuConnectionStatus {
   lastUpdatedAt: number;
 }
 
+export type FeishuCompatibilityStatus = 'compatible' | 'untested' | 'unknown';
+
+export interface FeishuCliCompatibility {
+  status: FeishuCompatibilityStatus;
+  detectedVersion?: string | null;
+  supportedRange: string;
+  message: string;
+}
+
 export interface FeishuEnvironmentStatus {
   nodeAvailable: boolean;
   cliAvailable: boolean;
   nodeVersion?: string | null;
   cliVersion?: string | null;
+  compatibility?: FeishuCliCompatibility;
   message: string;
 }
 

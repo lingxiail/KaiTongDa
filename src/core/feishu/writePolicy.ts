@@ -1,3 +1,4 @@
+import { buildWriteConfirmationMessage } from './messages';
 import type { FeishuWriteAction, FeishuWriteConfirmation } from './types';
 
 export interface FeishuWritePolicyConfig {
@@ -47,10 +48,7 @@ export class FeishuWritePolicy {
   }
 
   private buildReason(action: FeishuWriteAction, count: number, threshold: number): string {
-    if (action === 'update_by_filter') {
-      return `本次更新命中 ${count} 条记录，超过确认阈值 ${threshold}，请显式确认后再执行。`;
-    }
-    return `本次${action === 'create' ? '新增' : 'upsert'}将写入 ${count} 条记录，超过确认阈值 ${threshold}，请显式确认后再执行。`;
+    return buildWriteConfirmationMessage(action, count, threshold);
   }
 }
 

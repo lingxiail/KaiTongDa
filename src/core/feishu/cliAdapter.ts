@@ -2,6 +2,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { mcpManager } from '../mcp/client';
 import { isWindows } from '../../utils/platform';
+import { feishuResultNormalizer } from './resultNormalizer';
 import { feishuSessionStore } from './sessionStore';
 import type {
   FeishuCreateRecordsInput,
@@ -69,80 +70,6 @@ const FEISHU_MCP_TOOLS = [
   'bitable.v1.appTableRecord.batchUpdate',
 ].join(' ');
 const MCP_SERVER_SIGNATURES = new Map<string, string>();
-
-function asObject(value: unknown): Record<string, unknown> {
-  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
-}
-
-function pickString(source: Record<string, unknown>, keys: string[]): string | undefined {
-  for (const key of keys) {
-    const value = source[key];
-    if (typeof value === 'string' && value.trim()) {
-      return value.trim();
-    }
-  }
-  return undefined;
-}
-
-function pickBoolean(source: Record<string, unknown>, keys: string[]): boolean | undefined {
-  for (const key of keys) {
-    const value = source[key];
-    if (typeof value === 'boolean') {
-      return value;
-    }
-  }
-  return undefined;
-}
-
-function pickNumber(source: Record<string, unknown>, keys: string[]): number | undefined {
-  for (const key of keys) {
-    const value = source[key];
-    if (typeof value === 'number') {
-      return value;
-    }
-  }
-  return undefined;
-}
-
-function parseJsonPayload(raw: string): unknown {
-  const trimmed = raw.trim();
-  if (!trimmed) return {};
-
-  try {
-    return JSON.parse(trimmed);
-  } catch {
-    const arrayStart = trimmed.indexOf('[');
-    const objectStart = trimmed.indexOf('{');
-    const start = arrayStart === -1 ? objectStart : objectStart === -1 ? arrayStart : Math.min(arrayStart, objectStart);
-    const end = Math.max(trimmed.lastIndexOf(']'), trimmed.lastIndexOf('}'));
-    if (start >= 0 && end > start) {
-      return JSON.parse(trimmed.slice(start, end + 1));
-    }
-    throw new Error(`无法解析飞书返回结果: ${trimmed}`);
-  }
-}
-
-function unwrapData(payload: unknown): Record<string, unknown> {
-  const objectPayload = asObject(payload);
-  const nested = objectPayload.data;
-  return Object.keys(asObject(nested)).length > 0 ? asObject(nested) : objectPayload;
-}
-
-function extractItems(container: Record<string, unknown>): unknown[] {
-  for (const key of ['items', 'records']) {
-    if (Array.isArray(container[key])) {
-      return container[key] as unknown[];
-    }
-  }
-  return [];
-}
-
-function normalizeRecordItem(item: Record<string, unknown>): { recordId?: string; fields: Record<string, unknown> } {
-  return {
-    recordId: pickString(item, ['record_id', 'recordId', 'id']),
-    fields: asObject(item.fields),
-  };
-}
 
 function buildWriteResult(input: {
   success: boolean;
@@ -335,13 +262,13 @@ export class LarkMcpCliAdapter implements FeishuCliAdapter {
         throw new Error(raw.stderr || raw.stdout || '飞书记录查询失败。');
       }
 
-      const data = unwrapData(parseJsonPayload(raw.stdout));
-      const pageItems = extractItems(data)
-        .map((item) => normalizeRecordItem(asObject(item)))
+      const data = feishuResultNormalizer.unwrapData(feishuResultNormalizer.parseJsonPayload(raw.stdout));
+      const pageItems = feishuResultNormalizer.extractItems(data)
+        .map((item) => feishuResultNormalizer.normalizeRecordEnvelope(feishuResultNormalizer.asObject(item)))
         .filter((item): item is { recordId: string; fields: Record<string, unknown> } => typeof item.recordId === 'string' && !!item.recordId);
       records.push(...pageItems);
-      pageToken = pickString(data, ['page_token', 'pageToken', 'next_page_token']);
-      if (!(pickBoolean(data, ['has_more', 'hasMore']) ?? false)) {
+      pageToken = feishuResultNormalizer.pickString(data, ['page_token', 'pageToken', 'next_page_token']);
+      if (!(feishuResultNormalizer.pickBoolean(data, ['has_more', 'hasMore']) ?? false)) {
         pageToken = undefined;
       }
     } while (pageToken);
@@ -589,8 +516,8 @@ export class LarkMcpCliAdapter implements FeishuCliAdapter {
         throw new Error(raw.stderr || raw.stdout || '飞书新增记录失败。');
       }
 
-      const data = unwrapData(parseJsonPayload(raw.stdout));
-      const createdCount = extractItems(data).length || _input.records.length;
+      const payload = feishuResultNormalizer.parseJsonPayload(raw.stdout);
+      const createdCount = feishuResultNormalizer.extractWriteSuccessCount(payload, _input.records.length);
       const failureCount = Math.max(0, _input.records.length - createdCount);
       return buildWriteResult({
         success: failureCount === 0,
@@ -678,8 +605,10 @@ export class LarkMcpCliAdapter implements FeishuCliAdapter {
         if (raw.code !== 0) {
           throw new Error(raw.stderr || raw.stdout || '飞书批量更新记录失败。');
         }
-        const data = unwrapData(parseJsonPayload(raw.stdout));
-        updatedCount = extractItems(data).length || toUpdate.length;
+        updatedCount = feishuResultNormalizer.extractWriteSuccessCount(
+          feishuResultNormalizer.parseJsonPayload(raw.stdout),
+          toUpdate.length,
+        );
       }
 
       const successCount = createdCount + updatedCount;
@@ -734,8 +663,10 @@ export class LarkMcpCliAdapter implements FeishuCliAdapter {
         throw new Error(raw.stderr || raw.stdout || '飞书按条件更新记录失败。');
       }
 
-      const data = unwrapData(parseJsonPayload(raw.stdout));
-      const updatedCount = pickNumber(data, ['total']) ?? (extractItems(data).length || matchedRecords.length);
+      const updatedCount = feishuResultNormalizer.extractWriteSuccessCount(
+        feishuResultNormalizer.parseJsonPayload(raw.stdout),
+        matchedRecords.length,
+      );
       const failureCount = Math.max(0, matchedRecords.length - updatedCount);
       return buildWriteResult({
         success: failureCount === 0,
