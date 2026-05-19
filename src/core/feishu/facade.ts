@@ -21,11 +21,19 @@ import { FeishuBaseService, feishuBaseService } from './baseService';
 import { FeishuIntentOrchestrator, feishuIntentOrchestrator } from './orchestrator';
 
 export class FeishuFacade {
+  private readonly authService: FeishuAuthService;
+  private readonly baseService: FeishuBaseService;
+  private readonly intentOrchestrator: FeishuIntentOrchestrator;
+
   constructor(
-    private readonly authService: FeishuAuthService = feishuAuthService,
-    private readonly baseService: FeishuBaseService = feishuBaseService,
-    private readonly intentOrchestrator: FeishuIntentOrchestrator = feishuIntentOrchestrator,
-  ) {}
+    authService: FeishuAuthService = feishuAuthService,
+    baseService: FeishuBaseService = feishuBaseService,
+    intentOrchestrator: FeishuIntentOrchestrator = feishuIntentOrchestrator,
+  ) {
+    this.authService = authService;
+    this.baseService = baseService;
+    this.intentOrchestrator = intentOrchestrator;
+  }
 
   async connect(input: FeishuConnectInput = {}): Promise<FeishuConnectionStatus> {
     return await this.authService.startLogin(input);

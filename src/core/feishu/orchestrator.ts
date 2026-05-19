@@ -33,13 +33,25 @@ function toConversationContext(input?: Record<string, unknown>): Partial<{
 }
 
 export class FeishuIntentOrchestrator {
+  private readonly authService: FeishuAuthService;
+  private readonly baseService: FeishuBaseService;
+  private readonly store: FeishuSessionStore;
+  private readonly mapper: FeishuToolMapper;
+  private readonly resolver: FeishuResourceResolver;
+
   constructor(
-    private readonly authService: FeishuAuthService = feishuAuthService,
-    private readonly baseService: FeishuBaseService = feishuBaseService,
-    private readonly store: FeishuSessionStore = feishuSessionStore,
-    private readonly mapper: FeishuToolMapper = feishuToolMapper,
-    private readonly resolver: FeishuResourceResolver = feishuResourceResolver,
-  ) {}
+    authService: FeishuAuthService = feishuAuthService,
+    baseService: FeishuBaseService = feishuBaseService,
+    store: FeishuSessionStore = feishuSessionStore,
+    mapper: FeishuToolMapper = feishuToolMapper,
+    resolver: FeishuResourceResolver = feishuResourceResolver,
+  ) {
+    this.authService = authService;
+    this.baseService = baseService;
+    this.store = store;
+    this.mapper = mapper;
+    this.resolver = resolver;
+  }
 
   private buildResult(input: {
     handleInput: FeishuHandleRequestInput;

@@ -14,7 +14,11 @@ const DEFAULT_POLICY: FeishuWritePolicyConfig = {
 };
 
 export class FeishuWritePolicy {
-  constructor(private readonly config: FeishuWritePolicyConfig = DEFAULT_POLICY) {}
+  private readonly config: FeishuWritePolicyConfig;
+
+  constructor(config: FeishuWritePolicyConfig = DEFAULT_POLICY) {
+    this.config = config;
+  }
 
   evaluate(action: FeishuWriteAction, count: number, confirmed = false): FeishuWriteConfirmation {
     const threshold = this.getThreshold(action);

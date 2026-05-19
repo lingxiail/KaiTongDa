@@ -1,5 +1,5 @@
 import { TOOL_NAMES } from '../tools/toolNames';
-import type { FeishuExecutionPlan, FeishuIntent, FeishuIntentContext, FeishuIntentKind, FeishuIntentSlot } from './intentTypes';
+import type { FeishuExecutionPlan, FeishuExecutionStep, FeishuIntent, FeishuIntentContext, FeishuIntentKind, FeishuIntentSlot } from './intentTypes';
 
 function extractNumber(query: string): number | undefined {
   const matched = query.match(/(?:最近|最新|前|last|recent)?\s*(\d+)\s*条?(?:记录)?/i);
@@ -127,7 +127,7 @@ export class FeishuToolMapper {
   }
 
   buildExecutionPlan(intent: FeishuIntent, context: FeishuIntentContext): FeishuExecutionPlan {
-    const steps = [];
+    const steps: FeishuExecutionStep[] = [];
 
     if (intent.kind !== 'connect' && intent.kind !== 'auth_status') {
       steps.push({

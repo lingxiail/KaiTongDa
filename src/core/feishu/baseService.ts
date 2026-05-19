@@ -7,13 +7,17 @@ import { FeishuResultNormalizer, feishuResultNormalizer } from './resultNormaliz
 import { FeishuSessionStore, feishuSessionStore } from './sessionStore';
 import { FeishuWritePolicy, feishuWritePolicy } from './writePolicy';
 import type {
+  FeishuBaseSummary,
   FeishuCreateRecordsInput,
+  FeishuFieldSchema,
   FeishuGetTableSchemaInput,
   FeishuListBasesInput,
   FeishuListTablesInput,
+  FeishuPagedResult,
   FeishuQueryRecordsInput,
   FeishuRecordQueryResult,
   FeishuRecordWriteResult,
+  FeishuTableSummary,
   FeishuUpdateRecordsByFilterInput,
   FeishuUpsertRecordsInput,
 } from './types';
@@ -25,14 +29,28 @@ function ensureRawSuccess(raw: FeishuCliRawResult): void {
 }
 
 export class FeishuBaseService {
+  private readonly adapter: FeishuCliAdapter;
+  private readonly authService: FeishuAuthService;
+  private readonly store: FeishuSessionStore;
+  private readonly fieldMapper: FeishuFieldMapper;
+  private readonly writePolicy: FeishuWritePolicy;
+  private readonly resultNormalizer: FeishuResultNormalizer;
+
   constructor(
-    private readonly adapter: FeishuCliAdapter = feishuCliAdapter,
-    private readonly authService: FeishuAuthService = feishuAuthService,
-    private readonly store: FeishuSessionStore = feishuSessionStore,
-    private readonly fieldMapper: FeishuFieldMapper = feishuFieldMapper,
-    private readonly writePolicy: FeishuWritePolicy = feishuWritePolicy,
-    private readonly resultNormalizer: FeishuResultNormalizer = feishuResultNormalizer,
-  ) {}
+    adapter: FeishuCliAdapter = feishuCliAdapter,
+    authService: FeishuAuthService = feishuAuthService,
+    store: FeishuSessionStore = feishuSessionStore,
+    fieldMapper: FeishuFieldMapper = feishuFieldMapper,
+    writePolicy: FeishuWritePolicy = feishuWritePolicy,
+    resultNormalizer: FeishuResultNormalizer = feishuResultNormalizer,
+  ) {
+    this.adapter = adapter;
+    this.authService = authService;
+    this.store = store;
+    this.fieldMapper = fieldMapper;
+    this.writePolicy = writePolicy;
+    this.resultNormalizer = resultNormalizer;
+  }
 
   private async ensureConnected(appId?: string): Promise<void> {
     const status = await this.authService.checkAuthStatus({ appId });

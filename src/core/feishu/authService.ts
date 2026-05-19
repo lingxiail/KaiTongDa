@@ -68,10 +68,16 @@ function buildStatus(base: Partial<FeishuConnectionStatus> & Pick<FeishuConnecti
 }
 
 export class FeishuAuthService {
+  private readonly adapter: FeishuCliAdapter;
+  private readonly store: FeishuSessionStore;
+
   constructor(
-    private readonly adapter: FeishuCliAdapter = feishuCliAdapter,
-    private readonly store: FeishuSessionStore = feishuSessionStore,
-  ) {}
+    adapter: FeishuCliAdapter = feishuCliAdapter,
+    store: FeishuSessionStore = feishuSessionStore,
+  ) {
+    this.adapter = adapter;
+    this.store = store;
+  }
 
   async checkAuthStatus(input?: Pick<FeishuConnectInput, 'appId' | 'domain'>): Promise<FeishuConnectionStatus> {
     const cached = this.store.getConnectionStatus(input?.appId);
@@ -200,7 +206,7 @@ export class FeishuAuthService {
       connected: false,
       state: 'approval_pending',
       phase: 'waiting_user_confirm',
-      message: activeLogin.message,
+      message: activeLogin.message || '已发起授权，请在浏览器或飞书客户端完成确认。',
       nextAction: activeLogin.nextAction,
       appId,
       domain,

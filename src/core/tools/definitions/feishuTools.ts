@@ -23,17 +23,20 @@ function toRecordArray(value: unknown): Array<Record<string, unknown>> | undefin
 
 function toSortArray(value: unknown): Array<{ fieldName: string; desc?: boolean }> | undefined {
   if (!Array.isArray(value)) return undefined;
-  return value
-    .map((item) => {
-      if (!item || typeof item !== 'object') return null;
+  return value.reduce<Array<{ fieldName: string; desc?: boolean }>>((items, item) => {
+    if (!item || typeof item !== 'object') return items;
       const candidate = item as Record<string, unknown>;
-      if (typeof candidate.fieldName !== 'string' || !candidate.fieldName.trim()) return null;
-      return {
-        fieldName: candidate.fieldName,
-        desc: typeof candidate.desc === 'boolean' ? candidate.desc : undefined,
-      };
-    })
-    .filter((item): item is { fieldName: string; desc?: boolean } => item !== null);
+    if (typeof candidate.fieldName !== 'string' || !candidate.fieldName.trim()) return items;
+
+    const sortRule: { fieldName: string; desc?: boolean } = {
+      fieldName: candidate.fieldName.trim(),
+    };
+    if (typeof candidate.desc === 'boolean') {
+      sortRule.desc = candidate.desc;
+    }
+    items.push(sortRule);
+    return items;
+  }, []);
 }
 
 export const feishuConnectTool: ToolDefinition = {

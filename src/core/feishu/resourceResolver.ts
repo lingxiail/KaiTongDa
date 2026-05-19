@@ -48,10 +48,16 @@ export interface FeishuResolutionResult<T> {
 }
 
 export class FeishuResourceResolver {
+  private readonly baseService: FeishuBaseService;
+  private readonly store: FeishuSessionStore;
+
   constructor(
-    private readonly baseService: FeishuBaseService = feishuBaseService,
-    private readonly store: FeishuSessionStore = feishuSessionStore,
-  ) {}
+    baseService: FeishuBaseService = feishuBaseService,
+    store: FeishuSessionStore = feishuSessionStore,
+  ) {
+    this.baseService = baseService;
+    this.store = store;
+  }
 
   private async getBases(appId?: string): Promise<FeishuBaseSummary[]> {
     const cached = this.store.getCachedBases(appId);

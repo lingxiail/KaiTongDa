@@ -118,7 +118,8 @@ function quoteShellArg(value: string): string {
 }
 
 function buildShellCommand(program: string, args: string[]): string {
-  return [quoteShellArg(program), ...args.map(quoteShellArg)].join(' ');
+  const command = [quoteShellArg(program), ...args.map(quoteShellArg)].join(' ');
+  return isWindows() ? `& ${command}` : command;
 }
 
 function mapResult(command: string, output: CommandOutput): FeishuCliRawResult {
@@ -136,11 +137,27 @@ function generateOperationId(): string {
     : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
+function getProgramName(program: string): string {
+  return program.split(/[\\/]/).pop()?.toLowerCase() ?? program.toLowerCase();
+}
+
+function buildArgvInvocation(program: string, args: string[]): { program: string; args: string[] } {
+  const programName = getProgramName(program);
+  if (isWindows() && (programName === 'npx' || programName === 'npx.cmd' || programName === 'npm' || programName === 'npm.cmd')) {
+    return {
+      program: 'cmd.exe',
+      args: ['/D', '/C', program, ...args],
+    };
+  }
+  return { program, args };
+}
+
 async function runArgv(program: string, args: string[], timeout = 60): Promise<FeishuCliRawResult> {
   const command = `${program} ${args.join(' ')}`.trim();
+  const invocation = buildArgvInvocation(program, args);
   const output = await invoke<CommandOutput>('run_argv_command', {
-    program,
-    args,
+    program: invocation.program,
+    args: invocation.args,
     cwd: null,
     timeout,
     sandboxEnabled: false,
