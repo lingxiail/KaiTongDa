@@ -218,6 +218,8 @@ jobs:
                 endpoint: cos.ap-guangzhou.myqcloud.com
           EOF
 
+          VERSION="${{ github.ref_name }}"
+          set -x
           for file in release-assets/*; do
             [ -f "$file" ] || continue
             coscli cp "$file" "cos://lingxi/releases/${VERSION}/$(basename $file)"

@@ -27,7 +27,7 @@ Tell LingXi what you need — it reads files, runs commands, writes docs, and bu
 | Autonomous planning & task execution | :white_check_mark: | :x: | :x: |
 | Read/write local files, run commands | :white_check_mark: | :x: | :white_check_mark: |
 | Natural language interaction | :white_check_mark: | :white_check_mark: | :x: |
-| 28 built-in skills + self-evolving (LingXi grows its own) | :white_check_mark: | :x: | :x: |
+| 29 built-in skills + self-evolving (LingXi grows its own) | :white_check_mark: | :x: | :x: |
 | Multi-conversation Project aggregation | :white_check_mark: | :x: | :x: |
 | Scheduled tasks & event triggers | :white_check_mark: | :x: | :white_check_mark: |
 | IM bot (Lark/DingTalk/WeCom/Slack) | :white_check_mark: | :x: | Partial |
@@ -59,7 +59,7 @@ Tell LingXi what you need — it reads files, runs commands, writes docs, and bu
 <td align="center"><b>IM Channel Chat</b><br/>@LingXi in Lark/DingTalk to interact<br/><br/><img src="website/assets/screenshot-im-chat.png" width="100%" /></td>
 </tr>
 <tr>
-<td align="center"><b>Skills</b><br/>28 built-in skills + self-evolving + custom<br/><br/><img src="website/assets/screenshot-skills.png" width="100%" /></td>
+<td align="center"><b>Skills</b><br/>29 built-in skills + self-evolving + custom<br/><br/><img src="website/assets/screenshot-skills.png" width="100%" /></td>
 <td align="center"><b>MCP Connectors</b><br/>One-click integration with Playwright, GitHub & more<br/><br/><img src="website/assets/screenshot-mcp.png" width="100%" /></td>
 </tr>
 <tr>
@@ -333,7 +333,7 @@ src/
 ├── types/            # TypeScript type definitions
 └── utils/            # Utility functions
 
-builtin-skills/       # 28 built-in skills (one directory each)
+builtin-skills/       # 29 built-in skills (one directory each)
 builtin-agents/       # Built-in agent definitions (placeholder)
 lingxi-browser-bridge/   # Browser bridge MCP Server
 lingxi-chrome-extension/ # Chrome extension (used by the LingXi-Browser skill)
