@@ -1501,6 +1501,7 @@ export interface TranslationDict {
 
   // About
   about: {
+    title: string;
     feedback: string;
     feedbackDesc: string;
     sponsor: string;
@@ -1617,5 +1618,19 @@ export interface TranslationDict {
     modularRules: string;
     rulesTruncated: string;
     rulesNotModifiable: string;
+  };
+
+  // SkillAgentPicker
+  skillAgentPicker: {
+    clearSkill: string;
+    clearAgent: string;
+    clearAll: string;
+    more: string;
+    choose: string;
+    searchPlaceholder: string;
+    skills: string;
+    agents: string;
+    selected: string;
+    noResults: string;
   };
 }

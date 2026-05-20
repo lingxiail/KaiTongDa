@@ -1,4 +1,4 @@
-//! Platform-aware secret storage for Abu API keys.
+//! Platform-aware secret storage for LingXi API keys.
 //!
 //! - **Windows / Linux**: delegates to the `keyring` crate
 //!   (Windows Credential Manager via DPAPI; Linux secret-service).
@@ -24,7 +24,7 @@ use std::sync::Mutex;
 /// Service name shown in OS credential stores. Appears in
 /// `Credential Manager → Generic Credentials` on Windows.
 #[cfg(not(target_os = "macos"))]
-const KEYRING_SERVICE: &str = "abu";
+const KEYRING_SERVICE: &str = "lingxi";
 
 #[derive(Debug)]
 pub enum SecretError {
@@ -204,9 +204,9 @@ mod macos {
 
     /// Fixed salt. Changing this invalidates all existing ciphertext —
     /// reserved for a future crypto rotation.
-    const HKDF_SALT: &[u8] = b"abu.secrets.v1";
+    const HKDF_SALT: &[u8] = b"lingxi.secrets.v1";
     /// Context string for HKDF expansion; pinned to the app and version tier.
-    const HKDF_INFO: &[u8] = b"abu-secrets-aes256gcm";
+    const HKDF_INFO: &[u8] = b"lingxi-secrets-aes256gcm";
     /// On-disk file format version; written to JSON so future readers can
     /// detect format changes without parsing ciphertext.
     const FILE_FORMAT_VERSION: u32 = 1;

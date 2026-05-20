@@ -169,7 +169,7 @@ fn execute_foreground_command(
 
 #[tauri::command]
 fn greet(name: &str) -> String {
-    format!("Hello, {}! Welcome to ABU.", name)
+    format!("Hello, {}! Welcome to LingXi.", name)
 }
 
 #[tauri::command]
@@ -563,7 +563,7 @@ fn get_login_shell_path() -> Option<String> {
         // Many tools (nvm, fnm, volta, Homebrew) add PATH entries in .zshrc,
         // which -lc (login-only, non-interactive) would skip.
         // Use unique markers to reliably extract PATH from potentially noisy output.
-        const MARKER: &str = "__ABU_PATH__";
+        const MARKER: &str = "__LINGXI_PATH__";
         let echo_cmd = format!("echo {0}$PATH{0}", MARKER);
 
         let mut child = StdCommand::new(&shell)
@@ -587,7 +587,7 @@ fn get_login_shell_path() -> Option<String> {
         let raw = match rx.recv_timeout(std::time::Duration::from_secs(8)) {
             Ok(s) => s,
             Err(_) => {
-                eprintln!("[Abu PATH] Login shell timed out after 8s, using fallback PATH");
+                eprintln!("[LingXi PATH] Login shell timed out after 8s, using fallback PATH");
                 let _ = child.kill();
                 String::new()
             }
@@ -600,7 +600,7 @@ fn get_login_shell_path() -> Option<String> {
             if let Some(end) = after.find(MARKER) {
                 let path = after[..end].trim().to_string();
                 if !path.is_empty() {
-                    eprintln!("[Abu PATH] Resolved from login shell: {}", &path);
+                    eprintln!("[LingXi PATH] Resolved from login shell: {}", &path);
                     return Some(path);
                 }
             }
@@ -644,7 +644,7 @@ fn get_login_shell_path() -> Option<String> {
             }
         }
 
-        eprintln!("[Abu PATH] Using fallback PATH: {}", &merged);
+        eprintln!("[LingXi PATH] Using fallback PATH: {}", &merged);
         Some(merged)
     }).clone()
 }
@@ -890,7 +890,7 @@ const ENV_VAR_ALLOWED_PREFIXES: &[&str] = &[
     "TAVILY_API_KEY", "BRAVE_API_KEY", "SERP_API_KEY",
     "FIRECRAWL_API_KEY", "EXA_API_KEY", "JINA_API_KEY",
     // MCP / Abu specific
-    "ABU_", "MCP_", "CLAUDE_",
+    "LINGXI_", "MCP_", "CLAUDE_",
 ];
 
 fn is_env_var_allowed(name: &str) -> bool {
@@ -1231,7 +1231,7 @@ pub fn run() {
                     );
                     // Fall back to a best-effort temp-dir store so the UI doesn't crash;
                     // migration will retry on next launch.
-                    let fallback_path = std::env::temp_dir().join("abu-secrets-fallback.bin");
+                    let fallback_path = std::env::temp_dir().join("lingxi-secrets-fallback.bin");
                     if let Ok(store) = secrets::SecretStore::load(&fallback_path) {
                         app.manage(store);
                     }
@@ -1254,14 +1254,14 @@ pub fn run() {
             }
 
             // Build tray menu — bilingual labels for cross-locale compatibility
-            let show_item = MenuItem::with_id(app, "show", "Show Abu / 显示窗口", true, None::<&str>)?;
+            let show_item = MenuItem::with_id(app, "show", "Show LingXi / 显示窗口", true, None::<&str>)?;
             let quit_item = MenuItem::with_id(app, "quit", "Quit / 退出", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&show_item, &quit_item])?;
 
             // Create tray icon with known ID for update_tray_menu
             TrayIconBuilder::with_id("main")
                 .icon(app.default_window_icon().expect("default window icon must be set in tauri.conf.json").clone())
-                .tooltip("Abu")
+                .tooltip("LingXi")
                 .menu(&menu)
                 .show_menu_on_left_click(false)
                 .on_menu_event(|app, event| {

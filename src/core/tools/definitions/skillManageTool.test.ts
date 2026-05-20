@@ -715,7 +715,7 @@ describe('skill_manage · delete', () => {
       '/ws/.abu/projects/key/skills/wa-skill',
       { recursive: true },
     );
-    // Notice card reflects destructive action so chat shows "Abu
+    // Notice card reflects destructive action so chat shows "LingXi
     // deleted skill X — permanently removed".
     expect(result.notice_card?.type).toBe('skill-deleted');
     expect(result.notice_card?.skillDeleted?.rescuable).toBe(false);

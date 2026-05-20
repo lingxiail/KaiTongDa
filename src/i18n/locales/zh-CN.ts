@@ -1486,6 +1486,7 @@ const zhCN: TranslationDict = {
   },
 
   about: {
+    title: '关于',
     feedback: '反馈',
     feedbackDesc: '扫码添加微信，反馈问题或交流想法',
     sponsor: '支持',
@@ -1596,6 +1597,19 @@ const zhCN: TranslationDict = {
     modularRules: '模块化规则',
     rulesTruncated: '规则已截断',
     rulesNotModifiable: '项目规则由用户手动维护，不可通过 AI 修改',
+  },
+
+  skillAgentPicker: {
+    clearSkill: '清除技能',
+    clearAgent: '清除智能体',
+    clearAll: '清除全部',
+    more: '更多',
+    choose: '选择',
+    searchPlaceholder: '搜索技能或智能体...',
+    skills: '技能',
+    agents: '智能体',
+    selected: '已选',
+    noResults: '未找到匹配项',
   },
 };
 

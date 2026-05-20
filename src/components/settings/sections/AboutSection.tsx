@@ -74,6 +74,7 @@ export default function AboutSection() {
         <div>
           <h4 className="text-2xl font-bold text-[var(--abu-text-primary)]">{t.common.appName}</h4>
           <p className="text-sm text-[var(--abu-text-tertiary)]">{t.common.appSlogan}</p>
+          <p className="text-xs text-[var(--abu-text-muted)] mt-1">测试</p>
         </div>
       </div>
 
@@ -233,15 +234,6 @@ export default function AboutSection() {
 
       {/* Footer */}
       <div className="text-center space-y-2 pt-4">
-        <p className="text-sm text-[var(--abu-text-tertiary)]">
-          Made with ❤️ by{' '}
-          <button
-              onClick={() => handleOpenLink('https://github.com/PM-Shawn/Abu-Cowork')}
-              className="text-[var(--abu-clay)] hover:underline font-medium"
-            >
-              Shawn
-            </button>
-        </p>
         <p className="text-xs text-[var(--abu-text-muted)]">
           © 2026 {t.common.appName}. All rights reserved.
         </p>
