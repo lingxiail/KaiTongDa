@@ -57,12 +57,8 @@ jobs:
       - name: Build Tauri app
         env:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-        shell: bash
-        run: |
-          # Read signing key directly from file (no base64 decode needed)
-          # Tauri 2 auto-detects PEM format when the file starts with -----BEGIN
-          export TAURI_SIGNING_PRIVATE_KEY="tauri-signing-key.pem"
-          npx tauri build --target ${{ matrix.target }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ github.workspace }}/tauri-signing-key.pem
+        run: npx tauri build --target ${{ matrix.target }}
 
       - name: Create GitHub Release (idempotent)
         env:
