@@ -74,6 +74,7 @@ export default function AboutSection() {
         <div>
           <h4 className="text-2xl font-bold text-[var(--abu-text-primary)]">{t.common.appName}</h4>
           <p className="text-sm text-[var(--abu-text-tertiary)]">{t.common.appSlogan}</p>
+          <p className="text-xs text-[var(--abu-text-muted)] mt-1">测试</p>
         </div>
       </div>
 

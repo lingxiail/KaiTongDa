@@ -1597,6 +1597,19 @@ const enUS: TranslationDict = {
     rulesTruncated: 'Rules truncated',
     rulesNotModifiable: 'Project rules are manually maintained by users, not modifiable by AI',
   },
+
+  skillAgentPicker: {
+    clearSkill: 'Clear skill',
+    clearAgent: 'Clear agent',
+    clearAll: 'Clear all',
+    more: 'More',
+    choose: 'Choose',
+    searchPlaceholder: 'Search skills or agents...',
+    skills: 'Skills',
+    agents: 'Agents',
+    selected: 'Selected',
+    noResults: 'No matches found',
+  },
 };
 
 export default enUS;

@@ -23,6 +23,7 @@ import { generateAttachmentId, readFileAsBase64, SUPPORTED_IMAGE_TYPES } from '@
 import PermissionDialog from '@/components/common/PermissionDialog';
 import FolderSelector from '@/components/common/FolderSelector';
 import PromoteToProjectHint from '@/components/chat/PromoteToProjectHint';
+import SkillAgentPicker from '@/components/chat/SkillAgentPicker';
 
 interface ChatInputProps {
   variant: 'welcome' | 'chat';
@@ -724,6 +725,50 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                   anchorRef={modelPickerRef as React.RefObject<HTMLElement>}
                 />
               </div>
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    if (suggestionType === 'skill') {
+                      setSuggestionsDismissed(!suggestionsDismissed);
+                    } else {
+                      setText('/');
+                      setSelectedSkill(null);
+                      setSelectedAgent(null);
+                      textareaRef.current?.focus();
+                    }
+                  }}
+                  className={cn(
+                    'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors',
+                    selectedSkill && 'text-purple-600'
+                  )}
+                  title="选择技能"
+                >
+                  <span className="w-5 text-center">/</span>
+                  <span>{selectedSkill?.name ?? '技能'}</span>
+                </button>
+              </div>
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    if (suggestionType === 'agent') {
+                      setSuggestionsDismissed(!suggestionsDismissed);
+                    } else {
+                      setText('@');
+                      setSelectedAgent(null);
+                      setSelectedSkill(null);
+                      textareaRef.current?.focus();
+                    }
+                  }}
+                  className={cn(
+                    'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors',
+                    selectedAgent && 'text-blue-600'
+                  )}
+                  title="选择代理"
+                >
+                  <span className="w-5 text-center">@</span>
+                  <span>{selectedAgent?.name ?? '代理'}</span>
+                </button>
+              </div>
               <FolderSelector
                 currentPath={localWorkspace}
                 recentPaths={recentPaths}
@@ -740,6 +785,31 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                 <Plus className="h-4 w-4" />
               </Button>
               <div className="flex-1" />
+
+              {/* Skill / Agent picker (welcome variant, full row) */}
+              <div className="relative">
+                <SkillAgentPicker
+                  compact={false}
+                  selectedSkill={selectedSkill?.name ?? null}
+                  selectedAgent={selectedAgent?.name ?? null}
+                  onSkillChange={(name) => {
+                    if (name === null) {
+                      setSelectedSkill(null);
+                    } else {
+                      const item = skills.find((s) => s.name === name);
+                      if (item) setSelectedSkill({ name: item.name, description: item.description });
+                    }
+                  }}
+                  onAgentChange={(name) => {
+                    if (name === null) {
+                      setSelectedAgent(null);
+                    } else {
+                      const item = agents.find((a) => a.name === name);
+                      if (item) setSelectedAgent({ name: item.name, description: item.description });
+                    }
+                  }}
+                />
+              </div>
 
               <button
                 onClick={handleSend}
@@ -780,7 +850,50 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                     anchorRef={modelPickerRef as React.RefObject<HTMLElement>}
                   />
                 </div>
-
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      if (suggestionType === 'skill') {
+                        setSuggestionsDismissed(!suggestionsDismissed);
+                      } else {
+                        setText('/');
+                        setSelectedSkill(null);
+                        setSelectedAgent(null);
+                        textareaRef.current?.focus();
+                      }
+                    }}
+                    className={cn(
+                      'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors',
+                      selectedSkill && 'text-purple-600'
+                    )}
+                    title="选择技能"
+                  >
+                    <span className="w-5 text-center">/</span>
+                    <span>{selectedSkill?.name ?? '技能'}</span>
+                  </button>
+                </div>
+                <div className="relative">
+                  <button
+                    onClick={() => {
+                      if (suggestionType === 'agent') {
+                        setSuggestionsDismissed(!suggestionsDismissed);
+                      } else {
+                        setText('@');
+                        setSelectedAgent(null);
+                        setSelectedSkill(null);
+                        textareaRef.current?.focus();
+                      }
+                    }}
+                    className={cn(
+                      'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors',
+                      selectedAgent && 'text-blue-600'
+                    )}
+                    title="选择代理"
+                  >
+                    <span className="w-5 text-center">@</span>
+                    <span>{selectedAgent?.name ?? '代理'}</span>
+                  </button>
+                </div>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -790,6 +903,31 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
+
+                {/* Skill / Agent picker (compact, chat variant) */}
+                <div className="relative">
+                  <SkillAgentPicker
+                    compact={true}
+                    selectedSkill={selectedSkill?.name ?? null}
+                    selectedAgent={selectedAgent?.name ?? null}
+                    onSkillChange={(name) => {
+                      if (name === null) {
+                        setSelectedSkill(null);
+                      } else {
+                        const item = skills.find((s) => s.name === name);
+                        if (item) setSelectedSkill({ name: item.name, description: item.description });
+                      }
+                    }}
+                    onAgentChange={(name) => {
+                      if (name === null) {
+                        setSelectedAgent(null);
+                      } else {
+                        const item = agents.find((a) => a.name === name);
+                        if (item) setSelectedAgent({ name: item.name, description: item.description });
+                      }
+                    }}
+                  />
+                </div>
               </div>
 
               {/* Send / Stop Button */}

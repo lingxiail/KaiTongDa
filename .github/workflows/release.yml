@@ -133,7 +133,7 @@ jobs:
           gh release download "${{ github.ref_name }}" \
             --repo "${{ github.repository }}" \
             -D release-assets \
-            -p "*-setup.exe" -p "*.dmg"
+            -p "*-setup.exe" -p "*.dmg" -p "*.sig"
 
           echo "=== Downloaded ==="
           ls -la release-assets/
@@ -195,44 +195,35 @@ jobs:
 
       - name: Install coscli
         run: |
-          COSCLI_VERSION="v1.0.8"
-          curl -fSL "https://github.com/tencentyun/coscli/releases/download/${COSCLI_VERSION}/coscli-${COSCLI_VERSION}-linux-amd64" -o /usr/local/bin/coscli
+          wget -q "https://cosbrowser.cloud.tencent.com/software/coscli/coscli-linux-amd64" -O /usr/local/bin/coscli
           chmod +x /usr/local/bin/coscli
 
-      - name: Write coscli config
-        run: |
-          python3 -c "
-import os
-cfg_path = '/home/runner/.cos.yaml'
-secret_id = os.environ['TENCENT_SECRET_ID']
-secret_key = os.environ['TENCENT_SECRET_KEY']
-content = (
-    'base:\n'
-    '  secretID: ' + secret_id + '\n'
-    '  secretKey: ' + secret_key + '\n'
-    'sessions:\n'
-    '  default:\n'
-    '    bucket: lingxi-1303034624\n'
-    '    region: ap-guangzhou\n'
-)
-with open(cfg_path, 'w') as f:
-    f.write(content)
-print('Written:', cfg_path)
-with open(cfg_path) as f:
-    print(f.read())
-"
-        env:
-          TENCENT_SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
-          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
-
       - name: Upload to COS
+        env:
+          VERSION: ${{ github.ref_name }}
+          SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
+          SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
         run: |
+          mkdir -p ~/.cos
+          cat > ~/.cos.yaml <<EOF
+          cos:
+            base:
+              secretid: $SECRET_ID
+              secretkey: $SECRET_KEY
+              sessiontoken: ""
+            buckets:
+              - name: lingxi-1303034624
+                alias: lingxi
+                region: ap-guangzhou
+                endpoint: cos.ap-guangzhou.myqcloud.com
+          EOF
+
           VERSION="${{ github.ref_name }}"
           set -x
           for file in release-assets/*; do
             [ -f "$file" ] || continue
-            coscli cp "$file" "cos://lingxi-1303034624/releases/${VERSION}/$(basename $file)"
+            coscli cp "$file" "cos://lingxi/releases/${VERSION}/$(basename $file)"
           done
-          coscli cp latest.json "cos://lingxi-1303034624/latest.json" --meta "Cache-Control:no-cache"
+          coscli cp latest.json "cos://lingxi/latest.json" --meta "Cache-Control:no-cache"
           echo "Done. Listing:"
-          coscli ls "cos://lingxi-1303034624/releases/${VERSION}/"
+          coscli ls "cos://lingxi/releases/${VERSION}/"
