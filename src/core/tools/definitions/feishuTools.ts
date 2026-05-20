@@ -120,11 +120,12 @@ export const feishuDisconnectTool: ToolDefinition = {
 
 export const feishuListBasesTool: ToolDefinition = {
   name: TOOL_NAMES.FEISHU_LIST_BASES,
-  description: '列出当前已授权用户可访问的飞书多维表格 Base 列表。',
+  description: '列出当前已授权用户云空间根目录或指定文件夹中的飞书多维表格 Base。底层是 Drive 文件夹清单接口，不保证覆盖账号下所有可读或共享 Base。',
   inputSchema: {
     type: 'object',
     properties: {
       appId: { type: 'string', description: '飞书应用 App ID；默认使用最近一次连接的应用。' },
+      folderToken: { type: 'string', description: '可选。飞书云空间文件夹 token；不传时只列根目录。' },
       pageSize: { type: 'number', description: '分页大小。' },
       pageToken: { type: 'string', description: '下一页游标。' },
       refresh: { type: 'boolean', description: '是否忽略缓存并重新拉取。' },
@@ -134,6 +135,7 @@ export const feishuListBasesTool: ToolDefinition = {
   execute: async (input) => {
     const result = await feishuFacade.listBases({
       appId: input.appId as string | undefined,
+      folderToken: input.folderToken as string | undefined,
       pageSize: typeof input.pageSize === 'number' ? input.pageSize : undefined,
       pageToken: input.pageToken as string | undefined,
       refresh: input.refresh as boolean | undefined,

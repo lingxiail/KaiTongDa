@@ -24,6 +24,7 @@ class MockStageBAdapter implements FeishuCliAdapter {
   listTablesCalls = 0;
   schemaCalls = 0;
   recordCalls = 0;
+  lastListBasesInput?: FeishuListBasesInput;
 
   async checkNodeVersion(): Promise<FeishuCliRawResult> {
     return { command: 'node --version', stdout: 'v22.0.0', stderr: '', code: 0 };
@@ -45,8 +46,9 @@ class MockStageBAdapter implements FeishuCliAdapter {
     return { command: 'logout', stdout: 'ok', stderr: '', code: 0 };
   }
 
-  async listBases(_input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
+  async listBases(input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
     this.listBasesCalls += 1;
+    this.lastListBasesInput = input;
     return {
       command: 'drive.v1.file.list',
       stdout: JSON.stringify({
@@ -187,13 +189,39 @@ describe('Feishu stage B integration', () => {
     expect(records.hasMore).toBe(true);
   });
 
+  it('bypasses base cache when listing a specific folder', async () => {
+    const adapter = new MockStageBAdapter();
+    const store = new FeishuSessionStore();
+    seedConnectedStore(store);
+    const authService = new FeishuAuthService(adapter, store);
+    const service = new FeishuBaseService(adapter, authService, store);
+
+    store.setCachedBases('cli_stage_b', {
+      items: [],
+      pageToken: null,
+      hasMore: false,
+    });
+
+    const bases = await service.listBases({
+      appId: 'cli_stage_b',
+      folderToken: 'fld_team',
+      pageSize: 20,
+    });
+
+    expect(adapter.listBasesCalls).toBe(1);
+    expect(adapter.lastListBasesInput?.folderToken).toBe('fld_team');
+    expect(adapter.lastListBasesInput?.pageSize).toBe(20);
+    expect(bases.items[0]?.id).toBe('app_alpha');
+    expect(store.getCachedBases('cli_stage_b')?.items).toEqual([]);
+  });
+
   it('registers stage B feishu tools and returns structured json', async () => {
     expect(toolRegistry.get('feishu_list_bases')).toBeDefined();
     expect(toolRegistry.get('feishu_list_tables')).toBeDefined();
     expect(toolRegistry.get('feishu_get_table_schema')).toBeDefined();
     expect(toolRegistry.get('feishu_query_records')).toBeDefined();
 
-    vi.spyOn(feishuFacade, 'listBases').mockResolvedValue({
+    const listBasesSpy = vi.spyOn(feishuFacade, 'listBases').mockResolvedValue({
       items: [{ id: 'app_alpha', name: 'Alpha Base', url: 'https://feishu.cn/base/app_alpha' }],
       pageToken: null,
       hasMore: false,
@@ -205,7 +233,10 @@ describe('Feishu stage B integration', () => {
       total: 1,
     });
 
-    const basesResult = await toolRegistry.get('feishu_list_bases')!.execute({});
+    const basesResult = await toolRegistry.get('feishu_list_bases')!.execute({
+      folderToken: 'fld_team',
+      refresh: true,
+    });
     const queryResult = await toolRegistry.get('feishu_query_records')!.execute({
       baseId: 'app_alpha',
       tableId: 'tbl_orders',
@@ -217,5 +248,12 @@ describe('Feishu stage B integration', () => {
 
     expect(parsedBases.items[0]?.id).toBe('app_alpha');
     expect(parsedRecords.records[0]?.recordId).toBe('rec_1');
+    expect(listBasesSpy).toHaveBeenCalledWith({
+      appId: undefined,
+      folderToken: 'fld_team',
+      pageSize: undefined,
+      pageToken: undefined,
+      refresh: true,
+    });
   });
 });

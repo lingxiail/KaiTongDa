@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { FeishuAuthService } from '../core/feishu/authService';
 import { assessCliCompatibility } from '../core/feishu/compat';
+import { LarkMcpCliAdapter } from '../core/feishu/cliAdapter';
 import type { FeishuCliAdapter, FeishuCliLoginHandle, FeishuCliRawResult } from '../core/feishu/cliAdapter';
 import { detectFeishuEnvironment } from '../core/feishu/env';
 import { FeishuResultNormalizer } from '../core/feishu/resultNormalizer';
@@ -162,6 +163,39 @@ describe('Feishu stage E integration', () => {
 
     expect(() => normalizer.toPagedResult(payload, (item) => normalizer.normalizeBase(item)))
       .toThrow('飞书请求失败(1254030): No permission to access this resource');
+  });
+
+  it('passes folder token to the Drive file list MCP tool', async () => {
+    type InvokeMcpToolProbe = {
+      invokeMcpTool: (
+        appId: string | undefined,
+        toolName: string,
+        args: Record<string, unknown>,
+      ) => Promise<FeishuCliRawResult>;
+    };
+    const adapter = new LarkMcpCliAdapter();
+    const invokeSpy = vi.spyOn(adapter as unknown as InvokeMcpToolProbe, 'invokeMcpTool').mockResolvedValue({
+      command: 'drive.v1.file.list',
+      stdout: JSON.stringify({ data: { files: [], has_more: false } }),
+      stderr: '',
+      code: 0,
+    });
+
+    await adapter.listBases({
+      appId: 'cli_stage_e',
+      folderToken: 'fld_team',
+      pageSize: 20,
+      pageToken: 'next',
+    });
+
+    expect(invokeSpy).toHaveBeenCalledWith('cli_stage_e', 'drive.v1.file.list', {
+      params: {
+        folder_token: 'fld_team',
+        page_size: 20,
+        page_token: 'next',
+      },
+      useUAT: true,
+    });
   });
 
   it('keeps natural language mapping stable for typical query request', () => {

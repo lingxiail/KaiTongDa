@@ -34,7 +34,7 @@ export function setNotificationPermission(granted: boolean): void {
 // ── Helpers ────────────────────────────────────────────────────────────
 
 const noticeTitle: Record<string, string> = {
-  task_complete: '阿布完成啦！',
+  task_complete: '灵犀完成啦！',
   agent_error: '哎呀出错了',
   schedule_fired: '定时任务触发',
   permission_request: '需要你的确认',

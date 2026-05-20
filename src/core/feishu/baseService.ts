@@ -1,5 +1,5 @@
-import type { FeishuCliAdapter, FeishuCliRawResult } from './cliAdapter';
-import { feishuCliAdapter } from './cliAdapter';
+import type { FeishuCommandRawResult, FeishuConnectorAdapter } from './connectorAdapter';
+import { larkMcpAdapter } from './larkMcpAdapter';
 import { FeishuAuthService, feishuAuthService } from './authService';
 import { buildFeishuWriteAuditSummary } from './audit';
 import { FeishuFieldMapper, feishuFieldMapper } from './fieldMapper';
@@ -22,14 +22,14 @@ import type {
   FeishuUpsertRecordsInput,
 } from './types';
 
-function ensureRawSuccess(raw: FeishuCliRawResult): void {
+function ensureRawSuccess(raw: FeishuCommandRawResult): void {
   if (raw.code !== 0) {
     throw new Error(raw.stderr || raw.stdout || '飞书请求失败。');
   }
 }
 
 export class FeishuBaseService {
-  private readonly adapter: FeishuCliAdapter;
+  private readonly adapter: FeishuConnectorAdapter;
   private readonly authService: FeishuAuthService;
   private readonly store: FeishuSessionStore;
   private readonly fieldMapper: FeishuFieldMapper;
@@ -37,7 +37,7 @@ export class FeishuBaseService {
   private readonly resultNormalizer: FeishuResultNormalizer;
 
   constructor(
-    adapter: FeishuCliAdapter = feishuCliAdapter,
+    adapter: FeishuConnectorAdapter = larkMcpAdapter,
     authService: FeishuAuthService = feishuAuthService,
     store: FeishuSessionStore = feishuSessionStore,
     fieldMapper: FeishuFieldMapper = feishuFieldMapper,
@@ -61,7 +61,8 @@ export class FeishuBaseService {
 
   async listBases(input: FeishuListBasesInput = {}): Promise<FeishuPagedResult<FeishuBaseSummary>> {
     await this.ensureConnected(input.appId);
-    if (!input.refresh && !input.pageToken) {
+    const canUseCache = !input.folderToken && !input.refresh && !input.pageToken;
+    if (canUseCache) {
       const cached = this.store.getCachedBases(input.appId);
       if (cached) return cached;
     }
@@ -72,7 +73,7 @@ export class FeishuBaseService {
       this.resultNormalizer.parseJsonPayload(raw.stdout),
       (item) => this.resultNormalizer.normalizeBase(item),
     );
-    if (!input.pageToken) {
+    if (!input.folderToken && !input.pageToken) {
       this.store.setCachedBases(input.appId, result);
     }
     return result;

@@ -1,7 +1,7 @@
 import { assessCliCompatibility } from './compat';
-import type { FeishuCliAdapter } from './cliAdapter';
-import { feishuCliAdapter } from './cliAdapter';
+import type { FeishuConnectorAdapter } from './connectorAdapter';
 import { FEISHU_ERROR_CODES } from './errorCodes';
+import { larkMcpAdapter } from './larkMcpAdapter';
 import { buildCliCompatibilityMessage } from './messages';
 import type { FeishuConnectionStatus, FeishuEnvironmentStatus } from './types';
 
@@ -14,7 +14,7 @@ function trimVersion(raw: string): string | null {
 }
 
 export async function detectFeishuEnvironment(
-  adapter: FeishuCliAdapter = feishuCliAdapter,
+  adapter: FeishuConnectorAdapter = larkMcpAdapter,
 ): Promise<FeishuEnvironmentStatus> {
   let nodeVersion: string | null = null;
   let cliVersion: string | null = null;

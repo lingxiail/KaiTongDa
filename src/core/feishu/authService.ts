@@ -1,8 +1,8 @@
 import { FEISHU_ERROR_CODES } from './errorCodes';
-import type { FeishuCliAdapter } from './cliAdapter';
-import { feishuCliAdapter } from './cliAdapter';
+import type { FeishuConnectorAdapter } from './connectorAdapter';
 import { detectFeishuEnvironment, toEnvironmentFailureStatus } from './env';
 import { normalizeFeishuCliError } from './errorNormalizer';
+import { larkMcpAdapter } from './larkMcpAdapter';
 import type {
   FeishuAccountSummary,
   FeishuConnectInput,
@@ -68,11 +68,11 @@ function buildStatus(base: Partial<FeishuConnectionStatus> & Pick<FeishuConnecti
 }
 
 export class FeishuAuthService {
-  private readonly adapter: FeishuCliAdapter;
+  private readonly adapter: FeishuConnectorAdapter;
   private readonly store: FeishuSessionStore;
 
   constructor(
-    adapter: FeishuCliAdapter = feishuCliAdapter,
+    adapter: FeishuConnectorAdapter = larkMcpAdapter,
     store: FeishuSessionStore = feishuSessionStore,
   ) {
     this.adapter = adapter;

@@ -22,6 +22,9 @@ import { feishuFacade } from '../core/feishu/facade';
 import { toolRegistry } from '../core/tools/registry';
 
 class MockStageCAdapter implements FeishuCliAdapter {
+  listBasesCalls = 0;
+  lastListBasesInput?: FeishuListBasesInput;
+
   async checkNodeVersion(): Promise<FeishuCliRawResult> {
     return { command: 'node --version', stdout: 'v22.0.0', stderr: '', code: 0 };
   }
@@ -48,7 +51,9 @@ class MockStageCAdapter implements FeishuCliAdapter {
     return { command: 'logout', stdout: 'ok', stderr: '', code: 0 };
   }
 
-  async listBases(_input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
+  async listBases(input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
+    this.listBasesCalls += 1;
+    this.lastListBasesInput = input;
     return {
       command: 'drive.v1.file.list',
       stdout: JSON.stringify({
@@ -136,8 +141,6 @@ class MockStageCAdapter implements FeishuCliAdapter {
 }
 
 class DirectBaseTokenAdapter extends MockStageCAdapter {
-  listBasesCalls = 0;
-
   async listBases(_input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
     this.listBasesCalls += 1;
     return {
@@ -156,6 +159,24 @@ class DirectBaseTokenAdapter extends MockStageCAdapter {
           items: [
             { table_id: 'tbl_direct', name: `${input.baseId}-Direct` },
           ],
+          has_more: false,
+        },
+      }),
+      stderr: '',
+      code: 0,
+    };
+  }
+}
+
+class EmptyRootBasesAdapter extends MockStageCAdapter {
+  async listBases(input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
+    this.listBasesCalls += 1;
+    this.lastListBasesInput = input;
+    return {
+      command: 'drive.v1.file.list',
+      stdout: JSON.stringify({
+        data: {
+          files: [],
           has_more: false,
         },
       }),
@@ -207,7 +228,8 @@ describe('Feishu stage C integration', () => {
   it('handles natural language request for listing bases', async () => {
     const store = new FeishuSessionStore();
     seedConnectedStore(store);
-    const orchestrator = createOrchestrator(store);
+    const adapter = new MockStageCAdapter();
+    const orchestrator = createOrchestrator(store, adapter);
 
     const result = await orchestrator.handleRequest({
       appId: 'cli_stage_c',
@@ -217,6 +239,45 @@ describe('Feishu stage C integration', () => {
     expect(result.intent.kind).toBe('list_bases');
     expect(result.needClarification).toBe(false);
     expect((result.result as { items: Array<{ id: string }> }).items[0]?.id).toBe('app_sales');
+    expect(adapter.lastListBasesInput?.refresh).toBe(true);
+  });
+
+  it('refreshes natural language base listing instead of reusing a stale empty cache', async () => {
+    const store = new FeishuSessionStore();
+    seedConnectedStore(store);
+    store.setCachedBases('cli_stage_c', {
+      items: [],
+      pageToken: null,
+      hasMore: false,
+    });
+    const adapter = new MockStageCAdapter();
+    const orchestrator = createOrchestrator(store, adapter);
+
+    const result = await orchestrator.handleRequest({
+      appId: 'cli_stage_c',
+      query: '列出我可读的多维表格',
+    });
+
+    expect(result.intent.kind).toBe('list_bases');
+    expect(adapter.listBasesCalls).toBe(1);
+    expect((result.result as { items: Array<{ id: string }> }).items[0]?.id).toBe('app_sales');
+    expect(result.message).toBe('已找到 2 个 Base。');
+  });
+
+  it('explains root-folder scope when base listing returns empty', async () => {
+    const store = new FeishuSessionStore();
+    seedConnectedStore(store);
+    const adapter = new EmptyRootBasesAdapter();
+    const orchestrator = createOrchestrator(store, adapter);
+
+    const result = await orchestrator.handleRequest({
+      appId: 'cli_stage_c',
+      query: '列出我可读的多维表格',
+    });
+
+    expect(result.intent.kind).toBe('list_bases');
+    expect(result.message).toContain('云空间根目录');
+    expect(result.message).toContain('不代表账号下所有可读/共享 Base');
   });
 
   it('lists tables from a direct Feishu base token without requiring global base listing', async () => {

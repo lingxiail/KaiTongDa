@@ -105,6 +105,7 @@ export interface FeishuRecordQueryResult {
 
 export interface FeishuListBasesInput {
   appId?: string;
+  folderToken?: string;
   pageSize?: number;
   pageToken?: string;
   refresh?: boolean;

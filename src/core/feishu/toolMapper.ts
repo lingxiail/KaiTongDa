@@ -91,11 +91,14 @@ function detectIntentKind(query: string): FeishuIntentKind {
   if (/(记录|最近|最新).*(记录)?/i.test(query)) {
     return 'query_records';
   }
-  if (/(下的表|数据表列表|列出.*表|查看.*表)/i.test(query)) {
+  if (/(?:下|里面|里的|中|内)的?(?:所有)?(?:数据表|表)|数据表列表/i.test(query)) {
     return 'list_tables';
   }
   if (/(base|多维表格|多维表)/i.test(query)) {
     return 'list_bases';
+  }
+  if (/(?:列出|查看|显示).*(?:数据表|表)$/i.test(query)) {
+    return 'list_tables';
   }
   return 'unknown';
 }
@@ -173,8 +176,8 @@ export class FeishuToolMapper {
       steps.push({
         type: 'list_bases' as const,
         toolName: TOOL_NAMES.FEISHU_LIST_BASES,
-        input: { appId: context.appId },
-        reason: '列出当前账号可访问的 Base。',
+        input: { appId: context.appId, refresh: true },
+        reason: '列出当前云空间根目录或指定文件夹中的 Base。',
         status: 'completed' as const,
       });
     } else if (intent.kind === 'list_tables') {

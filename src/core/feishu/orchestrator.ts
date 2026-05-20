@@ -191,14 +191,16 @@ export class FeishuIntentOrchestrator {
     }
 
     if (intent.kind === 'list_bases') {
-      const result = await this.baseService.listBases({ appId: intentContext.appId });
+      const result = await this.baseService.listBases({ appId: intentContext.appId, refresh: true });
       return {
         intent,
         resolvedContext: intentContext,
         needClarification: false,
         executionPlan: this.mapper.buildExecutionPlan(intent, intentContext),
         result,
-        message: `已找到 ${result.items.length} 个 Base。`,
+        message: result.items.length > 0
+          ? `已找到 ${result.items.length} 个 Base。`
+          : '当前没有在飞书云空间根目录查到多维表格。这个入口底层使用 Drive 文件夹清单接口，只覆盖根目录或指定文件夹，不代表账号下所有可读/共享 Base；如果你知道 Base 链接或 app_token，可以直接让我列出该 Base 下的数据表。',
       };
     }
 

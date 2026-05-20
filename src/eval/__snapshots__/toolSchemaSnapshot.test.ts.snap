@@ -148,6 +148,7 @@ exports[`Tool schema snapshot > all tool schemas match snapshot 1`] = `
     "name": "feishu_list_bases",
     "paramNames": [
       "appId",
+      "folderToken",
       "pageSize",
       "pageToken",
       "refresh",
