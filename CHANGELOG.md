@@ -2,6 +2,12 @@
 
 本文档记录灵犀的每次版本更新。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/)。
 
+## v0.15.22 · 2026-05-20
+
+### 其他
+
+- 移除聊天框底部的 SkillAgentPicker 按钮，精简界面布局。
+
 ## v0.15.21 · 2026-05-20
 
 ### 其他
