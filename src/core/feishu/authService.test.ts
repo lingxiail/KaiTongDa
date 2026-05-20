@@ -17,7 +17,9 @@ import type {
 
 class MockFeishuCliAdapter implements FeishuCliAdapter {
   nodeResult: FeishuCliRawResult = { command: 'node --version', stdout: 'v22.0.0', stderr: '', code: 0 };
-  cliResult: FeishuCliRawResult = { command: 'npx -y @larksuiteoapi/lark-mcp --version', stdout: '0.5.1', stderr: '', code: 0 };
+  npxResult: FeishuCliRawResult = { command: 'npx --version', stdout: '10.0.0', stderr: '', code: 0 };
+  cliResult: FeishuCliRawResult = { command: 'lark-cli --version', stdout: '1.0.23', stderr: '', code: 0 };
+  configResult: FeishuCliRawResult = { command: 'lark-cli config init --new', stdout: 'ok', stderr: '', code: 0 };
   loginResult: FeishuCliRawResult = {
     command: 'login',
     stdout: 'Login successful\nname: Tom\nemail: tom@example.com\ntenant_key: tenant_demo',
@@ -29,8 +31,20 @@ class MockFeishuCliAdapter implements FeishuCliAdapter {
     return this.nodeResult;
   }
 
+  async checkNpxVersion(): Promise<FeishuCliRawResult> {
+    return this.npxResult;
+  }
+
   async checkCliVersion(): Promise<FeishuCliRawResult> {
     return this.cliResult;
+  }
+
+  async installCli(): Promise<FeishuCliRawResult> {
+    return { command: 'install', stdout: 'installed', stderr: '', code: 0 };
+  }
+
+  async initializeConfig(): Promise<FeishuCliRawResult> {
+    return this.configResult;
   }
 
   async startLogin(
@@ -42,6 +56,15 @@ class MockFeishuCliAdapter implements FeishuCliAdapter {
       id: 'login-1',
       command: 'login',
       completion: Promise.resolve(this.loginResult),
+    };
+  }
+
+  async getAuthStatus(): Promise<FeishuCliRawResult> {
+    return {
+      command: 'auth status',
+      stdout: 'Authorized account: Tom (tom@example.com)\ntenant_key: tenant_demo',
+      stderr: '',
+      code: 0,
     };
   }
 
@@ -113,6 +136,28 @@ describe('FeishuAuthService', () => {
 
     expect(result.state).toBe('approval_pending');
     expect(result.authUrl).toBe('https://open.feishu.cn/mock-auth');
+  });
+
+  it('can auto install lark-cli after explicit confirmation', async () => {
+    const adapter = new MockFeishuCliAdapter();
+    adapter.cliResult = { command: 'lark-cli --version', stdout: '', stderr: 'not found', code: 1 };
+    let installed = false;
+    adapter.installCli = async () => {
+      installed = true;
+      adapter.cliResult = { command: 'lark-cli --version', stdout: '1.0.23', stderr: '', code: 0 };
+      return { command: 'install', stdout: 'installed', stderr: '', code: 0 };
+    };
+    const service = new FeishuAuthService(adapter, new FeishuSessionStore());
+
+    const result = await service.startLogin({
+      appId: 'cli_xxx',
+      appSecret: 'secret',
+      confirmInstall: true,
+      waitForMs: 50,
+    });
+
+    expect(installed).toBe(true);
+    expect(result.success).toBe(true);
   });
 
   it('connects successfully and caches account summary', async () => {

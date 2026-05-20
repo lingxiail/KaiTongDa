@@ -21,7 +21,7 @@ import type {
 
 class MockStageEAdapter implements FeishuCliAdapter {
   constructor(
-    private readonly cliVersion = '0.5.1',
+    private readonly cliVersion = '1.0.23',
     private readonly loginOutput = 'Login successful\nname: Tom\nemail: tom@example.com\ntenant_key: tenant_demo',
   ) {}
 
@@ -29,8 +29,20 @@ class MockStageEAdapter implements FeishuCliAdapter {
     return { command: 'node --version', stdout: 'v22.0.0', stderr: '', code: 0 };
   }
 
+  async checkNpxVersion(): Promise<FeishuCliRawResult> {
+    return { command: 'npx --version', stdout: '10.0.0', stderr: '', code: 0 };
+  }
+
   async checkCliVersion(): Promise<FeishuCliRawResult> {
-    return { command: 'npx --version', stdout: this.cliVersion, stderr: '', code: 0 };
+    return { command: 'lark-cli --version', stdout: this.cliVersion, stderr: '', code: 0 };
+  }
+
+  async installCli(): Promise<FeishuCliRawResult> {
+    return { command: 'install', stdout: 'installed', stderr: '', code: 0 };
+  }
+
+  async initializeConfig(): Promise<FeishuCliRawResult> {
+    return { command: 'config', stdout: 'ok', stderr: '', code: 0 };
   }
 
   async startLogin(_input: FeishuLoginStartInput, onOutput?: (line: string, stream: 'stdout' | 'stderr') => void): Promise<FeishuCliLoginHandle> {
@@ -44,6 +56,15 @@ class MockStageEAdapter implements FeishuCliAdapter {
         stderr: '',
         code: 0,
       }),
+    };
+  }
+
+  async getAuthStatus(): Promise<FeishuCliRawResult> {
+    return {
+      command: 'auth status',
+      stdout: 'Authorized account: Tom (tom@example.com)\ntenant_key: tenant_demo',
+      stderr: '',
+      code: 0,
     };
   }
 
@@ -83,12 +104,13 @@ class MockStageEAdapter implements FeishuCliAdapter {
 describe('Feishu stage E integration', () => {
   it('assesses tested and untested cli versions', () => {
     expect(assessCliCompatibility('0.5.1').status).toBe('compatible');
-    expect(assessCliCompatibility('0.8.0').status).toBe('untested');
+    expect(assessCliCompatibility('1.0.23').status).toBe('untested');
   });
 
   it('detects environment with compatibility metadata', async () => {
     const env = await detectFeishuEnvironment(new MockStageEAdapter('0.5.1'));
     expect(env.nodeAvailable).toBe(true);
+    expect(env.npxAvailable).toBe(true);
     expect(env.cliAvailable).toBe(true);
     expect(env.compatibility?.status).toBe('compatible');
   });

@@ -54,6 +54,7 @@ export const feishuConnectTool: ToolDefinition = {
         items: { type: 'string' },
       },
       interactive: { type: 'boolean', description: '是否按交互式连接处理，默认 true' },
+      confirmInstall: { type: 'boolean', description: '当本机缺少 lark-cli 时，是否确认执行安装命令。默认 false。' },
       waitForMs: { type: 'number', description: '本次连接等待授权完成的时长，单位毫秒' },
       port: { type: 'number', description: '本地 OAuth 回调端口，默认 3000' },
     },
@@ -68,6 +69,7 @@ export const feishuConnectTool: ToolDefinition = {
         ? input.preferredScopes.map(String)
         : undefined,
       interactive: input.interactive as boolean | undefined,
+      confirmInstall: input.confirmInstall as boolean | undefined,
       waitForMs: typeof input.waitForMs === 'number' ? input.waitForMs : undefined,
       port: typeof input.port === 'number' ? input.port : undefined,
     });

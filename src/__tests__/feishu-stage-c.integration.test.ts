@@ -29,8 +29,20 @@ class MockStageCAdapter implements FeishuCliAdapter {
     return { command: 'node --version', stdout: 'v22.0.0', stderr: '', code: 0 };
   }
 
+  async checkNpxVersion(): Promise<FeishuCliRawResult> {
+    return { command: 'npx --version', stdout: '10.0.0', stderr: '', code: 0 };
+  }
+
   async checkCliVersion(): Promise<FeishuCliRawResult> {
-    return { command: 'npx --version', stdout: '0.5.1', stderr: '', code: 0 };
+    return { command: 'lark-cli --version', stdout: '1.0.23', stderr: '', code: 0 };
+  }
+
+  async installCli(): Promise<FeishuCliRawResult> {
+    return { command: 'install', stdout: 'installed', stderr: '', code: 0 };
+  }
+
+  async initializeConfig(): Promise<FeishuCliRawResult> {
+    return { command: 'config', stdout: 'ok', stderr: '', code: 0 };
   }
 
   async startLogin(_input: FeishuLoginStartInput, onOutput?: (line: string) => void): Promise<FeishuCliLoginHandle> {
@@ -44,6 +56,15 @@ class MockStageCAdapter implements FeishuCliAdapter {
         stderr: '',
         code: 0,
       }),
+    };
+  }
+
+  async getAuthStatus(): Promise<FeishuCliRawResult> {
+    return {
+      command: 'auth status',
+      stdout: 'Authorized account: Tom (tom@example.com)',
+      stderr: '',
+      code: 0,
     };
   }
 

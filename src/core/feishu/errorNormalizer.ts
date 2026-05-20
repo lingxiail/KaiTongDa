@@ -1,4 +1,5 @@
 import { FEISHU_ERROR_CODES, type FeishuErrorCode } from './errorCodes';
+import { scrubFeishuText } from './scrub';
 import type { FeishuConnectionStatus } from './types';
 
 function includesAny(source: string, tokens: string[]): boolean {
@@ -12,6 +13,7 @@ export function normalizeFeishuCliError(stderr: string, stdout = ''): {
   nextAction: string;
 } {
   const merged = `${stdout}\n${stderr}`.trim();
+  const scrubbed = scrubFeishuText(merged);
 
   if (includesAny(merged, ['expired', 'token expired', 'invalid_grant'])) {
     return {
@@ -47,7 +49,7 @@ export function normalizeFeishuCliError(stderr: string, stdout = ''): {
 
   return {
     errorCode: FEISHU_ERROR_CODES.UNKNOWN,
-    message: merged || '飞书操作失败。',
+    message: scrubbed || '飞书操作失败。',
     nextAction: '请查看错误详情并重试。',
   };
 }

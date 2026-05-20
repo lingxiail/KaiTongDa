@@ -1,3 +1,22 @@
+import {
+  buildAuthLoginCommand,
+  buildAuthStatusCommand,
+  buildCliVersionCommand,
+  buildCliInstallCommand,
+  buildConfigInitCommand,
+  buildCreateRecordsCommand,
+  buildGetTableSchemaCommand,
+  buildListBasesCommand,
+  buildListTablesCommand,
+  buildLogoutCommand,
+  buildNodeVersionCommand,
+  buildNpxVersionCommand,
+  buildQueryRecordsCommand,
+  buildUpdateRecordsCommand,
+  buildUpsertRecordsCommand,
+} from './larkCliCommands';
+import { runArgvCommand, runArgvCommandStreaming } from './argvExecutor';
+import { scrubFeishuRawResult, scrubFeishuText } from './scrub';
 import type {
   FeishuCommandRawResult,
   FeishuConnectorAdapter,
@@ -41,8 +60,12 @@ export class LarkCliAdapter implements FeishuConnectorAdapter {
   getCapabilities(): FeishuConnectorCapability[] {
     return [
       'check_node_version',
+      'check_npx_version',
       'check_cli_version',
+      'install_cli',
+      'initialize_config',
       'start_login',
+      'get_auth_status',
       'logout',
       'list_bases',
       'list_tables',
@@ -62,6 +85,22 @@ export class LarkCliAdapter implements FeishuConnectorAdapter {
     };
   }
 
+  private async runCommand(
+    command: { program: string; args: string[]; command: string },
+    timeout = 60,
+  ): Promise<FeishuCommandRawResult> {
+    try {
+      return scrubFeishuRawResult(await runArgvCommand(command, timeout));
+    } catch (error) {
+      return {
+        command: command.command,
+        stdout: '',
+        stderr: scrubFeishuText(error instanceof Error ? error.message : String(error)),
+        code: -1,
+      };
+    }
+  }
+
   parseJsonResult(raw: FeishuCommandRawResult): unknown {
     const text = raw.stdout.trim();
     if (!text) {
@@ -71,20 +110,11 @@ export class LarkCliAdapter implements FeishuConnectorAdapter {
     try {
       return JSON.parse(text) as unknown;
     } catch (error) {
-      const reason = error instanceof Error ? error.message : String(error);
+      const reason = scrubFeishuText(error instanceof Error ? error.message : String(error));
       throw new Error(`Lark CLI JSON 解析失败: ${reason}`, {
         cause: error,
       });
     }
-  }
-
-  private buildNotImplementedResult(command: string): FeishuCommandRawResult {
-    return {
-      command,
-      stdout: '',
-      stderr: 'LarkCliAdapter 尚未实现，当前默认仍使用 LarkMcpAdapter。',
-      code: -1,
-    };
   }
 
   private buildNotImplementedWriteResult(
@@ -102,54 +132,80 @@ export class LarkCliAdapter implements FeishuConnectorAdapter {
   }
 
   async checkNodeVersion(): Promise<FeishuCommandRawResult> {
-    return this.buildNotImplementedResult(this.buildCommand('node', ['--version']).command);
+    return await this.runCommand(buildNodeVersionCommand(), 20);
+  }
+
+  async checkNpxVersion(): Promise<FeishuCommandRawResult> {
+    return await this.runCommand(buildNpxVersionCommand(), 20);
   }
 
   async checkCliVersion(): Promise<FeishuCommandRawResult> {
-    return this.buildNotImplementedResult(this.buildCommand('lark-cli', ['--version']).command);
+    return await this.runCommand(buildCliVersionCommand(), 30);
+  }
+
+  async installCli(): Promise<FeishuCommandRawResult> {
+    return await this.runCommand(buildCliInstallCommand(), 240);
+  }
+
+  async initializeConfig(): Promise<FeishuCommandRawResult> {
+    return await this.runCommand(buildConfigInitCommand(), 90);
   }
 
   async startLogin(
-    _input: FeishuLoginStartInput,
-    _onOutput?: (line: string, stream: 'stdout' | 'stderr') => void,
+    input: FeishuLoginStartInput,
+    onOutput?: (line: string, stream: 'stdout' | 'stderr') => void,
   ): Promise<FeishuConnectorLoginHandle> {
-    const command = this.buildCommand('lark-cli', ['auth', 'login', '--recommend']).command;
+    const command = buildAuthLoginCommand(input);
     return {
-      id: 'lark-cli-unimplemented',
-      command,
-      completion: Promise.resolve(this.buildNotImplementedResult(command)),
+      id: typeof crypto !== 'undefined' && 'randomUUID' in crypto
+        ? crypto.randomUUID()
+        : `lark-cli-login-${Date.now()}`,
+      command: command.command,
+      completion: runArgvCommandStreaming(command, input.timeoutSec ?? 240, onOutput).catch((error) => ({
+        command: command.command,
+        stdout: '',
+        stderr: scrubFeishuText(error instanceof Error ? error.message : String(error)),
+        code: -1,
+      })),
     };
   }
 
+  async getAuthStatus(_appId?: string): Promise<FeishuCommandRawResult> {
+    return await this.runCommand(buildAuthStatusCommand(), 30);
+  }
+
   async logout(_appId?: string): Promise<FeishuCommandRawResult> {
-    return this.buildNotImplementedResult(this.buildCommand('lark-cli', ['auth', 'logout']).command);
+    return await this.runCommand(buildLogoutCommand(), 30);
   }
 
   async listBases(_input?: FeishuListBasesInput): Promise<FeishuCommandRawResult> {
-    return this.buildNotImplementedResult(this.buildCommand('lark-cli', ['base', 'list']).command);
+    return await this.runCommand(buildListBasesCommand(_input), 60);
   }
 
   async listTables(_input: FeishuListTablesInput): Promise<FeishuCommandRawResult> {
-    return this.buildNotImplementedResult(this.buildCommand('lark-cli', ['base', 'table', 'list']).command);
+    return await this.runCommand(buildListTablesCommand(_input), 60);
   }
 
   async getTableSchema(_input: FeishuGetTableSchemaInput): Promise<FeishuCommandRawResult> {
-    return this.buildNotImplementedResult(this.buildCommand('lark-cli', ['base', 'field', 'list']).command);
+    return await this.runCommand(buildGetTableSchemaCommand(_input), 60);
   }
 
   async queryRecords(_input: FeishuQueryRecordsInput): Promise<FeishuCommandRawResult> {
-    return this.buildNotImplementedResult(this.buildCommand('lark-cli', ['base', 'record', 'search']).command);
+    return await this.runCommand(buildQueryRecordsCommand(_input), 90);
   }
 
   async createRecords(input: FeishuCreateRecordsInput): Promise<FeishuRecordWriteResult> {
+    void buildCreateRecordsCommand(input);
     return this.buildNotImplementedWriteResult('create', input.baseId, input.tableId);
   }
 
   async upsertRecords(input: FeishuUpsertRecordsInput): Promise<FeishuRecordWriteResult> {
+    void buildUpsertRecordsCommand(input);
     return this.buildNotImplementedWriteResult('upsert', input.baseId, input.tableId);
   }
 
   async updateRecordsByFilter(input: FeishuUpdateRecordsByFilterInput): Promise<FeishuRecordWriteResult> {
+    void buildUpdateRecordsCommand(input);
     return this.buildNotImplementedWriteResult('update_by_filter', input.baseId, input.tableId);
   }
 }

@@ -2,7 +2,7 @@ import { FEISHU_ERROR_CODES } from './errorCodes';
 import type { FeishuConnectorAdapter } from './connectorAdapter';
 import { detectFeishuEnvironment, toEnvironmentFailureStatus } from './env';
 import { normalizeFeishuCliError } from './errorNormalizer';
-import { larkMcpAdapter } from './larkMcpAdapter';
+import { larkCliAdapter } from './larkCliAdapter';
 import type {
   FeishuAccountSummary,
   FeishuConnectInput,
@@ -44,6 +44,14 @@ function isApprovalPending(output: string): boolean {
   return /approval|approve|审批/i.test(output);
 }
 
+function isAuthorized(output: string): boolean {
+  return /authorized account|current authorized account|login successful|authorization successful|user[_\s-]?id|open[_\s-]?id|tenant[_\s-]?key|identity\s*:/i.test(output);
+}
+
+function isUnauthenticated(output: string): boolean {
+  return /not configured|not logged in|no logged in users|please run .*auth login|please run .*config init|unauthorized/i.test(output);
+}
+
 function isExpired(output: string): boolean {
   return /expired|invalid_grant|token expired/i.test(output);
 }
@@ -72,7 +80,7 @@ export class FeishuAuthService {
   private readonly store: FeishuSessionStore;
 
   constructor(
-    adapter: FeishuConnectorAdapter = larkMcpAdapter,
+    adapter: FeishuConnectorAdapter = larkCliAdapter,
     store: FeishuSessionStore = feishuSessionStore,
   ) {
     this.adapter = adapter;
@@ -162,7 +170,45 @@ export class FeishuAuthService {
 
     const environment = await detectFeishuEnvironment(this.adapter);
     if (!environment.nodeAvailable || !environment.cliAvailable) {
+      if (environment.failureReason === 'cli_missing' && environment.canAutoInstall && input.confirmInstall) {
+        const install = await this.adapter.installCli();
+        if (install.code !== 0) {
+          const normalized = normalizeFeishuCliError(install.stderr, install.stdout);
+          const failedInstall = buildStatus({
+            success: false,
+            connected: false,
+            state: 'unauthorized',
+            phase: 'failed',
+            message: normalized.message,
+            nextAction: normalized.nextAction,
+            errorCode: normalized.errorCode,
+            appId,
+            domain,
+          });
+          this.store.updateConnectionStatus(appId, failedInstall);
+          return failedInstall;
+        }
+
+        const rechecked = await detectFeishuEnvironment(this.adapter);
+        if (!rechecked.nodeAvailable || !rechecked.cliAvailable) {
+          const failure = toEnvironmentFailureStatus(rechecked, appId, domain);
+          this.store.updateConnectionStatus(appId, failure);
+          return failure;
+        }
+      } else {
+        const failure = toEnvironmentFailureStatus(environment, appId, domain);
+        this.store.updateConnectionStatus(appId, failure);
+        return failure;
+      }
+    }
+
+    const configResult = await this.adapter.initializeConfig();
+    if (configResult.code !== 0) {
+      const normalized = normalizeFeishuCliError(configResult.stderr, configResult.stdout);
       const failure = toEnvironmentFailureStatus(environment, appId, domain);
+      failure.message = normalized.message;
+      failure.nextAction = normalized.nextAction || '请执行 lark-cli config init --new 完成初始化。';
+      failure.errorCode = normalized.errorCode;
       this.store.updateConnectionStatus(appId, failure);
       return failure;
     }
@@ -299,6 +345,28 @@ export class FeishuAuthService {
       return expired;
     }
 
+    const statusRaw = await this.adapter.getAuthStatus(input?.appId);
+    const merged = `${statusRaw.stdout}\n${statusRaw.stderr}`.trim();
+    if (statusRaw.code === 0 && isAuthorized(merged) && !isUnauthenticated(merged)) {
+      const parsed = parseAccountSummary(merged);
+      const connected = buildStatus({
+        success: true,
+        connected: true,
+        state: 'connected',
+        phase: 'connected',
+        message: '飞书连接成功。',
+        nextAction: '可继续查询授权状态或进入下一阶段能力开发。',
+        appId: input?.appId,
+        domain: input?.domain || DEFAULT_DOMAIN,
+        account: parsed.account,
+        tenant: parsed.tenant,
+        authUrl: activeLogin.authUrl,
+      });
+      this.store.updateConnectionStatus(input?.appId, connected);
+      this.store.setActiveLogin(input?.appId, null);
+      return connected;
+    }
+
     if (isApprovalPending(output)) {
       return buildStatus({
         success: false,
@@ -312,6 +380,27 @@ export class FeishuAuthService {
         domain: input?.domain || DEFAULT_DOMAIN,
         authUrl: activeLogin.authUrl,
       });
+    }
+
+    if (statusRaw.code !== 0 && merged) {
+      const normalized = normalizeFeishuCliError(statusRaw.stderr, statusRaw.stdout);
+      const failed = buildStatus({
+        success: false,
+        connected: false,
+        state: normalized.errorCode === FEISHU_ERROR_CODES.AUTH_EXPIRED ? 'auth_expired' : 'unauthorized',
+        phase: normalized.errorCode === FEISHU_ERROR_CODES.AUTH_EXPIRED ? 'auth_expired' : 'failed',
+        message: normalized.message,
+        nextAction: normalized.nextAction,
+        errorCode: normalized.errorCode,
+        appId: input?.appId,
+        domain: input?.domain || DEFAULT_DOMAIN,
+        authUrl: activeLogin.authUrl,
+      });
+      this.store.updateConnectionStatus(input?.appId, failed);
+      if (normalized.errorCode !== FEISHU_ERROR_CODES.AUTH_PENDING) {
+        this.store.setActiveLogin(input?.appId, null);
+      }
+      return failed;
     }
 
     return await this.checkAuthStatus(input);

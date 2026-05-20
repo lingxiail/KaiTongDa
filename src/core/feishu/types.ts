@@ -61,10 +61,21 @@ export interface FeishuCliCompatibility {
 
 export interface FeishuEnvironmentStatus {
   nodeAvailable: boolean;
+  npxAvailable: boolean;
   cliAvailable: boolean;
   nodeVersion?: string | null;
+  npxVersion?: string | null;
   cliVersion?: string | null;
   compatibility?: FeishuCliCompatibility;
+  installCommand?: string;
+  canAutoInstall?: boolean;
+  failureReason?:
+    | 'node_missing'
+    | 'npx_missing'
+    | 'cli_missing'
+    | 'network_error'
+    | 'incompatible_version'
+    | 'unknown';
   message: string;
 }
 
@@ -225,6 +236,7 @@ export interface FeishuConnectInput {
   domain?: string;
   preferredScopes?: string[];
   interactive?: boolean;
+  confirmInstall?: boolean;
   waitForMs?: number;
   port?: number;
 }

@@ -1,7 +1,7 @@
 import { assessCliCompatibility } from './compat';
 import type { FeishuConnectorAdapter } from './connectorAdapter';
 import { FEISHU_ERROR_CODES } from './errorCodes';
-import { larkMcpAdapter } from './larkMcpAdapter';
+import { larkCliAdapter } from './larkCliAdapter';
 import { buildCliCompatibilityMessage } from './messages';
 import type { FeishuConnectionStatus, FeishuEnvironmentStatus } from './types';
 
@@ -14,11 +14,13 @@ function trimVersion(raw: string): string | null {
 }
 
 export async function detectFeishuEnvironment(
-  adapter: FeishuConnectorAdapter = larkMcpAdapter,
+  adapter: FeishuConnectorAdapter = larkCliAdapter,
 ): Promise<FeishuEnvironmentStatus> {
   let nodeVersion: string | null = null;
+  let npxVersion: string | null = null;
   let cliVersion: string | null = null;
   let nodeAvailable: boolean;
+  let npxAvailable = false;
   let cliAvailable: boolean;
 
   try {
@@ -29,53 +31,125 @@ export async function detectFeishuEnvironment(
     nodeAvailable = false;
   }
 
-  try {
-    const cli = await adapter.checkCliVersion();
-    cliAvailable = cli.code === 0;
-    cliVersion = trimVersion(cli.stdout || cli.stderr);
-  } catch {
-    cliAvailable = false;
+  if (nodeAvailable) {
+    try {
+      const npx = await adapter.checkNpxVersion();
+      npxAvailable = npx.code === 0;
+      npxVersion = trimVersion(npx.stdout || npx.stderr);
+    } catch {
+      npxAvailable = false;
+    }
   }
 
   if (!nodeAvailable) {
     return {
       nodeAvailable: false,
-      cliAvailable,
+      npxAvailable: false,
+      cliAvailable: false,
       nodeVersion,
+      npxVersion,
       cliVersion,
+      installCommand: 'npx -y @larksuite/cli@latest install',
+      canAutoInstall: false,
+      failureReason: 'node_missing',
       message: '未检测到可用的 Node.js 环境。',
     };
+  }
+
+  if (!npxAvailable) {
+    return {
+      nodeAvailable: true,
+      npxAvailable: false,
+      cliAvailable: false,
+      nodeVersion,
+      npxVersion,
+      cliVersion,
+      installCommand: 'npx -y @larksuite/cli@latest install',
+      canAutoInstall: false,
+      failureReason: 'npx_missing',
+      message: '已检测到 Node.js，但未检测到可用的 npx。',
+    };
+  }
+
+  try {
+    const cli = await adapter.checkCliVersion();
+    cliAvailable = cli.code === 0;
+    cliVersion = trimVersion(cli.stdout || cli.stderr);
+    if (!cliAvailable && /network|timed out|econn|fetch failed|download/i.test(`${cli.stdout}\n${cli.stderr}`)) {
+      return {
+        nodeAvailable: true,
+        npxAvailable: true,
+        cliAvailable: false,
+        nodeVersion,
+        npxVersion,
+        cliVersion,
+        installCommand: 'npx -y @larksuite/cli@latest install',
+        canAutoInstall: true,
+        failureReason: 'network_error',
+        message: '检测 lark-cli 时发生网络错误，请确认网络连通后重试。',
+      };
+    }
+  } catch {
+    cliAvailable = false;
   }
 
   if (!cliAvailable) {
     return {
       nodeAvailable: true,
+      npxAvailable: true,
       cliAvailable: false,
       nodeVersion,
+      npxVersion,
       cliVersion,
-      message: '未检测到可用的飞书 Lark MCP CLI。',
+      installCommand: 'npx -y @larksuite/cli@latest install',
+      canAutoInstall: true,
+      failureReason: 'cli_missing',
+      message: '未检测到可用的 lark-cli。',
     };
   }
 
   const compatibility = assessCliCompatibility(cliVersion);
-  const message = compatibility.status === 'compatible'
-    ? `环境可用，CLI 版本：${cliVersion ?? 'unknown'}`
-    : buildCliCompatibilityMessage(compatibility.detectedVersion, compatibility.supportedRange);
+  if (compatibility.status === 'untested') {
+    return {
+      nodeAvailable: true,
+      npxAvailable: true,
+      cliAvailable: true,
+      nodeVersion,
+      npxVersion,
+      cliVersion,
+      compatibility,
+      installCommand: 'npx -y @larksuite/cli@latest install',
+      canAutoInstall: false,
+      failureReason: 'incompatible_version',
+      message: buildCliCompatibilityMessage(compatibility.detectedVersion, compatibility.supportedRange),
+    };
+  }
 
   return {
     nodeAvailable: true,
+    npxAvailable: true,
     cliAvailable: true,
     nodeVersion,
+    npxVersion,
     cliVersion,
     compatibility,
-    message,
+    installCommand: 'npx -y @larksuite/cli@latest install',
+    canAutoInstall: false,
+    message: `环境可用，CLI 版本：${cliVersion ?? 'unknown'}`,
   };
 }
 
 export function toEnvironmentFailureStatus(env: FeishuEnvironmentStatus, appId?: string, domain?: string): FeishuConnectionStatus {
-  const errorCode = env.nodeAvailable
-    ? FEISHU_ERROR_CODES.CLI_UNAVAILABLE
-    : FEISHU_ERROR_CODES.NODE_MISSING;
+  const errorCode = !env.nodeAvailable
+    ? FEISHU_ERROR_CODES.NODE_MISSING
+    : FEISHU_ERROR_CODES.CLI_UNAVAILABLE;
+  const nextAction = env.failureReason === 'node_missing'
+    ? '请先安装 Node.js LTS，并确认 node 与 npx 命令可用。'
+    : env.failureReason === 'npx_missing'
+      ? '请修复当前 Node.js 安装，确保 npx 命令可用。'
+      : env.canAutoInstall && env.installCommand
+        ? `确认后可执行安装命令：${env.installCommand}`
+        : '请先安装或修复 lark-cli。';
 
   return {
     success: false,
@@ -83,7 +157,7 @@ export function toEnvironmentFailureStatus(env: FeishuEnvironmentStatus, appId?:
     state: 'unauthorized',
     phase: 'failed',
     message: env.message,
-    nextAction: env.nodeAvailable ? '请先安装或修复 @larksuiteoapi/lark-mcp。' : '请先安装 Node.js LTS，并确认 node 命令可用。',
+    nextAction,
     errorCode,
     appId,
     domain,

@@ -2,8 +2,10 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { mcpManager } from '../mcp/client';
 import { isWindows } from '../../utils/platform';
+import { buildArgvCommand, runArgvCommand } from './argvExecutor';
 import { feishuResultNormalizer } from './resultNormalizer';
 import { feishuSessionStore } from './sessionStore';
+import { scrubFeishuRawResult, scrubFeishuText } from './scrub';
 import type {
   FeishuCommandRawResult,
   FeishuConnectorAdapter,
@@ -99,47 +101,12 @@ function buildShellCommand(program: string, args: string[]): string {
 }
 
 function mapResult(command: string, output: CommandOutput): FeishuCommandRawResult {
-  return {
+  return scrubFeishuRawResult({
     command,
     stdout: output.stdout,
     stderr: output.stderr,
     code: output.code,
-  };
-}
-
-function generateOperationId(): string {
-  return typeof crypto !== 'undefined' && 'randomUUID' in crypto
-    ? crypto.randomUUID()
-    : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-}
-
-function getProgramName(program: string): string {
-  return program.split(/[\\/]/).pop()?.toLowerCase() ?? program.toLowerCase();
-}
-
-function buildArgvInvocation(program: string, args: string[]): { program: string; args: string[] } {
-  const programName = getProgramName(program);
-  if (isWindows() && (programName === 'npx' || programName === 'npx.cmd' || programName === 'npm' || programName === 'npm.cmd')) {
-    return {
-      program: 'cmd.exe',
-      args: ['/D', '/C', program, ...args],
-    };
-  }
-  return { program, args };
-}
-
-async function runArgv(program: string, args: string[], timeout = 60): Promise<FeishuCommandRawResult> {
-  const command = `${program} ${args.join(' ')}`.trim();
-  const invocation = buildArgvInvocation(program, args);
-  const output = await invoke<CommandOutput>('run_argv_command', {
-    program: invocation.program,
-    args: invocation.args,
-    cwd: null,
-    timeout,
-    sandboxEnabled: false,
-    networkIsolation: false,
   });
-  return mapResult(command, output);
 }
 
 function normalizeDomain(domain?: string): string {
@@ -181,21 +148,27 @@ function buildMcpSignature(input: { appId: string; appSecret: string; domain?: s
 }
 
 function toRawResult(command: string, value: unknown): FeishuCommandRawResult {
-  return {
+  return scrubFeishuRawResult({
     command,
     stdout: typeof value === 'string' ? value : JSON.stringify(value),
     stderr: '',
     code: 0,
-  };
+  });
 }
 
 function toErrorResult(command: string, error: unknown): FeishuCommandRawResult {
-  return {
+  return scrubFeishuRawResult({
     command,
     stdout: '',
-    stderr: error instanceof Error ? error.message : String(error),
+    stderr: scrubFeishuText(error instanceof Error ? error.message : String(error)),
     code: -1,
-  };
+  });
+}
+
+function generateOperationId(): string {
+  return typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export class LarkMcpAdapter implements FeishuConnectorAdapter {
@@ -353,7 +326,11 @@ export class LarkMcpAdapter implements FeishuConnectorAdapter {
   }
 
   async checkNodeVersion(): Promise<FeishuCommandRawResult> {
-    return await runArgv('node', ['--version'], 20);
+    return await runArgvCommand(buildArgvCommand('node', ['--version']), 20);
+  }
+
+  async checkNpxVersion(): Promise<FeishuCommandRawResult> {
+    return await runArgvCommand(buildArgvCommand('npx', ['--version']), 20);
   }
 
   async checkCliVersion(): Promise<FeishuCommandRawResult> {
@@ -365,12 +342,12 @@ export class LarkMcpAdapter implements FeishuConnectorAdapter {
     let lastError: FeishuCommandRawResult | null = null;
     for (const args of attempts) {
       try {
-        return await runArgv('npx', args, 90);
+        return await runArgvCommand(buildArgvCommand('npx', args), 90);
       } catch (error) {
         lastError = {
           command: `npx ${args.join(' ')}`,
           stdout: '',
-          stderr: error instanceof Error ? error.message : String(error),
+          stderr: scrubFeishuText(error instanceof Error ? error.message : String(error)),
           code: -1,
         };
       }
@@ -381,6 +358,24 @@ export class LarkMcpAdapter implements FeishuConnectorAdapter {
       stdout: '',
       stderr: 'Failed to execute lark-mcp version check.',
       code: -1,
+    };
+  }
+
+  async installCli(): Promise<FeishuCommandRawResult> {
+    return {
+      command: 'npx -y @larksuite/cli@latest install',
+      stdout: '',
+      stderr: 'LarkMcpAdapter 不负责安装 lark-cli。',
+      code: -1,
+    };
+  }
+
+  async initializeConfig(): Promise<FeishuCommandRawResult> {
+    return {
+      command: 'noop',
+      stdout: 'LarkMcpAdapter 无需单独初始化 lark-cli config。',
+      stderr: '',
+      code: 0,
     };
   }
 
@@ -433,6 +428,15 @@ export class LarkMcpAdapter implements FeishuConnectorAdapter {
     };
   }
 
+  async getAuthStatus(_appId?: string): Promise<FeishuCommandRawResult> {
+    return {
+      command: 'npx -y @larksuiteoapi/lark-mcp auth status',
+      stdout: '',
+      stderr: 'LarkMcpAdapter 不提供 lark-cli auth status。',
+      code: -1,
+    };
+  }
+
   async logout(appId?: string): Promise<FeishuCommandRawResult> {
     const args = ['-y', '@larksuiteoapi/lark-mcp', 'logout'];
     if (appId) {
@@ -446,7 +450,7 @@ export class LarkMcpAdapter implements FeishuConnectorAdapter {
       }
       MCP_SERVER_SIGNATURES.delete(serverName);
     }
-    return await runArgv('npx', args, 60);
+    return await runArgvCommand(buildArgvCommand('npx', args), 60);
   }
 
   async listBases(input?: FeishuListBasesInput): Promise<FeishuCommandRawResult> {

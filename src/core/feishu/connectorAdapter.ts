@@ -27,8 +27,12 @@ export type FeishuConnectorKind = 'lark_cli' | 'lark_mcp' | 'feishu_openapi';
 
 export type FeishuConnectorCapability =
   | 'check_node_version'
+  | 'check_npx_version'
   | 'check_cli_version'
+  | 'install_cli'
+  | 'initialize_config'
   | 'start_login'
+  | 'get_auth_status'
   | 'logout'
   | 'list_bases'
   | 'list_tables'
@@ -42,11 +46,15 @@ export interface FeishuConnectorAdapter {
   readonly kind: FeishuConnectorKind;
   getCapabilities?(): FeishuConnectorCapability[];
   checkNodeVersion(): Promise<FeishuCommandRawResult>;
+  checkNpxVersion(): Promise<FeishuCommandRawResult>;
   checkCliVersion(): Promise<FeishuCommandRawResult>;
+  installCli(): Promise<FeishuCommandRawResult>;
+  initializeConfig(): Promise<FeishuCommandRawResult>;
   startLogin(
     input: FeishuLoginStartInput,
     onOutput?: (line: string, stream: 'stdout' | 'stderr') => void,
   ): Promise<FeishuConnectorLoginHandle>;
+  getAuthStatus(appId?: string): Promise<FeishuCommandRawResult>;
   logout(appId?: string): Promise<FeishuCommandRawResult>;
   listBases(input?: FeishuListBasesInput): Promise<FeishuCommandRawResult>;
   listTables(input: FeishuListTablesInput): Promise<FeishuCommandRawResult>;
