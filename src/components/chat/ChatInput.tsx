@@ -23,6 +23,7 @@ import { generateAttachmentId, readFileAsBase64, SUPPORTED_IMAGE_TYPES } from '@
 import PermissionDialog from '@/components/common/PermissionDialog';
 import FolderSelector from '@/components/common/FolderSelector';
 import PromoteToProjectHint from '@/components/chat/PromoteToProjectHint';
+import SkillAgentPicker from '@/components/chat/SkillAgentPicker';
 
 interface ChatInputProps {
   variant: 'welcome' | 'chat';
@@ -741,6 +742,31 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
               </Button>
               <div className="flex-1" />
 
+              {/* Skill / Agent picker (welcome variant, full row) */}
+              <div className="relative">
+                <SkillAgentPicker
+                  compact={false}
+                  selectedSkill={selectedSkill?.name ?? null}
+                  selectedAgent={selectedAgent?.name ?? null}
+                  onSkillChange={(name) => {
+                    if (name === null) {
+                      setSelectedSkill(null);
+                    } else {
+                      const item = skills.find((s) => s.name === name);
+                      if (item) setSelectedSkill({ name: item.name, description: item.description });
+                    }
+                  }}
+                  onAgentChange={(name) => {
+                    if (name === null) {
+                      setSelectedAgent(null);
+                    } else {
+                      const item = agents.find((a) => a.name === name);
+                      if (item) setSelectedAgent({ name: item.name, description: item.description });
+                    }
+                  }}
+                />
+              </div>
+
               <button
                 onClick={handleSend}
                 disabled={!hasContent}
@@ -790,6 +816,31 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
+
+                {/* Skill / Agent picker (compact, chat variant) */}
+                <div className="relative">
+                  <SkillAgentPicker
+                    compact={true}
+                    selectedSkill={selectedSkill?.name ?? null}
+                    selectedAgent={selectedAgent?.name ?? null}
+                    onSkillChange={(name) => {
+                      if (name === null) {
+                        setSelectedSkill(null);
+                      } else {
+                        const item = skills.find((s) => s.name === name);
+                        if (item) setSelectedSkill({ name: item.name, description: item.description });
+                      }
+                    }}
+                    onAgentChange={(name) => {
+                      if (name === null) {
+                        setSelectedAgent(null);
+                      } else {
+                        const item = agents.find((a) => a.name === name);
+                        if (item) setSelectedAgent({ name: item.name, description: item.description });
+                      }
+                    }}
+                  />
+                </div>
               </div>
 
               {/* Send / Stop Button */}
