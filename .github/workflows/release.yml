@@ -190,7 +190,7 @@ jobs:
           cos:
             base:
               secretid: $SECRET_ID
-              secretkey: $DECODED_SECRET_KEY
+              secretkey: $SECRET_KEY
               sessiontoken: ""
             buckets:
               - name: lingxi-1303034624
