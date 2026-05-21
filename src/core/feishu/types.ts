@@ -4,11 +4,15 @@ export type FeishuAuthState =
   | 'unauthorized'
   | 'connected'
   | 'auth_expired'
+  | 'config_pending'
   | 'approval_pending';
 
 export type FeishuLoginPhase =
   | 'idle'
   | 'checking_environment'
+  | 'configuring_app'
+  | 'config_pending'
+  | 'login_starting'
   | 'starting_auth'
   | 'waiting_user_confirm'
   | 'verifying_session'
@@ -248,17 +252,24 @@ export interface FeishuLoginStartInput {
   preferredScopes?: string[];
   port?: number;
   timeoutSec?: number;
+  noWait?: boolean;
+  json?: boolean;
 }
+
+export type FeishuLoginStep = 'config' | 'login';
 
 export interface FeishuPersistedLoginState {
   id: string;
+  step: FeishuLoginStep;
   state: FeishuAuthState;
   phase: FeishuLoginPhase;
+  command: string;
   startedAt: number;
   timeoutAt?: number;
   message?: string;
   nextAction?: string;
   authUrl?: string;
+  deviceCode?: string;
   outputLines: string[];
 }
 

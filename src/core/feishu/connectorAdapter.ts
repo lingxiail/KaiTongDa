@@ -49,7 +49,7 @@ export interface FeishuConnectorAdapter {
   checkNpxVersion(): Promise<FeishuCommandRawResult>;
   checkCliVersion(): Promise<FeishuCommandRawResult>;
   installCli(): Promise<FeishuCommandRawResult>;
-  initializeConfig(): Promise<FeishuCommandRawResult>;
+  initializeConfig(onOutput?: (line: string, stream: 'stdout' | 'stderr') => void): Promise<FeishuCommandRawResult>;
   startLogin(
     input: FeishuLoginStartInput,
     onOutput?: (line: string, stream: 'stdout' | 'stderr') => void,

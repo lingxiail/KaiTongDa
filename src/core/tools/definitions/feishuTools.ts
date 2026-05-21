@@ -1,9 +1,10 @@
 import type { ToolDefinition } from '../../../types';
 import { feishuFacade } from '../../feishu/facade';
+import { scrubFeishuText } from '../../feishu/scrub';
 import { TOOL_NAMES } from '../toolNames';
 
 function stringifyResult(value: unknown): string {
-  return JSON.stringify(value, null, 2);
+  return scrubFeishuText(JSON.stringify(value, null, 2));
 }
 
 function toStringArray(value: unknown): string[] | undefined {
@@ -41,12 +42,12 @@ function toSortArray(value: unknown): Array<{ fieldName: string; desc?: boolean 
 
 export const feishuConnectTool: ToolDefinition = {
   name: TOOL_NAMES.FEISHU_CONNECT,
-  description: '连接飞书并发起用户授权。适用于阶段 A 的连接闭环，返回结构化连接状态。',
+  description: '启动飞书连接流程。可能返回 config_pending 或 approval_pending；此时必须把 authUrl 展示给用户，并在用户完成浏览器或飞书客户端确认后调用 feishu_auth_status 查询，不要反复重新调用连接。',
   inputSchema: {
     type: 'object',
     properties: {
       appId: { type: 'string', description: '飞书应用 App ID' },
-      appSecret: { type: 'string', description: '飞书应用 App Secret' },
+      appSecret: { type: 'string', description: '可选。仅当底层适配器确实需要时使用；默认不要在普通聊天中提供 App Secret。' },
       domain: { type: 'string', description: '飞书开放平台域名，默认 https://open.feishu.cn' },
       preferredScopes: {
         type: 'array',
@@ -55,10 +56,10 @@ export const feishuConnectTool: ToolDefinition = {
       },
       interactive: { type: 'boolean', description: '是否按交互式连接处理，默认 true' },
       confirmInstall: { type: 'boolean', description: '当本机缺少 lark-cli 时，是否确认执行安装命令。默认 false。' },
-      waitForMs: { type: 'number', description: '本次连接等待授权完成的时长，单位毫秒' },
+      waitForMs: { type: 'number', description: '本次连接短等待时长，单位毫秒；默认快速返回 pending，后续用 feishu_auth_status 轮询' },
       port: { type: 'number', description: '本地 OAuth 回调端口，默认 3000' },
     },
-    required: ['appId', 'appSecret'],
+    required: ['appId'],
   },
   execute: async (input) => {
     const result = await feishuFacade.connect({
@@ -80,7 +81,7 @@ export const feishuConnectTool: ToolDefinition = {
 
 export const feishuAuthStatusTool: ToolDefinition = {
   name: TOOL_NAMES.FEISHU_AUTH_STATUS,
-  description: '查询当前飞书连接状态，返回结构化账号摘要与授权状态。',
+  description: '查询并收口当前飞书授权流程。pending 状态下优先调用本工具轮询；用户完成授权后会转为 connected，并返回结构化账号摘要与下一步提示。',
   inputSchema: {
     type: 'object',
     properties: {
@@ -365,7 +366,7 @@ export const feishuHandleRequestTool: ToolDefinition = {
     properties: {
       query: { type: 'string', description: '用户的飞书自然语言请求。' },
       appId: { type: 'string', description: '可选飞书应用 App ID。连接或切换应用时使用。' },
-      appSecret: { type: 'string', description: '可选飞书应用 App Secret。连接时使用。' },
+      appSecret: { type: 'string', description: '可选。默认不要在普通聊天中提供 App Secret；应用配置优先通过浏览器或飞书客户端完成。' },
       domain: { type: 'string', description: '可选飞书开放平台域名。' },
       conversationContext: {
         type: 'object',

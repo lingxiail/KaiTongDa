@@ -47,6 +47,40 @@ describe('feishu tools', () => {
     expect(parsed.authUrl).toBe('https://open.feishu.cn/mock');
   });
 
+  it('feishu_connect does not require app secret and redacts sensitive output', async () => {
+    vi.spyOn(feishuFacade, 'connect').mockResolvedValue({
+      success: false,
+      connected: false,
+      state: 'unauthorized',
+      phase: 'failed',
+      message: 'failed with app_secret=secret_demo token=token_demo email=tom@example.com phone=13800138000',
+      nextAction: '检查配置',
+      appId: 'cli_x',
+      domain: 'https://open.feishu.cn',
+      account: null,
+      tenant: null,
+      expiresAt: null,
+      lastUpdatedAt: 1,
+    });
+
+    const result = await toolRegistry.get('feishu_connect')!.execute({
+      appId: 'cli_x',
+    });
+    const output = result as string;
+
+    expect(feishuFacade.connect).toHaveBeenCalledWith(expect.objectContaining({
+      appId: 'cli_x',
+      appSecret: undefined,
+    }));
+    expect(output).toContain('[REDACTED]');
+    expect(output).toContain('[REDACTED_EMAIL]');
+    expect(output).toContain('[REDACTED_PHONE]');
+    expect(output).not.toContain('secret_demo');
+    expect(output).not.toContain('token_demo');
+    expect(output).not.toContain('tom@example.com');
+    expect(output).not.toContain('13800138000');
+  });
+
   it('feishu_auth_status returns cached status as json', async () => {
     vi.spyOn(feishuFacade, 'getAuthStatus').mockResolvedValue({
       success: true,

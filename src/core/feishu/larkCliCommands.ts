@@ -57,6 +57,12 @@ export function buildConfigInitCommand(): ArgvCommand {
 
 export function buildAuthLoginCommand(input: FeishuLoginStartInput): ArgvCommand {
   const args = ['auth', 'login', '--recommend'];
+  if (input.noWait) {
+    args.push('--no-wait');
+  }
+  if (input.json) {
+    args.push('--json');
+  }
   pushOptionalArg(args, '--domain', input.domain);
   pushOptionalArg(args, '--port', input.port);
   if (input.preferredScopes && input.preferredScopes.length > 0) {

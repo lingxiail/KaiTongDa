@@ -19,14 +19,16 @@ describe('Feishu scrub', () => {
 
   it('redacts stdout and stderr in raw result wrappers', () => {
     const raw = scrubFeishuRawResult({
-      command: 'lark-cli auth status',
+      command: 'lark-cli auth login --app-secret secret_demo -s secret_demo',
       stdout: 'user_access_token: token_demo',
-      stderr: 'contact tom@example.com',
+      stderr: 'contact tom@example.com and 13800138000',
       code: 1,
     });
 
+    expect(raw.command).not.toContain('secret_demo');
     expect(raw.stdout).toContain('[REDACTED]');
     expect(raw.stderr).toContain('[REDACTED_EMAIL]');
+    expect(raw.stderr).toContain('[REDACTED_PHONE]');
   });
 
   it('returns scrubbed unknown errors to user-facing messages', () => {
@@ -38,5 +40,15 @@ describe('Feishu scrub', () => {
     expect(normalized.message).toContain('[REDACTED_EMAIL]');
     expect(normalized.message).not.toContain('secret_demo');
     expect(normalized.message).not.toContain('tom@example.com');
+  });
+
+  it('normalizes common actionable failures', () => {
+    expect(normalizeFeishuCliError('admin approval required').errorCode).toBe('feishu_approval_required');
+    expect(normalizeFeishuCliError('permission denied: missing scope').errorCode).toBe('feishu_permission_denied');
+    expect(normalizeFeishuCliError('token expired').errorCode).toBe('feishu_auth_expired');
+    expect(normalizeFeishuCliError('network fetch failed').errorCode).toBe('feishu_cli_unavailable');
+    expect(normalizeFeishuCliError('lark-cli version too old').errorCode).toBe('feishu_cli_unavailable');
+    expect(normalizeFeishuCliError('base not found').errorCode).toBe('feishu_resource_not_found');
+    expect(normalizeFeishuCliError('invalid field field_name').errorCode).toBe('feishu_field_mismatch');
   });
 });

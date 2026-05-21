@@ -317,8 +317,9 @@ export class LarkCliAdapter implements FeishuConnectorAdapter {
     return await this.runCommand(buildCliInstallCommand(), 240);
   }
 
-  async initializeConfig(): Promise<FeishuCommandRawResult> {
-    return await this.runCommand(buildConfigInitCommand(), 90);
+  async initializeConfig(onOutput?: (line: string, stream: 'stdout' | 'stderr') => void): Promise<FeishuCommandRawResult> {
+    const command = buildConfigInitCommand();
+    return scrubFeishuRawResult(await runArgvCommandStreaming(command, 90, onOutput));
   }
 
   async startLogin(

@@ -33,6 +33,23 @@ describe('Feishu lark-cli command builders', () => {
     ]);
   });
 
+  it('builds no-wait login argv for agent polling', () => {
+    const command = buildAuthLoginCommand({
+      appId: 'cli_demo',
+      appSecret: 'secret_demo',
+      noWait: true,
+      json: true,
+    });
+
+    expect(command.args).toEqual([
+      'auth',
+      'login',
+      '--recommend',
+      '--no-wait',
+      '--json',
+    ]);
+  });
+
   it('keeps table and record query values as raw argv elements', () => {
     const command = buildQueryRecordsCommand({
       baseId: 'app 客户',
