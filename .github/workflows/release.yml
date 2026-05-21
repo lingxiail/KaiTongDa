@@ -185,11 +185,12 @@ jobs:
           SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
         run: |
           mkdir -p ~/.cos
+          DECODED_SECRET_KEY=$(echo "$SECRET_KEY" | base64 -d)
           cat > ~/.cos.yaml <<EOF
           cos:
             base:
               secretid: $SECRET_ID
-              secretkey: $SECRET_KEY
+              secretkey: $DECODED_SECRET_KEY
               sessiontoken: ""
             buckets:
               - name: lingxi-1303034624
