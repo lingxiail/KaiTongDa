@@ -4,6 +4,7 @@ import { FeishuBaseService } from '../core/feishu/baseService';
 import { FeishuFieldMapper } from '../core/feishu/fieldMapper';
 import { FeishuSessionStore } from '../core/feishu/sessionStore';
 import { FeishuWritePolicy } from '../core/feishu/writePolicy';
+import { FeishuWriteQueue } from '../core/feishu/writeQueue';
 import type { FeishuCliAdapter, FeishuCliLoginHandle, FeishuCliRawResult } from '../core/feishu/cliAdapter';
 import type {
   FeishuCreateRecordsInput,
@@ -190,12 +191,15 @@ function seedConnectedStore(store: FeishuSessionStore, appId = 'cli_stage_d'): v
   });
 }
 
-function createBaseService(writePolicy = new FeishuWritePolicy()): FeishuBaseService {
+function createBaseService(
+  writePolicy = new FeishuWritePolicy(),
+  adapter: FeishuCliAdapter = new MockStageDAdapter(),
+  writeQueue = new FeishuWriteQueue(),
+): FeishuBaseService {
   const store = new FeishuSessionStore();
   seedConnectedStore(store);
-  const adapter = new MockStageDAdapter();
   const authService = new FeishuAuthService(adapter, store);
-  return new FeishuBaseService(adapter, authService, store, new FeishuFieldMapper(), writePolicy);
+  return new FeishuBaseService(adapter, authService, store, new FeishuFieldMapper(), writePolicy, undefined, writeQueue);
 }
 
 describe('Feishu stage D integration', () => {
@@ -266,5 +270,52 @@ describe('Feishu stage D integration', () => {
     expect(result.success).toBe(false);
     expect(result.confirmation?.required).toBe(true);
     expect(result.message).toContain('超过确认阈值');
+  });
+
+  it('serializes same-table writes through the write queue', async () => {
+    const events: string[] = [];
+    let releaseFirst!: () => void;
+
+    class QueueAwareAdapter extends MockStageDAdapter {
+      override async createRecords(input: FeishuCreateRecordsInput): Promise<FeishuRecordWriteResult> {
+        if (input.records[0]?.客户名称 === 'Tom') {
+          events.push('first:start');
+          await new Promise<void>((resolve) => {
+            releaseFirst = () => {
+              events.push('first:end');
+              resolve();
+            };
+          });
+        } else {
+          events.push('second:start');
+        }
+
+        return await super.createRecords(input);
+      }
+    }
+
+    const service = createBaseService(new FeishuWritePolicy(), new QueueAwareAdapter(), new FeishuWriteQueue());
+    const first = service.createRecords({
+      appId: 'cli_stage_d',
+      baseId: 'app_sales',
+      tableId: 'tbl_customer',
+      records: [{ 客户名称: 'Tom', 金额: 99 }],
+    });
+    const second = service.createRecords({
+      appId: 'cli_stage_d',
+      baseId: 'app_sales',
+      tableId: 'tbl_customer',
+      records: [{ 客户名称: 'Jerry', 金额: 88 }],
+    });
+
+    await vi.waitFor(() => {
+      expect(events).toEqual(['first:start']);
+    });
+
+    releaseFirst();
+
+    await first;
+    await second;
+    expect(events).toEqual(['first:start', 'first:end', 'second:start']);
   });
 });

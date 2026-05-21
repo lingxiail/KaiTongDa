@@ -15,6 +15,7 @@ export * from './baseService';
 export * from './errorNormalizer';
 export * from './fieldMapper';
 export * from './writePolicy';
+export * from './writeQueue';
 export * from './audit';
 export * from './resultNormalizer';
 export * from './facade';

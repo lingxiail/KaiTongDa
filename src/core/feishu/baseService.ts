@@ -6,6 +6,7 @@ import { FeishuFieldMapper, feishuFieldMapper } from './fieldMapper';
 import { FeishuResultNormalizer, feishuResultNormalizer } from './resultNormalizer';
 import { FeishuSessionStore, feishuSessionStore } from './sessionStore';
 import { FeishuWritePolicy, feishuWritePolicy } from './writePolicy';
+import { FeishuWriteQueue, feishuWriteQueue } from './writeQueue';
 import type {
   FeishuBaseSummary,
   FeishuCreateRecordsInput,
@@ -15,6 +16,7 @@ import type {
   FeishuListTablesInput,
   FeishuPagedResult,
   FeishuQueryRecordsInput,
+  FeishuRecentContext,
   FeishuRecordQueryResult,
   FeishuRecordWriteResult,
   FeishuTableSummary,
@@ -28,6 +30,17 @@ function ensureRawSuccess(raw: FeishuCommandRawResult): void {
   }
 }
 
+function dedupeFieldNames(fieldNames: Array<string | undefined>): string[] | undefined {
+  const normalized = fieldNames
+    .filter((fieldName): fieldName is string => typeof fieldName === 'string' && fieldName.trim().length > 0)
+    .map((fieldName) => fieldName.trim());
+  return normalized.length > 0 ? Array.from(new Set(normalized)) : undefined;
+}
+
+function collectRecordFieldNames(records: Array<Record<string, unknown>>): string[] | undefined {
+  return dedupeFieldNames(records.flatMap((record) => Object.keys(record)));
+}
+
 export class FeishuBaseService {
   private readonly adapter: FeishuConnectorAdapter;
   private readonly authService: FeishuAuthService;
@@ -35,6 +48,7 @@ export class FeishuBaseService {
   private readonly fieldMapper: FeishuFieldMapper;
   private readonly writePolicy: FeishuWritePolicy;
   private readonly resultNormalizer: FeishuResultNormalizer;
+  private readonly writeQueue: FeishuWriteQueue;
 
   constructor(
     adapter: FeishuConnectorAdapter = larkMcpAdapter,
@@ -43,6 +57,7 @@ export class FeishuBaseService {
     fieldMapper: FeishuFieldMapper = feishuFieldMapper,
     writePolicy: FeishuWritePolicy = feishuWritePolicy,
     resultNormalizer: FeishuResultNormalizer = feishuResultNormalizer,
+    writeQueue: FeishuWriteQueue = feishuWriteQueue,
   ) {
     this.adapter = adapter;
     this.authService = authService;
@@ -50,6 +65,7 @@ export class FeishuBaseService {
     this.fieldMapper = fieldMapper;
     this.writePolicy = writePolicy;
     this.resultNormalizer = resultNormalizer;
+    this.writeQueue = writeQueue;
   }
 
   private async ensureConnected(appId?: string): Promise<void> {
@@ -57,6 +73,51 @@ export class FeishuBaseService {
     if (!status.connected) {
       throw new Error(status.message || '当前尚未建立飞书连接，请先执行 feishu_connect。');
     }
+  }
+
+  private getCachedBaseName(appId: string | undefined, baseId: string): string | undefined {
+    return this.store.getCachedBases(appId)?.items.find((item) => item.id === baseId)?.name;
+  }
+
+  private getCachedTableName(appId: string | undefined, baseId: string, tableId: string): string | undefined {
+    return this.store.getCachedTables(appId, baseId)?.items.find((item) => item.id === tableId)?.name;
+  }
+
+  private rememberRecentContext(input: {
+    appId?: string;
+    baseId?: string;
+    baseName?: string;
+    tableId?: string;
+    tableName?: string;
+    fieldNames?: string[];
+    intent: string;
+  }): void {
+    const context: Partial<FeishuRecentContext> = {
+      appId: input.appId,
+      intent: input.intent,
+      updatedAt: Date.now(),
+    };
+
+    if (input.baseId) {
+      context.baseId = input.baseId;
+      context.baseName = input.baseName || this.getCachedBaseName(input.appId, input.baseId) || input.baseId;
+    }
+
+    if (input.tableId && input.baseId) {
+      context.tableId = input.tableId;
+      context.tableName = input.tableName || this.getCachedTableName(input.appId, input.baseId, input.tableId) || input.tableId;
+    }
+
+    const fieldNames = dedupeFieldNames(input.fieldNames ?? []);
+    if (fieldNames) {
+      context.fieldNames = fieldNames;
+    }
+
+    if (!context.baseId && !context.tableId && !context.fieldNames?.length) {
+      return;
+    }
+
+    this.store.mergeRecentContext(input.appId, context);
   }
 
   async listBases(input: FeishuListBasesInput = {}): Promise<FeishuPagedResult<FeishuBaseSummary>> {
@@ -95,6 +156,11 @@ export class FeishuBaseService {
     if (!input.pageToken) {
       this.store.setCachedTables(input.appId, input.baseId, result);
     }
+    this.rememberRecentContext({
+      appId: input.appId,
+      baseId: input.baseId,
+      intent: 'list_tables',
+    });
     return result;
   }
 
@@ -114,6 +180,13 @@ export class FeishuBaseService {
     if (!input.pageToken) {
       this.store.setCachedSchema(input.appId, input.baseId, input.tableId, result);
     }
+    this.rememberRecentContext({
+      appId: input.appId,
+      baseId: input.baseId,
+      tableId: input.tableId,
+      fieldNames: result.items.map((item) => item.fieldName),
+      intent: 'get_table_schema',
+    });
     return result;
   }
 
@@ -121,9 +194,21 @@ export class FeishuBaseService {
     await this.ensureConnected(input.appId);
     const raw = await this.adapter.queryRecords(input);
     ensureRawSuccess(raw);
-    return this.resultNormalizer.normalizeRecordQueryResult(
+    const result = this.resultNormalizer.normalizeRecordQueryResult(
       this.resultNormalizer.parseJsonPayload(raw.stdout),
     );
+    const cachedFieldNames = this.store
+      .getCachedSchema(input.appId, input.baseId, input.tableId)
+      ?.items
+      .map((item) => item.fieldName);
+    this.rememberRecentContext({
+      appId: input.appId,
+      baseId: input.baseId,
+      tableId: input.tableId,
+      fieldNames: input.fieldNames || cachedFieldNames || collectRecordFieldNames(result.records),
+      intent: 'query_records',
+    });
+    return result;
   }
 
   private async getSchemaForWrite(input: {
@@ -171,10 +256,29 @@ export class FeishuBaseService {
     });
   }
 
+  private async enqueueWrite<T>(input: {
+    baseId: string;
+    tableId: string;
+    task: () => Promise<T>;
+  }): Promise<T> {
+    return await this.writeQueue.enqueue({
+      baseId: input.baseId,
+      tableId: input.tableId,
+      task: input.task,
+    });
+  }
+
   async createRecords(input: FeishuCreateRecordsInput): Promise<FeishuRecordWriteResult> {
     await this.ensureConnected(input.appId);
     const schema = await this.getSchemaForWrite(input);
     this.fieldMapper.validateRecords(schema, input.records);
+    this.rememberRecentContext({
+      appId: input.appId,
+      baseId: input.baseId,
+      tableId: input.tableId,
+      fieldNames: collectRecordFieldNames(input.records) || schema.map((item) => item.fieldName),
+      intent: 'create',
+    });
 
     const confirmation = this.writePolicy.evaluate('create', input.records.length, input.confirmed);
     if (confirmation.required) {
@@ -187,7 +291,11 @@ export class FeishuBaseService {
       });
     }
 
-    const result = await this.adapter.createRecords(input);
+    const result = await this.enqueueWrite({
+      baseId: input.baseId,
+      tableId: input.tableId,
+      task: async () => await this.adapter.createRecords(input),
+    });
     return this.withAudit({
       ...result,
       confirmation,
@@ -199,6 +307,16 @@ export class FeishuBaseService {
     const schema = await this.getSchemaForWrite(input);
     this.fieldMapper.validateMatchFields(schema, input.matchByFields);
     this.fieldMapper.validateRecords(schema, input.records);
+    this.rememberRecentContext({
+      appId: input.appId,
+      baseId: input.baseId,
+      tableId: input.tableId,
+      fieldNames: dedupeFieldNames([
+        ...(collectRecordFieldNames(input.records) ?? []),
+        ...input.matchByFields,
+      ]) || schema.map((item) => item.fieldName),
+      intent: 'upsert',
+    });
 
     const confirmation = this.writePolicy.evaluate('upsert', input.records.length, input.confirmed);
     if (confirmation.required) {
@@ -211,7 +329,11 @@ export class FeishuBaseService {
       });
     }
 
-    const result = await this.adapter.upsertRecords(input);
+    const result = await this.enqueueWrite({
+      baseId: input.baseId,
+      tableId: input.tableId,
+      task: async () => await this.adapter.upsertRecords(input),
+    });
     return this.withAudit({
       ...result,
       confirmation,
@@ -222,6 +344,13 @@ export class FeishuBaseService {
     await this.ensureConnected(input.appId);
     const schema = await this.getSchemaForWrite(input);
     this.fieldMapper.validateFields(schema, input.fields);
+    this.rememberRecentContext({
+      appId: input.appId,
+      baseId: input.baseId,
+      tableId: input.tableId,
+      fieldNames: dedupeFieldNames(Object.keys(input.fields)) || schema.map((item) => item.fieldName),
+      intent: 'update_by_filter',
+    });
 
     const preview = await this.queryRecords({
       appId: input.appId,
@@ -242,9 +371,17 @@ export class FeishuBaseService {
       });
     }
 
-    const result = await this.adapter.updateRecordsByFilter(input);
+    const result = await this.enqueueWrite({
+      baseId: input.baseId,
+      tableId: input.tableId,
+      task: async () => await this.adapter.updateRecordsByFilter(input),
+    });
+    const failureCount = Math.max(result.failureCount, Math.max(0, matchedCount - result.successCount));
     return this.withAudit({
       ...result,
+      success: failureCount === 0,
+      failureCount,
+      matchedCount,
       confirmation,
     });
   }

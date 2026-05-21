@@ -122,7 +122,7 @@ export const feishuDisconnectTool: ToolDefinition = {
 
 export const feishuListBasesTool: ToolDefinition = {
   name: TOOL_NAMES.FEISHU_LIST_BASES,
-  description: '列出当前已授权用户云空间根目录或指定文件夹中的飞书多维表格 Base。底层是 Drive 文件夹清单接口，不保证覆盖账号下所有可读或共享 Base。',
+  description: '通过灵犀封装的稳定飞书工具列出 Base。底层默认走本地 lark-cli，不要求 Agent 直接生成或执行原始 CLI 命令；当前仅覆盖云空间根目录或指定文件夹。',
   inputSchema: {
     type: 'object',
     properties: {
@@ -149,7 +149,7 @@ export const feishuListBasesTool: ToolDefinition = {
 
 export const feishuListTablesTool: ToolDefinition = {
   name: TOOL_NAMES.FEISHU_LIST_TABLES,
-  description: '列出指定 Base 下的数据表列表。',
+  description: '通过稳定飞书工具列出指定 Base 下的数据表列表。底层默认走本地 lark-cli，Agent 只传结构化参数。',
   inputSchema: {
     type: 'object',
     properties: {
@@ -176,7 +176,7 @@ export const feishuListTablesTool: ToolDefinition = {
 
 export const feishuGetTableSchemaTool: ToolDefinition = {
   name: TOOL_NAMES.FEISHU_GET_TABLE_SCHEMA,
-  description: '读取指定 Base/Table 的字段结构定义。',
+  description: '读取指定 Base/Table 的字段结构定义，并为后续写入校验提供稳定 schema 结果。底层默认走本地 lark-cli。',
   inputSchema: {
     type: 'object',
     properties: {
@@ -205,7 +205,7 @@ export const feishuGetTableSchemaTool: ToolDefinition = {
 
 export const feishuQueryRecordsTool: ToolDefinition = {
   name: TOOL_NAMES.FEISHU_QUERY_RECORDS,
-  description: '按分页、筛选和排序条件查询多维表格记录。',
+  description: '按分页、筛选和排序条件查询多维表格记录。底层默认走本地 lark-cli，返回归一化结果而不是原始 CLI 输出。',
   inputSchema: {
     type: 'object',
     properties: {
@@ -258,7 +258,7 @@ export const feishuQueryRecordsTool: ToolDefinition = {
 
 export const feishuCreateRecordsTool: ToolDefinition = {
   name: TOOL_NAMES.FEISHU_CREATE_RECORDS,
-  description: '向指定飞书多维表格批量新增记录，返回结构化写入结果与审计摘要。',
+  description: '向指定飞书多维表格批量新增记录。写前会做字段校验、确认门槛与审计摘要；Agent 不应直接生成原始 CLI 命令。',
   inputSchema: {
     type: 'object',
     properties: {
@@ -289,7 +289,7 @@ export const feishuCreateRecordsTool: ToolDefinition = {
 
 export const feishuUpsertRecordsTool: ToolDefinition = {
   name: TOOL_NAMES.FEISHU_UPSERT_RECORDS,
-  description: '按显式匹配字段执行飞书记录 upsert，返回新增/更新数量和失败明细。',
+  description: '按显式匹配字段执行飞书记录 upsert。写前会校验 matchByFields、执行确认门槛并返回结构化审计摘要。',
   inputSchema: {
     type: 'object',
     properties: {
@@ -326,7 +326,7 @@ export const feishuUpsertRecordsTool: ToolDefinition = {
 
 export const feishuUpdateRecordsByFilterTool: ToolDefinition = {
   name: TOOL_NAMES.FEISHU_UPDATE_RECORDS_BY_FILTER,
-  description: '按筛选条件批量更新飞书记录，支持高风险阈值确认。',
+  description: '按筛选条件批量更新飞书记录。工具会先做命中预估并在高风险场景要求确认，再返回结构化审计摘要。',
   inputSchema: {
     type: 'object',
     properties: {
@@ -356,9 +356,9 @@ export const feishuUpdateRecordsByFilterTool: ToolDefinition = {
 export const feishuHandleRequestTool: ToolDefinition = {
   name: TOOL_NAMES.FEISHU_HANDLE_REQUEST,
   description: [
-    '承接飞书多维表格自然语言请求。',
+    '承接飞书多维表格自然语言请求，但只做轻量意图识别、最近 Base/Table/字段上下文补全与资源澄清。',
     '适用于“连接飞书”“列出我的 Base”“查看客户表字段”“帮我查飞书客户表最近 10 条记录”等场景。',
-    '内部会完成意图识别、最近上下文补全、资源歧义澄清和只读执行编排。',
+    '复杂查询与写入仍应继续调用对应的 `feishu_*` 结构化工具；不要让 Agent 直接拼接或执行原始 lark-cli 命令。',
   ].join(' '),
   inputSchema: {
     type: 'object',

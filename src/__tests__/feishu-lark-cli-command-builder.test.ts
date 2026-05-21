@@ -5,6 +5,7 @@ import {
   buildListTablesCommand,
   buildQueryRecordsCommand,
   buildUpdateRecordsCommand,
+  buildUpsertRecordsCommand,
 } from '../core/feishu/larkCliCommands';
 
 describe('Feishu lark-cli command builders', () => {
@@ -69,6 +70,12 @@ describe('Feishu lark-cli command builders', () => {
       filter: { field_name: '客户名称', operator: 'is', value: ['Tom'] },
       fields: { 备注: '改成 "VIP"' },
     });
+    const upsertCommand = buildUpsertRecordsCommand({
+      baseId: 'app_001',
+      tableId: 'tbl_001',
+      matchByFields: ['客户名称'],
+      records: [{ 客户名称: 'Tom', 备注: '跟进中' }],
+    });
     const listTablesCommand = buildListTablesCommand({
       baseId: 'app team',
       pageSize: 50,
@@ -76,7 +83,12 @@ describe('Feishu lark-cli command builders', () => {
     });
 
     expect(createCommand.args).toContain(JSON.stringify([{ 客户名称: 'Tom', 备注: '含空格 和 "引号"' }]));
+    expect(createCommand.args).toContain('--format');
+    expect(createCommand.args).toContain('json');
     expect(updateCommand.args).toContain(JSON.stringify({ 备注: '改成 "VIP"' }));
+    expect(updateCommand.args).toContain('--format');
+    expect(upsertCommand.args).toContain('--format');
+    expect(upsertCommand.args).toContain('json');
     expect(listTablesCommand.args).toEqual([
       'base',
       'table',

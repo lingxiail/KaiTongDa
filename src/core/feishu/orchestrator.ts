@@ -1,10 +1,11 @@
 import { FeishuAuthService, feishuAuthService } from './authService';
 import { FeishuBaseService, feishuBaseService } from './baseService';
-import { buildAmbiguousBaseQuestion, buildAmbiguousTableQuestion, buildMissingBaseQuestion, buildMissingTableQuestion, buildNeedConnectMessage, buildNeedCredentialsMessage, buildUnknownIntentMessage, buildUnsupportedWriteMessage } from './messages';
-import { FeishuResourceResolver, feishuResourceResolver } from './resourceResolver';
+import { buildAmbiguousBaseQuestion, buildAmbiguousTableQuestion, buildMissingBaseQuestion, buildMissingTableQuestion, buildNeedConnectMessage, buildNeedCredentialsMessage, buildUnknownIntentMessage } from './messages';
+import { FeishuResourceResolver } from './resourceResolver';
 import { FeishuSessionStore, feishuSessionStore } from './sessionStore';
 import { FeishuToolMapper, feishuToolMapper } from './toolMapper';
-import type { FeishuHandleRequestInput, FeishuHandleRequestResult, FeishuIntentContext } from './intentTypes';
+import { TOOL_NAMES } from '../tools/toolNames';
+import type { FeishuHandleRequestInput, FeishuHandleRequestResult, FeishuIntent, FeishuIntentContext } from './intentTypes';
 
 function asString(value: unknown): string | undefined {
   return typeof value === 'string' && value.trim() ? value.trim() : undefined;
@@ -34,7 +35,6 @@ function toConversationContext(input?: Record<string, unknown>): Partial<{
 
 export class FeishuIntentOrchestrator {
   private readonly authService: FeishuAuthService;
-  private readonly baseService: FeishuBaseService;
   private readonly store: FeishuSessionStore;
   private readonly mapper: FeishuToolMapper;
   private readonly resolver: FeishuResourceResolver;
@@ -44,10 +44,9 @@ export class FeishuIntentOrchestrator {
     baseService: FeishuBaseService = feishuBaseService,
     store: FeishuSessionStore = feishuSessionStore,
     mapper: FeishuToolMapper = feishuToolMapper,
-    resolver: FeishuResourceResolver = feishuResourceResolver,
+    resolver: FeishuResourceResolver = new FeishuResourceResolver(baseService, store),
   ) {
     this.authService = authService;
-    this.baseService = baseService;
     this.store = store;
     this.mapper = mapper;
     this.resolver = resolver;
@@ -71,6 +70,68 @@ export class FeishuIntentOrchestrator {
       result: input.result,
       message: input.message,
     };
+  }
+
+  private rememberResolvedContext(appId: string | undefined, intent: FeishuIntent, context: FeishuIntentContext): void {
+    if (!context.base && !context.table && !context.fieldSchemas?.length) {
+      return;
+    }
+
+    this.store.mergeRecentContext(appId, {
+      appId,
+      baseId: context.base?.id,
+      baseName: context.base?.name,
+      tableId: context.table?.id,
+      tableName: context.table?.name,
+      fieldNames: context.fieldSchemas?.map((item) => item.fieldName),
+      intent: intent.kind,
+    });
+  }
+
+  private getPrimaryPlannedTool(intent: FeishuIntent, context: FeishuIntentContext): string | undefined {
+    return this.mapper
+      .buildExecutionPlan(intent, context)
+      .steps
+      .find((step) => step.toolName !== TOOL_NAMES.FEISHU_AUTH_STATUS)
+      ?.toolName;
+  }
+
+  private buildRoutingMessage(intent: FeishuIntent, context: FeishuIntentContext): string {
+    const toolName = this.getPrimaryPlannedTool(intent, context);
+    const baseName = context.base?.name || context.recentContext?.baseName;
+    const tableName = context.table?.name || context.recentContext?.tableName;
+
+    if (toolName === TOOL_NAMES.FEISHU_LIST_BASES) {
+      return '已识别为列出飞书 Base 的请求。请继续调用 feishu_list_bases；自然语言入口当前只做轻量识别与上下文补全。';
+    }
+    if (toolName === TOOL_NAMES.FEISHU_LIST_TABLES) {
+      return baseName
+        ? `已识别为列出 Base「${baseName}」下数据表的请求。请继续调用 feishu_list_tables。`
+        : '已识别为列出数据表的请求。请继续调用 feishu_list_tables。';
+    }
+    if (toolName === TOOL_NAMES.FEISHU_GET_TABLE_SCHEMA) {
+      return tableName
+        ? `已识别为读取表「${tableName}」字段结构的请求。请继续调用 feishu_get_table_schema。`
+        : '已识别为读取字段结构的请求。请继续调用 feishu_get_table_schema。';
+    }
+    if (toolName === TOOL_NAMES.FEISHU_QUERY_RECORDS) {
+      return tableName
+        ? `已识别为查询表「${tableName}」记录的请求。请继续调用 feishu_query_records。`
+        : '已识别为查询记录的请求。请继续调用 feishu_query_records。';
+    }
+    if (toolName === TOOL_NAMES.FEISHU_CREATE_RECORDS) {
+      return '已识别为新增记录意图。自然语言入口当前只做规划，不直接执行写入；请继续调用 feishu_create_records。';
+    }
+    if (toolName === TOOL_NAMES.FEISHU_UPSERT_RECORDS) {
+      return '已识别为 upsert 记录意图。自然语言入口当前只做规划，不直接执行写入；请继续调用 feishu_upsert_records。';
+    }
+    if (toolName === TOOL_NAMES.FEISHU_UPDATE_RECORDS_BY_FILTER) {
+      return '已识别为按筛选条件更新记录的意图。自然语言入口当前只做规划，不直接执行写入；请继续调用 feishu_update_records_by_filter。';
+    }
+    if (intent.kind === 'write_request') {
+      return '已识别为飞书写入请求，但还不能稳定判断应该走新增、upsert 还是按筛选更新。请补充明确动作，或直接调用对应结构化写入工具。';
+    }
+    return '已识别出飞书请求。请继续调用对应结构化飞书工具。';
   }
 
   private async ensureConnected(input: FeishuHandleRequestInput, context: FeishuIntentContext): Promise<FeishuHandleRequestResult | null> {
@@ -139,16 +200,6 @@ export class FeishuIntentOrchestrator {
       };
     }
 
-    if (intent.kind === 'write_request') {
-      return {
-        intent,
-        resolvedContext: intentContext,
-        needClarification: false,
-        executionPlan: this.mapper.buildExecutionPlan(intent, intentContext),
-        message: buildUnsupportedWriteMessage(),
-      };
-    }
-
     if (intent.kind === 'connect') {
       const runtimeConfig = this.store.getRuntimeConfig(appId);
       const connectResult = await this.authService.startLogin({
@@ -191,17 +242,11 @@ export class FeishuIntentOrchestrator {
     }
 
     if (intent.kind === 'list_bases') {
-      const result = await this.baseService.listBases({ appId: intentContext.appId, refresh: true });
-      return {
-        intent,
-        resolvedContext: intentContext,
-        needClarification: false,
-        executionPlan: this.mapper.buildExecutionPlan(intent, intentContext),
-        result,
-        message: result.items.length > 0
-          ? `已找到 ${result.items.length} 个 Base。`
-          : '当前没有在飞书云空间根目录查到多维表格。这个入口底层使用 Drive 文件夹清单接口，只覆盖根目录或指定文件夹，不代表账号下所有可读/共享 Base；如果你知道 Base 链接或 app_token，可以直接让我列出该 Base 下的数据表。',
-      };
+      return this.buildResult({
+        handleInput: input,
+        context: intentContext,
+        message: this.buildRoutingMessage(intent, intentContext),
+      });
     }
 
     if (intent.kind === 'list_tables') {
@@ -232,21 +277,12 @@ export class FeishuIntentOrchestrator {
         };
       }
       intentContext.base = base.resolved;
-      const result = await this.baseService.listTables({ appId: intentContext.appId, baseId: base.resolved.id });
-      this.store.mergeRecentContext(intentContext.appId, {
-        appId: intentContext.appId,
-        baseId: base.resolved.id,
-        baseName: base.resolved.name,
-        intent: intent.kind,
+      this.rememberResolvedContext(intentContext.appId, intent, intentContext);
+      return this.buildResult({
+        handleInput: input,
+        context: intentContext,
+        message: this.buildRoutingMessage(intent, intentContext),
       });
-      return {
-        intent,
-        resolvedContext: intentContext,
-        needClarification: false,
-        executionPlan: this.mapper.buildExecutionPlan(intent, intentContext),
-        result,
-        message: `已找到 Base「${base.resolved.name}」下的 ${result.items.length} 张表。`,
-      };
     }
 
     const table = await this.resolver.resolveTable({
@@ -298,47 +334,34 @@ export class FeishuIntentOrchestrator {
     }
 
     intentContext.table = table.resolved;
-    this.store.mergeRecentContext(intentContext.appId, {
-      appId: intentContext.appId,
-      baseId: table.base.id,
-      baseName: table.base.name,
-      tableId: table.resolved.id,
-      tableName: table.resolved.name,
-      intent: intent.kind,
-    });
-
     if (intent.kind === 'get_table_schema') {
-      const result = await this.baseService.getTableSchema({
-        appId: intentContext.appId,
-        baseId: table.base.id,
-        tableId: table.resolved.id,
+      intentContext.fieldSchemas = await this.resolver.getFieldSchemas(
+        intentContext.appId,
+        table.base.id,
+        table.resolved.id,
+      );
+    }
+    this.rememberResolvedContext(intentContext.appId, intent, intentContext);
+
+    if (intent.kind === 'write_request') {
+      const plannedTool = this.getPrimaryPlannedTool(intent, intentContext);
+      const needsClarification = !plannedTool || plannedTool === TOOL_NAMES.FEISHU_HANDLE_REQUEST;
+      return this.buildResult({
+        handleInput: input,
+        context: intentContext,
+        needClarification: needsClarification,
+        clarificationQuestion: needsClarification
+          ? '请补充明确的写入动作，例如“新增记录”“按匹配字段 upsert”或“按筛选条件更新”，并优先改用对应结构化写入工具。'
+          : undefined,
+        message: this.buildRoutingMessage(intent, intentContext),
       });
-      intentContext.fieldSchemas = result.items;
-      return {
-        intent,
-        resolvedContext: intentContext,
-        needClarification: false,
-        executionPlan: this.mapper.buildExecutionPlan(intent, intentContext),
-        result,
-        message: `已读取表「${table.resolved.name}」的字段结构。`,
-      };
     }
 
-    const limit = intent.slots.find((slot) => slot.name === 'limit')?.value;
-    const result = await this.baseService.queryRecords({
-      appId: intentContext.appId,
-      baseId: table.base.id,
-      tableId: table.resolved.id,
-      pageSize: typeof limit === 'number' ? limit : 10,
+    return this.buildResult({
+      handleInput: input,
+      context: intentContext,
+      message: this.buildRoutingMessage(intent, intentContext),
     });
-    return {
-      intent,
-      resolvedContext: intentContext,
-      needClarification: false,
-      executionPlan: this.mapper.buildExecutionPlan(intent, intentContext),
-      result,
-      message: `已查询表「${table.resolved.name}」的记录，共返回 ${result.records.length} 条。`,
-    };
   }
 }
 

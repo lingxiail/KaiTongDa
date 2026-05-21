@@ -103,6 +103,19 @@ function detectIntentKind(query: string): FeishuIntentKind {
   return 'unknown';
 }
 
+function detectWriteToolName(query: string): string | undefined {
+  if (/(upsert|不存在(?:则|就)?新增|有则更新|有就更新|匹配字段)/i.test(query)) {
+    return TOOL_NAMES.FEISHU_UPSERT_RECORDS;
+  }
+  if (/(按条件更新|按筛选条件更新|根据筛选.*更新|批量更新|更新.*符合.*记录)/i.test(query)) {
+    return TOOL_NAMES.FEISHU_UPDATE_RECORDS_BY_FILTER;
+  }
+  if (/(新增|创建|插入|添加).*(记录|行)?/i.test(query)) {
+    return TOOL_NAMES.FEISHU_CREATE_RECORDS;
+  }
+  return undefined;
+}
+
 function pushSlot(slots: FeishuIntentSlot[], name: FeishuIntentSlot['name'], value: unknown, source: FeishuIntentSlot['source']): void {
   if (value === undefined || value === null || value === '') return;
   slots.push({ name, value, source });
@@ -152,7 +165,7 @@ export class FeishuToolMapper {
         toolName: TOOL_NAMES.FEISHU_AUTH_STATUS,
         input: { appId: context.appId },
         reason: '先确认当前飞书连接状态。',
-        status: 'completed' as const,
+        status: context.authStatus ? 'completed' : 'pending',
       });
     }
 
@@ -177,24 +190,24 @@ export class FeishuToolMapper {
         type: 'list_bases' as const,
         toolName: TOOL_NAMES.FEISHU_LIST_BASES,
         input: { appId: context.appId, refresh: true },
-        reason: '列出当前云空间根目录或指定文件夹中的 Base。',
-        status: 'completed' as const,
+        reason: '调用稳定的 Base 查询工具，列出当前云空间根目录或指定文件夹中的 Base。',
+        status: 'pending' as const,
       });
     } else if (intent.kind === 'list_tables') {
       steps.push({
         type: 'list_tables' as const,
         toolName: TOOL_NAMES.FEISHU_LIST_TABLES,
         input: { appId: context.appId, baseId: context.base?.id },
-        reason: '列出目标 Base 下的数据表。',
-        status: context.base ? 'completed' : 'pending',
+        reason: '调用稳定的 Table 查询工具，列出目标 Base 下的数据表。',
+        status: 'pending' as const,
       });
     } else if (intent.kind === 'get_table_schema') {
       steps.push({
         type: 'get_table_schema' as const,
         toolName: TOOL_NAMES.FEISHU_GET_TABLE_SCHEMA,
         input: { appId: context.appId, baseId: context.base?.id, tableId: context.table?.id },
-        reason: '读取目标表的字段结构。',
-        status: context.base && context.table ? 'completed' : 'pending',
+        reason: '调用稳定的表结构工具，读取目标表的字段定义。',
+        status: 'pending' as const,
       });
     } else if (intent.kind === 'query_records') {
       const limitSlot = intent.slots.find((slot) => slot.name === 'limit');
@@ -207,10 +220,25 @@ export class FeishuToolMapper {
           tableId: context.table?.id,
           pageSize: typeof limitSlot?.value === 'number' ? limitSlot.value : 10,
         },
-        reason: '查询目标表的记录。',
-        status: context.base && context.table ? 'completed' : 'pending',
+        reason: '调用稳定的记录查询工具，读取目标表记录。',
+        status: 'pending' as const,
       });
-    } else if (intent.kind === 'unknown' || intent.kind === 'write_request') {
+    } else if (intent.kind === 'write_request') {
+      const toolName = detectWriteToolName(intent.query);
+      steps.push({
+        type: 'clarify' as const,
+        toolName: toolName || TOOL_NAMES.FEISHU_HANDLE_REQUEST,
+        input: {
+          appId: context.appId,
+          baseId: context.base?.id,
+          tableId: context.table?.id,
+        },
+        reason: toolName
+          ? '自然语言入口只做写入规划；请继续调用对应的结构化写入工具。'
+          : '当前仍需补充明确的写入动作，再决定使用哪一个结构化写入工具。',
+        status: 'pending' as const,
+      });
+    } else if (intent.kind === 'unknown') {
       steps.push({
         type: 'clarify' as const,
         toolName: TOOL_NAMES.FEISHU_HANDLE_REQUEST,

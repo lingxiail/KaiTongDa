@@ -189,24 +189,6 @@ class DirectBaseTokenAdapter extends MockStageCAdapter {
   }
 }
 
-class EmptyRootBasesAdapter extends MockStageCAdapter {
-  async listBases(input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
-    this.listBasesCalls += 1;
-    this.lastListBasesInput = input;
-    return {
-      command: 'drive.v1.file.list',
-      stdout: JSON.stringify({
-        data: {
-          files: [],
-          has_more: false,
-        },
-      }),
-      stderr: '',
-      code: 0,
-    };
-  }
-}
-
 function seedConnectedStore(store: FeishuSessionStore, appId = 'cli_stage_c'): void {
   store.setRuntimeConfig({
     appId,
@@ -259,11 +241,15 @@ describe('Feishu stage C integration', () => {
 
     expect(result.intent.kind).toBe('list_bases');
     expect(result.needClarification).toBe(false);
-    expect((result.result as { items: Array<{ id: string }> }).items[0]?.id).toBe('app_sales');
-    expect(adapter.lastListBasesInput?.refresh).toBe(true);
+    expect(result.result).toBeUndefined();
+    expect(result.executionPlan.steps[1]).toMatchObject({
+      toolName: 'feishu_list_bases',
+      status: 'pending',
+    });
+    expect(adapter.listBasesCalls).toBe(0);
   });
 
-  it('refreshes natural language base listing instead of reusing a stale empty cache', async () => {
+  it('keeps base listing in planning mode instead of touching stale cache or remote data', async () => {
     const store = new FeishuSessionStore();
     seedConnectedStore(store);
     store.setCachedBases('cli_stage_c', {
@@ -280,25 +266,12 @@ describe('Feishu stage C integration', () => {
     });
 
     expect(result.intent.kind).toBe('list_bases');
-    expect(adapter.listBasesCalls).toBe(1);
-    expect((result.result as { items: Array<{ id: string }> }).items[0]?.id).toBe('app_sales');
-    expect(result.message).toBe('已找到 2 个 Base。');
-  });
-
-  it('explains root-folder scope when base listing returns empty', async () => {
-    const store = new FeishuSessionStore();
-    seedConnectedStore(store);
-    const adapter = new EmptyRootBasesAdapter();
-    const orchestrator = createOrchestrator(store, adapter);
-
-    const result = await orchestrator.handleRequest({
-      appId: 'cli_stage_c',
-      query: '列出我可读的多维表格',
+    expect(adapter.listBasesCalls).toBe(0);
+    expect(result.executionPlan.steps[1]).toMatchObject({
+      toolName: 'feishu_list_bases',
+      status: 'pending',
     });
-
-    expect(result.intent.kind).toBe('list_bases');
-    expect(result.message).toContain('云空间根目录');
-    expect(result.message).toContain('不代表账号下所有可读/共享 Base');
+    expect(result.message).toContain('请继续调用 feishu_list_bases');
   });
 
   it('lists tables from a direct Feishu base token without requiring global base listing', async () => {
@@ -312,14 +285,16 @@ describe('Feishu stage C integration', () => {
       query: '列出LmXDbh8aCa1muPszAlgcCiXcnkh下的数据表',
     });
 
-    const tables = result.result as { items: Array<{ id: string; name: string; baseId: string }> };
     expect(result.intent.kind).toBe('list_tables');
     expect(result.needClarification).toBe(false);
     expect(result.resolvedContext.base?.id).toBe('LmXDbh8aCa1muPszAlgcCiXcnkh');
-    expect(tables.items[0]).toEqual({
-      id: 'tbl_direct',
-      name: 'LmXDbh8aCa1muPszAlgcCiXcnkh-Direct',
-      baseId: 'LmXDbh8aCa1muPszAlgcCiXcnkh',
+    expect(result.result).toBeUndefined();
+    expect(result.executionPlan.steps[1]).toMatchObject({
+      toolName: 'feishu_list_tables',
+      input: {
+        appId: 'cli_stage_c',
+        baseId: 'LmXDbh8aCa1muPszAlgcCiXcnkh',
+      },
     });
     expect(adapter.listBasesCalls).toBe(0);
   });
@@ -342,8 +317,17 @@ describe('Feishu stage C integration', () => {
 
     expect(result.intent.kind).toBe('get_table_schema');
     expect(result.needClarification).toBe(false);
-    expect((result.result as { items: Array<{ fieldName: string }> }).items[0]?.fieldName).toBe('客户名称');
     expect(result.resolvedContext.table?.id).toBe('tbl_order');
+    expect(result.resolvedContext.fieldSchemas?.[0]?.fieldName).toBe('客户名称');
+    expect(result.result).toBeUndefined();
+    expect(result.executionPlan.steps[1]).toMatchObject({
+      toolName: 'feishu_get_table_schema',
+      input: {
+        appId: 'cli_stage_c',
+        baseId: 'app_sales',
+        tableId: 'tbl_order',
+      },
+    });
   });
 
   it('asks for missing table when query records lacks target table', async () => {
@@ -386,6 +370,93 @@ describe('Feishu stage C integration', () => {
     expect(result.needClarification).toBe(true);
     expect(result.resolvedContext.candidates).toHaveLength(2);
     expect(result.clarificationQuestion).toContain('多个同名或相近的表');
+  });
+
+  it('returns a structured write plan when action and recent table are both clear', async () => {
+    const store = new FeishuSessionStore();
+    seedConnectedStore(store);
+    store.setRecentContext('cli_stage_c', {
+      appId: 'cli_stage_c',
+      baseId: 'app_sales',
+      baseName: '销售Base',
+      tableId: 'tbl_order',
+      tableName: '订单表',
+      updatedAt: Date.now(),
+    });
+    const orchestrator = createOrchestrator(store);
+
+    const result = await orchestrator.handleRequest({
+      appId: 'cli_stage_c',
+      query: '在这张表新增记录',
+    });
+
+    expect(result.intent.kind).toBe('write_request');
+    expect(result.needClarification).toBe(false);
+    expect(result.executionPlan.steps[1]).toMatchObject({
+      toolName: 'feishu_create_records',
+      input: {
+        appId: 'cli_stage_c',
+        baseId: 'app_sales',
+        tableId: 'tbl_order',
+      },
+    });
+    expect(result.message).toContain('feishu_create_records');
+  });
+
+  it('asks for clarification when write action is still ambiguous', async () => {
+    const store = new FeishuSessionStore();
+    seedConnectedStore(store);
+    store.setRecentContext('cli_stage_c', {
+      appId: 'cli_stage_c',
+      baseId: 'app_sales',
+      baseName: '销售Base',
+      tableId: 'tbl_order',
+      tableName: '订单表',
+      updatedAt: Date.now(),
+    });
+    const orchestrator = createOrchestrator(store);
+
+    const result = await orchestrator.handleRequest({
+      appId: 'cli_stage_c',
+      query: '帮我更新记录',
+    });
+
+    expect(result.intent.kind).toBe('write_request');
+    expect(result.needClarification).toBe(true);
+    expect(result.clarificationQuestion).toContain('补充明确的写入动作');
+    expect(result.executionPlan.steps[1]?.toolName).toBe('feishu_handle_request');
+  });
+
+  it('updates recent Base/Table/field context after structured tool calls', async () => {
+    const store = new FeishuSessionStore();
+    seedConnectedStore(store);
+    const adapter = new MockStageCAdapter();
+    const baseService = new FeishuBaseService(adapter, new FeishuAuthService(adapter, store), store);
+
+    await baseService.listTables({
+      appId: 'cli_stage_c',
+      baseId: 'app_sales',
+    });
+    await baseService.getTableSchema({
+      appId: 'cli_stage_c',
+      baseId: 'app_sales',
+      tableId: 'tbl_order',
+    });
+    await baseService.queryRecords({
+      appId: 'cli_stage_c',
+      baseId: 'app_sales',
+      tableId: 'tbl_order',
+      pageSize: 10,
+    });
+
+    expect(store.getRecentContext('cli_stage_c')).toMatchObject({
+      appId: 'cli_stage_c',
+      baseId: 'app_sales',
+      tableId: 'tbl_order',
+      tableName: '订单表',
+      intent: 'query_records',
+    });
+    expect(store.getRecentContext('cli_stage_c')?.fieldNames).toContain('客户名称');
   });
 
   it('registers stage C natural language tool and returns structured json', async () => {

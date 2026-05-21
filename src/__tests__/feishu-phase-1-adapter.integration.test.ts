@@ -20,7 +20,8 @@ describe('Feishu phase 1 adapter refactor', () => {
 
     expect(adapter.kind).toBe('lark_cli');
     expect(adapter.getCapabilities()).toContain('get_auth_status');
-    expect(writeResult.success).toBe(false);
-    expect(writeResult.message).toContain('LarkCliAdapter');
+    expect(writeResult.success).toBe(true);
+    expect(writeResult.createdCount).toBe(0);
+    expect(writeResult.message).toContain('没有需要新增的记录');
   });
 });
