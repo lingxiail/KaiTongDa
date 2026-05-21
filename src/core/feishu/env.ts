@@ -1,9 +1,12 @@
 import { assessCliCompatibility } from './compat';
 import type { FeishuConnectorAdapter } from './connectorAdapter';
 import { FEISHU_ERROR_CODES } from './errorCodes';
+import { buildCliInstallCommand } from './larkCliCommands';
 import { larkCliAdapter } from './larkCliAdapter';
 import { buildCliCompatibilityMessage } from './messages';
 import type { FeishuConnectionStatus, FeishuEnvironmentStatus } from './types';
+
+const CLI_INSTALL_COMMAND = buildCliInstallCommand().command;
 
 function trimVersion(raw: string): string | null {
   const line = raw
@@ -49,7 +52,7 @@ export async function detectFeishuEnvironment(
       nodeVersion,
       npxVersion,
       cliVersion,
-      installCommand: 'npx -y @larksuite/cli@latest install',
+      installCommand: CLI_INSTALL_COMMAND,
       canAutoInstall: false,
       failureReason: 'node_missing',
       message: '未检测到可用的 Node.js 环境。',
@@ -64,7 +67,7 @@ export async function detectFeishuEnvironment(
       nodeVersion,
       npxVersion,
       cliVersion,
-      installCommand: 'npx -y @larksuite/cli@latest install',
+      installCommand: CLI_INSTALL_COMMAND,
       canAutoInstall: false,
       failureReason: 'npx_missing',
       message: '已检测到 Node.js，但未检测到可用的 npx。',
@@ -83,7 +86,7 @@ export async function detectFeishuEnvironment(
         nodeVersion,
         npxVersion,
         cliVersion,
-        installCommand: 'npx -y @larksuite/cli@latest install',
+        installCommand: CLI_INSTALL_COMMAND,
         canAutoInstall: true,
         failureReason: 'network_error',
         message: '检测 lark-cli 时发生网络错误，请确认网络连通后重试。',
@@ -101,7 +104,7 @@ export async function detectFeishuEnvironment(
       nodeVersion,
       npxVersion,
       cliVersion,
-      installCommand: 'npx -y @larksuite/cli@latest install',
+      installCommand: CLI_INSTALL_COMMAND,
       canAutoInstall: true,
       failureReason: 'cli_missing',
       message: '未检测到可用的 lark-cli。',
@@ -118,7 +121,7 @@ export async function detectFeishuEnvironment(
       npxVersion,
       cliVersion,
       compatibility,
-      installCommand: 'npx -y @larksuite/cli@latest install',
+      installCommand: CLI_INSTALL_COMMAND,
       canAutoInstall: false,
       failureReason: 'incompatible_version',
       message: buildCliCompatibilityMessage(compatibility.detectedVersion, compatibility.supportedRange),
@@ -133,7 +136,7 @@ export async function detectFeishuEnvironment(
     npxVersion,
     cliVersion,
     compatibility,
-    installCommand: 'npx -y @larksuite/cli@latest install',
+    installCommand: CLI_INSTALL_COMMAND,
     canAutoInstall: false,
     message: `环境可用，CLI 版本：${cliVersion ?? 'unknown'}`,
   };

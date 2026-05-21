@@ -1416,6 +1416,9 @@ export interface TranslationDict {
     title: string;
     description: string;
     addChannel: string;
+    installFeishuCli: string;
+    installFeishuCliDesc: string;
+    installFeishuCliAction: string;
     editChannel: string;
     channelName: string;
     channelNamePlaceholder: string;

@@ -122,6 +122,41 @@ describe('FeishuAuthService', () => {
   it('returns environment error when cli is unavailable', async () => {
     const adapter = new MockFeishuCliAdapter();
     adapter.cliResult = { command: 'cli', stdout: '', stderr: 'not found', code: 1 };
+    let installed = false;
+    adapter.installCli = async () => {
+      installed = true;
+      return { command: 'install', stdout: 'installed', stderr: '', code: 0 };
+    };
+    const service = new FeishuAuthService(adapter, new FeishuSessionStore());
+
+    const result = await service.startLogin({
+      appId: 'cli_xxx',
+      appSecret: 'secret',
+      confirmInstall: true,
+    });
+
+    expect(result.success).toBe(false);
+    expect(result.errorCode).toBe(FEISHU_ERROR_CODES.CLI_UNAVAILABLE);
+    expect(result.nextAction).toContain('feishu_setup_cli');
+    expect(installed).toBe(false);
+  });
+
+  it('returns connected immediately when lark-cli is already authenticated', async () => {
+    const adapter = new MockFeishuCliAdapter();
+    let configStarted = false;
+    let loginStarted = false;
+    adapter.initializeConfig = async () => {
+      configStarted = true;
+      return { command: 'lark-cli config init --new', stdout: 'ok', stderr: '', code: 0 };
+    };
+    adapter.startLogin = async () => {
+      loginStarted = true;
+      return {
+        id: 'login-1',
+        command: 'login --no-wait',
+        completion: Promise.resolve({ command: 'login --no-wait', stdout: '', stderr: '', code: 0 }),
+      };
+    };
     const service = new FeishuAuthService(adapter, new FeishuSessionStore());
 
     const result = await service.startLogin({
@@ -129,12 +164,22 @@ describe('FeishuAuthService', () => {
       appSecret: 'secret',
     });
 
-    expect(result.success).toBe(false);
-    expect(result.errorCode).toBe(FEISHU_ERROR_CODES.CLI_UNAVAILABLE);
+    expect(result.success).toBe(true);
+    expect(result.connected).toBe(true);
+    expect(result.state).toBe('connected');
+    expect(result.account?.name).toBe('Tom');
+    expect(configStarted).toBe(false);
+    expect(loginStarted).toBe(false);
   });
 
   it('does not require app secret for lark-cli browser configuration flow', async () => {
     const adapter = new MockFeishuCliAdapter();
+    adapter.getAuthStatus = async () => ({
+      command: 'auth status',
+      stdout: '',
+      stderr: 'No user logged in',
+      code: 1,
+    });
     adapter.startLogin = async (_input, onOutput) => {
       onOutput?.('Please continue in browser: https://open.feishu.cn/mock-auth', 'stdout');
       return {
@@ -156,6 +201,12 @@ describe('FeishuAuthService', () => {
 
   it('returns approval pending when login has started but not finished yet', async () => {
     const adapter = new MockFeishuCliAdapter();
+    adapter.getAuthStatus = async () => ({
+      command: 'auth status',
+      stdout: '',
+      stderr: 'No user logged in',
+      code: 1,
+    });
     adapter.startLogin = async (_input, onOutput) => {
       onOutput?.('Please continue in browser: https://open.feishu.cn/mock-auth', 'stdout');
       return {
@@ -176,8 +227,48 @@ describe('FeishuAuthService', () => {
     expect(result.authUrl).toBe('https://open.feishu.cn/mock-auth');
   });
 
+  it('returns pending authUrl when cli prints url before timeout exit', async () => {
+    const adapter = new MockFeishuCliAdapter();
+    adapter.getAuthStatus = async () => ({
+      command: 'auth status',
+      stdout: '',
+      stderr: 'No user logged in',
+      code: 1,
+    });
+    adapter.startLogin = async () => {
+      return {
+        id: 'login-timeout-url',
+        command: 'login --no-wait',
+        completion: Promise.resolve({
+          command: 'login --no-wait',
+          stdout: 'Open https://accounts.feishu.cn/open-apis/authen/v1/index?app_id=cli_xxx to authorize',
+          stderr: 'timed out waiting for browser',
+          code: 1,
+        }),
+      };
+    };
+    const service = new FeishuAuthService(adapter, new FeishuSessionStore());
+
+    const result = await service.startLogin({
+      appId: 'cli_xxx',
+      domain: ' `https://open.feishu.cn` ',
+      waitForMs: 50,
+    });
+
+    expect(result.state).toBe('approval_pending');
+    expect(result.errorCode).toBe(FEISHU_ERROR_CODES.AUTH_PENDING);
+    expect(result.domain).toBe('https://open.feishu.cn');
+    expect(result.authUrl).toBe('https://accounts.feishu.cn/open-apis/authen/v1/index?app_id=cli_xxx');
+  });
+
   it('returns config_pending when config init needs browser confirmation', async () => {
     const adapter = new MockFeishuCliAdapter();
+    adapter.getAuthStatus = async () => ({
+      command: 'auth status',
+      stdout: '',
+      stderr: 'No user logged in',
+      code: 1,
+    });
     adapter.initializeConfig = async (onOutput) => {
       onOutput?.('或打开以下链接完成配置： https://open.feishu.cn/page/cli?user_code=ABCD-EFGH', 'stdout');
       return {
@@ -197,10 +288,17 @@ describe('FeishuAuthService', () => {
     expect(result.state).toBe('config_pending');
     expect(result.phase).toBe('config_pending');
     expect(result.authUrl).toBe('https://open.feishu.cn/page/cli?user_code=ABCD-EFGH');
+    expect(result.nextAction).toContain('feishu_setup_cli');
   });
 
   it('reuses active login on repeated connect', async () => {
     const adapter = new MockFeishuCliAdapter();
+    adapter.getAuthStatus = async () => ({
+      command: 'auth status',
+      stdout: '',
+      stderr: 'No user logged in',
+      code: 1,
+    });
     let loginStarts = 0;
     adapter.startLogin = async (input, onOutput) => {
       loginStarts += 1;
@@ -232,6 +330,24 @@ describe('FeishuAuthService', () => {
 
   it('polls auth status and turns pending into connected', async () => {
     const adapter = new MockFeishuCliAdapter();
+    let authChecks = 0;
+    adapter.getAuthStatus = async () => {
+      authChecks += 1;
+      if (authChecks === 1) {
+        return {
+          command: 'auth status',
+          stdout: '',
+          stderr: 'No user logged in',
+          code: 1,
+        };
+      }
+      return {
+        command: 'auth status',
+        stdout: 'Authorized account\nname: Tom\nemail: tom@example.com\ntenant_key: tenant_demo',
+        stderr: '',
+        code: 0,
+      };
+    };
     adapter.startLogin = async (_input, onOutput) => {
       onOutput?.('Please continue in browser: https://open.feishu.cn/mock-auth', 'stdout');
       return {
@@ -254,7 +370,7 @@ describe('FeishuAuthService', () => {
     expect(connected.connected).toBe(true);
   });
 
-  it('can auto install lark-cli after explicit confirmation', async () => {
+  it('guides cli installation to feishu_setup_cli instead of auto installing from connect', async () => {
     const adapter = new MockFeishuCliAdapter();
     adapter.cliResult = { command: 'lark-cli --version', stdout: '', stderr: 'not found', code: 1 };
     let installed = false;
@@ -272,13 +388,32 @@ describe('FeishuAuthService', () => {
       waitForMs: 50,
     });
 
-    expect(installed).toBe(true);
-    expect(result.state).toBe('approval_pending');
-    expect(result.authUrl).toBe('https://open.feishu.cn/mock-auth');
+    expect(installed).toBe(false);
+    expect(result.state).toBe('unauthorized');
+    expect(result.errorCode).toBe(FEISHU_ERROR_CODES.CLI_UNAVAILABLE);
+    expect(result.nextAction).toContain('feishu_setup_cli');
   });
 
   it('polls connected status and caches account summary', async () => {
     const adapter = new MockFeishuCliAdapter();
+    let authChecks = 0;
+    adapter.getAuthStatus = async () => {
+      authChecks += 1;
+      if (authChecks === 1) {
+        return {
+          command: 'auth status',
+          stdout: '',
+          stderr: 'No user logged in',
+          code: 1,
+        };
+      }
+      return {
+        command: 'auth status',
+        stdout: 'Authorized account\nname: Tom\nemail: tom@example.com\ntenant_key: tenant_demo',
+        stderr: '',
+        code: 0,
+      };
+    };
     adapter.startLogin = async (_input, onOutput) => {
       onOutput?.('Please continue in browser: https://open.feishu.cn/mock-auth', 'stdout');
       return {
@@ -305,6 +440,12 @@ describe('FeishuAuthService', () => {
 
   it('maps expired auth failures to auth_expired', async () => {
     const adapter = new MockFeishuCliAdapter();
+    adapter.getAuthStatus = async () => ({
+      command: 'auth status',
+      stdout: '',
+      stderr: 'No user logged in',
+      code: 1,
+    });
     adapter.startLogin = async () => {
       return {
         id: 'login-expired',

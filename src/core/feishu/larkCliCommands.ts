@@ -35,6 +35,14 @@ function buildLarkCliCommand(args: string[]): ArgvCommand {
   return buildArgvCommand('lark-cli', args);
 }
 
+function pushOptionalAuthDomainArg(args: string[], value: string | undefined): void {
+  const normalized = value?.trim().replace(/^`+|`+$/g, '').trim();
+  if (!normalized || /^https?:\/\//i.test(normalized)) {
+    return;
+  }
+  pushOptionalArg(args, '--domain', normalized);
+}
+
 export function buildNodeVersionCommand(): ArgvCommand {
   return buildArgvCommand('node', ['--version']);
 }
@@ -48,7 +56,11 @@ export function buildCliVersionCommand(): ArgvCommand {
 }
 
 export function buildCliInstallCommand(): ArgvCommand {
-  return buildArgvCommand('npx', ['-y', '@larksuite/cli@latest', 'install']);
+  return buildArgvCommand('npm', ['install', '-g', '@larksuite/cli']);
+}
+
+export function buildSkillInstallCommand(): ArgvCommand {
+  return buildArgvCommand('npx', ['-y', 'skills', 'add', 'https://open.feishu.cn', '--skill', '-y']);
 }
 
 export function buildConfigInitCommand(): ArgvCommand {
@@ -63,7 +75,7 @@ export function buildAuthLoginCommand(input: FeishuLoginStartInput): ArgvCommand
   if (input.json) {
     args.push('--json');
   }
-  pushOptionalArg(args, '--domain', input.domain);
+  pushOptionalAuthDomainArg(args, input.domain);
   pushOptionalArg(args, '--port', input.port);
   if (input.preferredScopes && input.preferredScopes.length > 0) {
     args.push('--scope', ...input.preferredScopes);

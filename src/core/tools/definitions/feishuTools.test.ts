@@ -11,6 +11,7 @@ describe('feishu tools', () => {
   });
 
   it('registers stage A feishu tools', () => {
+    expect(toolRegistry.get('feishu_setup_cli')).toBeDefined();
     expect(toolRegistry.get('feishu_connect')).toBeDefined();
     expect(toolRegistry.get('feishu_auth_status')).toBeDefined();
     expect(toolRegistry.get('feishu_disconnect')).toBeDefined();
@@ -18,6 +19,33 @@ describe('feishu tools', () => {
     expect(toolRegistry.get('feishu_upsert_records')).toBeDefined();
     expect(toolRegistry.get('feishu_update_records_by_filter')).toBeDefined();
     expect(toolRegistry.get('feishu_handle_request')).toBeDefined();
+  });
+
+  it('feishu_setup_cli returns structured json', async () => {
+    vi.spyOn(feishuFacade, 'setupCli').mockResolvedValue({
+      success: true,
+      phase: 'config_pending',
+      configUrl: 'https://open.feishu.cn/config',
+      command: 'lark-cli config init --new',
+      message: '等待配置',
+      nextAction: '打开链接',
+      lastUpdatedAt: 1,
+    });
+
+    const result = await toolRegistry.get('feishu_setup_cli')!.execute({
+      installCli: true,
+      installSkill: true,
+      initializeConfig: true,
+    });
+
+    const parsed = JSON.parse(result as string) as { phase: string; configUrl?: string };
+    expect(feishuFacade.setupCli).toHaveBeenCalledWith(expect.objectContaining({
+      installCli: true,
+      installSkill: true,
+      initializeConfig: true,
+    }));
+    expect(parsed.phase).toBe('config_pending');
+    expect(parsed.configUrl).toBe('https://open.feishu.cn/config');
   });
 
   it('feishu_connect returns structured json', async () => {

@@ -68,6 +68,7 @@ export const TOOL_NAMES = {
   TOOL_SEARCH: 'tool_search',
 
   // Feishu integration
+  FEISHU_SETUP_CLI: 'feishu_setup_cli',
   FEISHU_CONNECT: 'feishu_connect',
   FEISHU_AUTH_STATUS: 'feishu_auth_status',
   FEISHU_DISCONNECT: 'feishu_disconnect',

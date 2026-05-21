@@ -40,6 +40,45 @@ function toSortArray(value: unknown): Array<{ fieldName: string; desc?: boolean 
   }, []);
 }
 
+export const feishuSetupCliTool: ToolDefinition = {
+  name: TOOL_NAMES.FEISHU_SETUP_CLI,
+  description: '按官方飞书 CLI 安装指南执行安装向导：检查 Node/npm/npx/lark-cli，安装 @larksuite/cli，安装飞书 CLI Skill，发起 config init、auth login，并可用 auth status 验证。不要要求用户在聊天中提供 App Secret。',
+  inputSchema: {
+    type: 'object',
+    properties: {
+      installCli: { type: 'boolean', description: 'CLI 缺失时是否执行 npm install -g @larksuite/cli。默认 false。' },
+      installSkill: { type: 'boolean', description: '是否执行 npx -y skills add https://open.feishu.cn --skill -y。默认 false。' },
+      initializeConfig: { type: 'boolean', description: '是否执行 lark-cli config init --new 并返回配置链接。默认 false。' },
+      startLogin: { type: 'boolean', description: '是否执行 lark-cli auth login --recommend 并返回授权链接。默认 false。' },
+      verifyAuth: { type: 'boolean', description: '是否执行 lark-cli auth status 验证登录状态。默认 false。' },
+      domain: { type: 'string', description: '飞书开放平台域名。通常不需要传。' },
+      preferredScopes: {
+        type: 'array',
+        description: 'OAuth scopes 列表，通常不需要传。',
+        items: { type: 'string' },
+      },
+      port: { type: 'number', description: '本地 OAuth 回调端口。' },
+    },
+    required: [],
+  },
+  execute: async (input) => {
+    const result = await feishuFacade.setupCli({
+      installCli: input.installCli as boolean | undefined,
+      installSkill: input.installSkill as boolean | undefined,
+      initializeConfig: input.initializeConfig as boolean | undefined,
+      startLogin: input.startLogin as boolean | undefined,
+      verifyAuth: input.verifyAuth as boolean | undefined,
+      domain: input.domain as string | undefined,
+      preferredScopes: Array.isArray(input.preferredScopes)
+        ? input.preferredScopes.map(String)
+        : undefined,
+      port: typeof input.port === 'number' ? input.port : undefined,
+    });
+    return stringifyResult(result);
+  },
+  isConcurrencySafe: false,
+};
+
 export const feishuConnectTool: ToolDefinition = {
   name: TOOL_NAMES.FEISHU_CONNECT,
   description: '启动飞书连接流程。可能返回 config_pending 或 approval_pending；此时必须把 authUrl 展示给用户，并在用户完成浏览器或飞书客户端确认后调用 feishu_auth_status 查询，不要反复重新调用连接。',

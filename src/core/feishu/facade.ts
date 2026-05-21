@@ -1,5 +1,7 @@
 import type {
   FeishuConnectInput,
+  FeishuCliSetupInput,
+  FeishuCliSetupResult,
   FeishuConnectionStatus,
   FeishuCreateRecordsInput,
   FeishuFieldSchema,
@@ -19,20 +21,28 @@ import type { FeishuHandleRequestInput, FeishuHandleRequestResult } from './inte
 import { FeishuAuthService, feishuAuthService } from './authService';
 import { FeishuBaseService, feishuBaseService } from './baseService';
 import { FeishuIntentOrchestrator, feishuIntentOrchestrator } from './orchestrator';
+import { FeishuCliSetupService, feishuCliSetupService } from './setupService';
 
 export class FeishuFacade {
   private readonly authService: FeishuAuthService;
   private readonly baseService: FeishuBaseService;
   private readonly intentOrchestrator: FeishuIntentOrchestrator;
+  private readonly setupService: FeishuCliSetupService;
 
   constructor(
     authService: FeishuAuthService = feishuAuthService,
     baseService: FeishuBaseService = feishuBaseService,
     intentOrchestrator: FeishuIntentOrchestrator = feishuIntentOrchestrator,
+    setupService: FeishuCliSetupService = feishuCliSetupService,
   ) {
     this.authService = authService;
     this.baseService = baseService;
     this.intentOrchestrator = intentOrchestrator;
+    this.setupService = setupService;
+  }
+
+  async setupCli(input: FeishuCliSetupInput = {}): Promise<FeishuCliSetupResult> {
+    return await this.setupService.setup(input);
   }
 
   async connect(input: FeishuConnectInput = {}): Promise<FeishuConnectionStatus> {

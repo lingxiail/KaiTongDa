@@ -16,6 +16,11 @@ const DEFAULT_DOMAIN = 'https://open.feishu.cn';
 const DEFAULT_CONNECT_WAIT_MS = 3000;
 const ACTIVE_LOGIN_TTL_MS = 240000;
 
+function normalizeDomain(input?: string): string {
+  const trimmed = input?.trim().replace(/^`+|`+$/g, '').trim();
+  return trimmed || DEFAULT_DOMAIN;
+}
+
 function parseAuthUrl(output: string): string | undefined {
   const match = output.match(/https?:\/\/[^\s"'`]+/i);
   return match?.[0];
@@ -33,11 +38,12 @@ function parseAccountSummary(output: string): { account: FeishuAccountSummary | 
 
   const name = output.match(/(?:^|\b)(?:name|user_name)\s*[:=]\s*([^\r\n]+)/im)?.[1]?.trim();
   const email = output.match(/(?:^|\b)email\s*[:=]\s*([^\r\n]+)/im)?.[1]?.trim();
+  const authorizedAccount = output.match(/authorized account\s*[:=]\s*([^\r\n(]+)(?:\s*\(([^)]+)\))?/i);
   const userId = output.match(/(?:^|\b)(?:user_id|open_id)\s*[:=]\s*([^\r\n]+)/im)?.[1]?.trim();
   const tenantKey = output.match(/(?:^|\b)tenant(?:_key)?\s*[:=]\s*([^\r\n]+)/im)?.[1]?.trim();
 
-  if (name) account.name = name;
-  if (email) account.email = email;
+  if (name || authorizedAccount?.[1]) account.name = name || authorizedAccount?.[1]?.trim();
+  if (email || authorizedAccount?.[2]) account.email = email || authorizedAccount?.[2]?.trim();
   if (userId) account.userId = userId;
   if (tenantKey) tenant.tenantKey = tenantKey;
 
@@ -103,6 +109,48 @@ function buildPendingStatus(input: {
     appId: input.appId,
     domain: input.domain || DEFAULT_DOMAIN,
     authUrl: input.login.authUrl,
+  });
+}
+
+function buildCliSetupRequiredStatus(input: {
+  appId?: string;
+  domain?: string;
+  message: string;
+  nextAction: string;
+  errorCode: FeishuConnectionStatus['errorCode'];
+}): FeishuConnectionStatus {
+  return buildStatus({
+    success: false,
+    connected: false,
+    state: 'unauthorized',
+    phase: 'failed',
+    message: input.message,
+    nextAction: input.nextAction,
+    errorCode: input.errorCode,
+    appId: input.appId,
+    domain: input.domain,
+  });
+}
+
+function buildConnectedStatus(input: {
+  appId?: string;
+  domain?: string;
+  output: string;
+  authUrl?: string;
+}): FeishuConnectionStatus {
+  const parsed = parseAccountSummary(input.output);
+  return buildStatus({
+    success: true,
+    connected: true,
+    state: 'connected',
+    phase: 'connected',
+    message: '飞书连接成功。',
+    nextAction: '可继续查询授权状态或使用飞书相关工具。',
+    appId: input.appId,
+    domain: input.domain,
+    account: parsed.account,
+    tenant: parsed.tenant,
+    authUrl: input.authUrl,
   });
 }
 
@@ -186,7 +234,7 @@ export class FeishuAuthService {
   async startLogin(input: FeishuConnectInput): Promise<FeishuConnectionStatus> {
     const appId = input.appId?.trim();
     const appSecret = input.appSecret?.trim();
-    const domain = input.domain?.trim() || DEFAULT_DOMAIN;
+    const domain = normalizeDomain(input.domain);
 
     if (!appId) {
       return buildStatus({
@@ -209,6 +257,11 @@ export class FeishuAuthService {
       preferredScopes: input.preferredScopes,
     });
 
+    const cached = this.store.getConnectionStatus(appId);
+    if (cached?.connected) {
+      return cached;
+    }
+
     const existingLogin = this.store.getActiveLogin(appId);
     if (existingLogin && (!existingLogin.timeoutAt || Date.now() <= existingLogin.timeoutAt)) {
       const status = buildPendingStatus({ appId, domain, login: existingLogin });
@@ -221,36 +274,34 @@ export class FeishuAuthService {
 
     const environment = await detectFeishuEnvironment(this.adapter);
     if (!environment.nodeAvailable || !environment.cliAvailable) {
-      if (environment.failureReason === 'cli_missing' && environment.canAutoInstall && input.confirmInstall) {
-        const install = await this.adapter.installCli();
-        if (install.code !== 0) {
-          const normalized = normalizeFeishuCliError(install.stderr, install.stdout);
-          const failedInstall = buildStatus({
-            success: false,
-            connected: false,
-            state: 'unauthorized',
-            phase: 'failed',
-            message: normalized.message,
-            nextAction: normalized.nextAction,
-            errorCode: normalized.errorCode,
-            appId,
-            domain,
-          });
-          this.store.updateConnectionStatus(appId, failedInstall);
-          return failedInstall;
-        }
-
-        const rechecked = await detectFeishuEnvironment(this.adapter);
-        if (!rechecked.nodeAvailable || !rechecked.cliAvailable) {
-          const failure = toEnvironmentFailureStatus(rechecked, appId, domain);
-          this.store.updateConnectionStatus(appId, failure);
-          return failure;
-        }
+      if (environment.failureReason === 'cli_missing' && environment.canAutoInstall) {
+        const setupRequired = buildCliSetupRequiredStatus({
+          appId,
+          domain,
+          message: '未检测到可用的 lark-cli，请先按官方流程安装飞书 CLI。',
+          nextAction: '请调用 feishu_setup_cli 并传入 installCli=true、installSkill=true；安装完成后再次执行 feishu_connect。',
+          errorCode: FEISHU_ERROR_CODES.CLI_UNAVAILABLE,
+        });
+        this.store.updateConnectionStatus(appId, setupRequired);
+        return setupRequired;
       } else {
         const failure = toEnvironmentFailureStatus(environment, appId, domain);
+        if (environment.failureReason === 'node_missing') {
+          failure.nextAction = '请先安装 Node.js LTS，并确认 node 与 npx 命令可用；随后调用 feishu_setup_cli 安装飞书 CLI。';
+        } else if (environment.failureReason === 'npx_missing') {
+          failure.nextAction = '请修复当前 Node.js 安装，确保 npx 命令可用；随后调用 feishu_setup_cli 安装飞书 CLI。';
+        }
         this.store.updateConnectionStatus(appId, failure);
         return failure;
       }
+    }
+
+    const currentStatus = await this.adapter.getAuthStatus(appId);
+    const currentStatusOutput = `${currentStatus.stdout}\n${currentStatus.stderr}`.trim();
+    if (currentStatus.code === 0 && isAuthorized(currentStatusOutput) && !isUnauthenticated(currentStatusOutput)) {
+      const connected = buildConnectedStatus({ appId, domain, output: currentStatusOutput });
+      this.store.updateConnectionStatus(appId, connected);
+      return connected;
     }
 
     const configLines: string[] = [];
@@ -270,7 +321,7 @@ export class FeishuAuthService {
           startedAt: Date.now(),
           timeoutAt: Date.now() + ACTIVE_LOGIN_TTL_MS,
           message: configUrl ? '应用配置流程已启动，请打开配置链接完成应用配置。' : '应用配置流程已启动，请在浏览器或飞书客户端完成配置。',
-          nextAction: configUrl ? '打开 authUrl 完成应用配置；完成后再次执行 feishu_connect 进入登录阶段。' : '请检查浏览器或飞书客户端中的配置确认页面；完成后再次执行 feishu_connect。',
+          nextAction: configUrl ? '打开 authUrl 完成应用配置；完成后再次执行 feishu_setup_cli 并传入 startLogin=true，或再次执行 feishu_connect 进入登录阶段。' : '请检查浏览器或飞书客户端中的配置确认页面；完成后再次执行 feishu_setup_cli 并传入 startLogin=true，或再次执行 feishu_connect。',
           authUrl: configUrl,
           outputLines: configLines,
         };
@@ -347,23 +398,24 @@ export class FeishuAuthService {
         return status;
       }
       if (initialRaw.code === 0) {
-        const parsed = parseAccountSummary(initialOutput);
-        const connected = buildStatus({
-          success: true,
-          connected: true,
-          state: 'connected',
-          phase: 'connected',
-          message: '飞书连接成功。',
-          nextAction: '可继续查询授权状态或进入下一阶段能力开发。',
-          appId,
-          domain,
-          account: parsed.account,
-          tenant: parsed.tenant,
-          authUrl: initialAuthUrl,
-        });
+        const connected = buildConnectedStatus({ appId, domain, output: initialOutput, authUrl: initialAuthUrl });
         this.store.updateConnectionStatus(appId, connected);
         this.store.setActiveLogin(appId, null);
         return connected;
+      }
+      if (initialAuthUrl || initialDeviceCode) {
+        const pendingLogin: FeishuPersistedLoginState = {
+          ...activeLogin,
+          authUrl: activeLogin.authUrl || initialAuthUrl,
+          deviceCode: activeLogin.deviceCode || initialDeviceCode,
+          outputLines: [...activeLogin.outputLines, initialOutput].filter(Boolean).slice(-100),
+          message: initialAuthUrl ? '授权链接已生成，请手动打开 authUrl 完成确认。' : '授权流程已启动，请按 CLI 提示完成设备码确认。',
+          nextAction: initialAuthUrl ? '复制并打开 authUrl；完成后调用 feishu_auth_status 查询连接状态。' : '根据 deviceCode 完成确认；完成后调用 feishu_auth_status 查询连接状态。',
+        };
+        this.store.setActiveLogin(appId, pendingLogin);
+        const status = buildPendingStatus({ appId, domain, login: pendingLogin });
+        this.store.updateConnectionStatus(appId, status);
+        return status;
       }
       const normalized = normalizeFeishuCliError(initialRaw.stderr, initialRaw.stdout);
       const failed = buildStatus({
@@ -409,7 +461,25 @@ export class FeishuAuthService {
     }
 
     const mergedOutput = `${raw.stdout}\n${raw.stderr}`;
+    const rawAuthUrl = parseAuthUrl(mergedOutput) || this.store.getActiveLogin(appId)?.authUrl;
+    const rawDeviceCode = parseDeviceCode(mergedOutput) || this.store.getActiveLogin(appId)?.deviceCode;
     if (raw.code !== 0) {
+      if (rawAuthUrl || rawDeviceCode) {
+        const pendingLogin: FeishuPersistedLoginState = {
+          ...(this.store.getActiveLogin(appId) || activeLogin),
+          state: 'approval_pending',
+          phase: 'waiting_user_confirm',
+          message: rawAuthUrl ? '授权链接已生成，请手动打开 authUrl 完成确认。' : '授权流程已启动，请按 CLI 提示完成设备码确认。',
+          nextAction: rawAuthUrl ? '复制并打开 authUrl；完成后调用 feishu_auth_status 查询连接状态。' : '根据 deviceCode 完成确认；完成后调用 feishu_auth_status 查询连接状态。',
+          authUrl: rawAuthUrl,
+          deviceCode: rawDeviceCode,
+          outputLines: [...(this.store.getActiveLogin(appId)?.outputLines || activeLogin.outputLines), mergedOutput].filter(Boolean).slice(-100),
+        };
+        this.store.setActiveLogin(appId, pendingLogin);
+        const status = buildPendingStatus({ appId, domain, login: pendingLogin });
+        this.store.updateConnectionStatus(appId, status);
+        return status;
+      }
       const normalized = normalizeFeishuCliError(raw.stderr, raw.stdout);
       const failed = buildStatus({
         success: false,
@@ -421,27 +491,14 @@ export class FeishuAuthService {
         errorCode: normalized.errorCode,
         appId,
         domain,
-        authUrl: parseAuthUrl(mergedOutput) || this.store.getActiveLogin(appId)?.authUrl,
+        authUrl: rawAuthUrl,
       });
       this.store.updateConnectionStatus(appId, failed);
       this.store.setActiveLogin(appId, null);
       return failed;
     }
 
-    const parsed = parseAccountSummary(mergedOutput);
-    const connected = buildStatus({
-      success: true,
-      connected: true,
-      state: 'connected',
-      phase: 'connected',
-      message: '飞书连接成功。',
-      nextAction: '可继续查询授权状态或进入下一阶段能力开发。',
-      appId,
-      domain,
-      account: parsed.account,
-      tenant: parsed.tenant,
-      authUrl: parseAuthUrl(mergedOutput),
-    });
+    const connected = buildConnectedStatus({ appId, domain, output: mergedOutput, authUrl: rawAuthUrl });
     this.store.updateConnectionStatus(appId, connected);
     this.store.setActiveLogin(appId, null);
     return connected;
@@ -508,18 +565,10 @@ export class FeishuAuthService {
     const statusRaw = await this.adapter.getAuthStatus(input?.appId);
     const merged = `${statusRaw.stdout}\n${statusRaw.stderr}`.trim();
     if (statusRaw.code === 0 && isAuthorized(merged) && !isUnauthenticated(merged)) {
-      const parsed = parseAccountSummary(merged);
-      const connected = buildStatus({
-        success: true,
-        connected: true,
-        state: 'connected',
-        phase: 'connected',
-        message: '飞书连接成功。',
-        nextAction: '可继续查询授权状态或进入下一阶段能力开发。',
+      const connected = buildConnectedStatus({
         appId: input?.appId,
         domain: input?.domain || DEFAULT_DOMAIN,
-        account: parsed.account,
-        tenant: parsed.tenant,
+        output: merged,
         authUrl: activeLogin.authUrl,
       });
       this.store.updateConnectionStatus(input?.appId, connected);

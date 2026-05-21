@@ -5,9 +5,13 @@ import { triggerEngine } from '@/core/trigger/triggerEngine';
 import { Plus, Trash2, ChevronDown, ChevronUp, Copy, Check, HelpCircle } from 'lucide-react';
 import { Toggle } from '@/components/ui/toggle';
 import { Select } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import type { IMPlatform } from '@/types/im';
 import type { IMCapabilityLevel, IMResponseMode } from '@/types/imChannel';
 import { getIMPlatformOptions, getPlatformDisplayName } from '@/core/im/platformLabels';
+import { navigateToChatWithInput } from '@/utils/navigation';
+
+const FEISHU_CLI_INSTALL_PROMPT = '帮我安装飞书 CLI：https://open.feishu.cn/document/no_class/mcp-archive/feishu-cli-installation-guide.md';
 
 const CAPABILITY_OPTIONS: { value: IMCapabilityLevel; labelKey: keyof ReturnType<typeof useCapLabels> }[] = [
   { value: 'chat_only', labelKey: 'chat_only' },
@@ -179,12 +183,32 @@ export default function IMChannelSection() {
   const getSessionCount = (channelId: string) =>
     Object.values(sessions).filter(s => s.channelId === channelId).length;
 
+  const handleInstallFeishuCli = () => {
+    navigateToChatWithInput(FEISHU_CLI_INSTALL_PROMPT);
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div>
         <h3 className="text-base font-semibold text-[var(--abu-text-primary)]">{t.imChannel.title}</h3>
         <p className="text-xs text-[var(--abu-text-muted)] mt-1">{t.imChannel.description}</p>
+      </div>
+
+      <div className="rounded-xl border border-[var(--abu-clay-ring)] bg-[var(--abu-clay-5)] px-4 py-4 flex items-center justify-between gap-4">
+        <div className="min-w-0">
+          <h4 className="text-sm font-medium text-[var(--abu-text-primary)]">{t.imChannel.installFeishuCli}</h4>
+          <p className="text-xs text-[var(--abu-text-muted)] mt-1 leading-relaxed">{t.imChannel.installFeishuCliDesc}</p>
+        </div>
+        <Button
+          type="button"
+          variant="secondary"
+          size="sm"
+          onClick={handleInstallFeishuCli}
+          className="shrink-0 text-[var(--abu-clay)] bg-[var(--abu-bg-base)] hover:bg-[var(--abu-bg-hover)]"
+        >
+          {t.imChannel.installFeishuCliAction}
+        </Button>
       </div>
 
       {/* Channel List */}

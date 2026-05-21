@@ -3,6 +3,7 @@ import {
   buildAuthStatusCommand,
   buildCliVersionCommand,
   buildCliInstallCommand,
+  buildSkillInstallCommand,
   buildConfigInitCommand,
   buildCreateRecordsCommand,
   buildGetTableSchemaCommand,
@@ -315,6 +316,10 @@ export class LarkCliAdapter implements FeishuConnectorAdapter {
 
   async installCli(): Promise<FeishuCommandRawResult> {
     return await this.runCommand(buildCliInstallCommand(), 240);
+  }
+
+  async installSkill(): Promise<FeishuCommandRawResult> {
+    return await this.runCommand(buildSkillInstallCommand(), 240);
   }
 
   async initializeConfig(onOutput?: (line: string, stream: 'stdout' | 'stderr') => void): Promise<FeishuCommandRawResult> {

@@ -363,9 +363,18 @@ export class LarkMcpAdapter implements FeishuConnectorAdapter {
 
   async installCli(): Promise<FeishuCommandRawResult> {
     return {
-      command: 'npx -y @larksuite/cli@latest install',
+      command: 'npm install -g @larksuite/cli',
       stdout: '',
       stderr: 'LarkMcpAdapter 不负责安装 lark-cli。',
+      code: -1,
+    };
+  }
+
+  async installSkill(): Promise<FeishuCommandRawResult> {
+    return {
+      command: 'npx -y skills add https://open.feishu.cn --skill -y',
+      stdout: '',
+      stderr: 'LarkMcpAdapter 不负责安装飞书 CLI Skill。',
       code: -1,
     };
   }

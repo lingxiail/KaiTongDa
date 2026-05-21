@@ -245,6 +245,40 @@ export interface FeishuConnectInput {
   port?: number;
 }
 
+export type FeishuCliSetupPhase =
+  | 'idle'
+  | 'checking_environment'
+  | 'installing_cli'
+  | 'installing_skill'
+  | 'config_pending'
+  | 'login_pending'
+  | 'verifying'
+  | 'ready'
+  | 'failed';
+
+export interface FeishuCliSetupInput {
+  installCli?: boolean;
+  installSkill?: boolean;
+  initializeConfig?: boolean;
+  startLogin?: boolean;
+  verifyAuth?: boolean;
+  domain?: string;
+  preferredScopes?: string[];
+  port?: number;
+}
+
+export interface FeishuCliSetupResult {
+  success: boolean;
+  phase: FeishuCliSetupPhase;
+  environment?: FeishuEnvironmentStatus;
+  configUrl?: string;
+  authUrl?: string;
+  command?: string;
+  message: string;
+  nextAction?: string;
+  lastUpdatedAt: number;
+}
+
 export interface FeishuLoginStartInput {
   appId: string;
   appSecret: string;

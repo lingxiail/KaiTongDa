@@ -44,6 +44,7 @@ import {
   feishuListBasesTool,
   feishuListTablesTool,
   feishuQueryRecordsTool,
+  feishuSetupCliTool,
   feishuUpdateRecordsByFilterTool,
   feishuUpsertRecordsTool,
 } from './definitions/feishuTools';
@@ -93,6 +94,7 @@ export function registerBuiltinTools(): void {
   toolRegistry.register(skillViewTool);
   toolRegistry.register(skillManageTool);
   toolRegistry.register(toolSearchTool);
+  toolRegistry.register(feishuSetupCliTool);
   toolRegistry.register(feishuConnectTool);
   toolRegistry.register(feishuAuthStatusTool);
   toolRegistry.register(feishuDisconnectTool);

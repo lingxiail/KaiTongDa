@@ -1,14 +1,26 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildAuthLoginCommand,
+  buildCliInstallCommand,
   buildCreateRecordsCommand,
   buildListTablesCommand,
   buildQueryRecordsCommand,
+  buildSkillInstallCommand,
   buildUpdateRecordsCommand,
   buildUpsertRecordsCommand,
 } from '../core/feishu/larkCliCommands';
 
 describe('Feishu lark-cli command builders', () => {
+  it('builds official setup commands', () => {
+    const installCliCommand = buildCliInstallCommand();
+    const installSkillCommand = buildSkillInstallCommand();
+
+    expect(installCliCommand.program).toBe('npm');
+    expect(installCliCommand.args).toEqual(['install', '-g', '@larksuite/cli']);
+    expect(installSkillCommand.program).toBe('npx');
+    expect(installSkillCommand.args).toEqual(['-y', 'skills', 'add', 'https://open.feishu.cn', '--skill', '-y']);
+  });
+
   it('builds login argv without shell interpolation', () => {
     const command = buildAuthLoginCommand({
       appId: 'cli_demo',
@@ -23,14 +35,24 @@ describe('Feishu lark-cli command builders', () => {
       'auth',
       'login',
       '--recommend',
-      '--domain',
-      'https://open.feishu.cn',
       '--port',
       '3001',
       '--scope',
       'bitable:app',
       'contact:user.base:readonly',
     ]);
+  });
+
+  it('does not pass open platform url as auth domain', () => {
+    const command = buildAuthLoginCommand({
+      appId: 'cli_demo',
+      appSecret: 'secret_demo',
+      domain: ' `https://open.feishu.cn` ',
+      noWait: true,
+    });
+
+    expect(command.args).not.toContain('--domain');
+    expect(command.args).not.toContain(' `https://open.feishu.cn` ');
   });
 
   it('builds no-wait login argv for agent polling', () => {
