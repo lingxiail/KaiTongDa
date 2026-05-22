@@ -27,7 +27,7 @@
 | 自主规划并执行复杂任务 | :white_check_mark: | :x: | :x: |
 | 读写本地文件、执行命令 | :white_check_mark: | :x: | :white_check_mark: |
 | 自然语言交互 | :white_check_mark: | :white_check_mark: | :x: |
-| 28 个内置技能 + 自进化（灵犀自己攒新技能） | :white_check_mark: | :x: | :x: |
+| 29 个内置技能 + 自进化（灵犀自己攒新技能） | :white_check_mark: | :x: | :x: |
 | 多对话按项目聚合（Projects） | :white_check_mark: | :x: | :x: |
 | 定时任务 & 事件触发 | :white_check_mark: | :x: | :white_check_mark: |
 | IM 机器人（飞书/钉钉/企微/Slack） | :white_check_mark: | :x: | 部分 |
@@ -59,7 +59,7 @@
 <td align="center"><b>IM 频道对话</b><br/>在飞书/钉钉中 @灵犀 即可交互<br/><br/><img src="website/assets/screenshot-im-chat.png" width="100%" /></td>
 </tr>
 <tr>
-<td align="center"><b>Skill 技能</b><br/>28 个内置技能，支持自定义扩展 + 自进化<br/><br/><img src="website/assets/screenshot-skills.png" width="100%" /></td>
+<td align="center"><b>Skill 技能</b><br/>29 个内置技能，支持自定义扩展 + 自进化<br/><br/><img src="website/assets/screenshot-skills.png" width="100%" /></td>
 <td align="center"><b>MCP 连接器</b><br/>一键接入 Playwright、GitHub 等外部工具<br/><br/><img src="website/assets/screenshot-mcp.png" width="100%" /></td>
 </tr>
 <tr>
@@ -95,7 +95,7 @@
 - **多 Agent 后台并行** — 支持同时运行多个后台 Agent（最多 5 个），各自独立执行任务，进度实时可见
 - **桌宠模式** — 透明圆形浮窗常驻桌面，跨 Spaces 跟随，随手呼出对话不抢焦点
 - **对话分享 / 导出** — 一键把对话导出成 JSON 分享给同事；自动脱敏 API Key 与本地路径
-- **28 个内置技能** — PDF/PPTX/DOCX/Excel 生成、前端设计、画布设计、算法艺术、Mermaid/SVG/信息图、Web Artifacts、Chrome 自动化（LingXi-Browser）、深度研究、Agent 自我反思（reflect）、工作流自动化等，一键安装，支持自定义
+- **29 个内置技能** — PDF/PPTX/DOCX/Excel 生成、前端设计、画布设计、算法艺术、Mermaid/SVG/信息图、Web Artifacts、Chrome 自动化（LingXi-Browser）、互联网检索（agent-reach）、深度研究、Agent 自我反思（reflect）、工作流自动化等，一键安装，支持自定义
 - **MCP 工具协议** — 通过 Model Context Protocol 连接数据库、搜索引擎、GitHub 等外部服务
 - **浏览器自动化** — 内置 Browser Bridge + Chrome 扩展，实现网页元素操作、表单填写、截图、JS 执行
 - **电脑操控** — 通过截屏 + 键鼠控制完成桌面级任务，内置敏感应用拦截、危险按键拦截、5 分钟超时熔断等多重防护
@@ -261,27 +261,37 @@
 - Rust >= 1.75（[安装 Rust](https://rustup.rs/)）
 - Tauri 2.0 系统依赖（[参考文档](https://v2.tauri.app/start/prerequisites/)）
 
-### 开发
+### Windows 本地构建
 
-```bash
-# 克隆仓库
-git clone https://github.com/vking0804-spec/lingxi.git
-cd lingxi
-
-# 安装依赖
+```powershell
+# 1. 安装前端依赖
 npm install
 
-# 启动桌面应用（dev 隔离配置，与正式安装的 LingXi 完全隔离）
+# 2. 生成 Windows 版 Python 运行时（首次克隆或删除后必需）
+# 说明：此命令需要仓库提供对应的 package.json script
+npm run setup-python:win
+
+# 3. 开发模式（热更新）
 npm run tauri:dev
 
-# 仅启动前端（不需要 Rust）
-npm run dev
+# 4. 生产打包（输出 .exe 安装包）
+npm run tauri:build
 ```
 
-### 构建
+### macOS 本地构建
 
 ```bash
-npm run tauri build
+# 1. 安装前端依赖
+npm install
+
+# 2. 生成 macOS 版 Python 运行时（首次克隆或删除后必需）
+bash scripts/setup-python-runtime.sh
+
+# 3. 开发模式
+npm run tauri:dev
+
+# 4. 生产打包（输出 .dmg 镜像）
+npm run tauri:build
 ```
 
 构建产物位于 `src-tauri/target/release/bundle/`。
@@ -333,7 +343,7 @@ src/
 ├── types/            # TypeScript 类型定义
 └── utils/            # 工具函数
 
-builtin-skills/       # 28 个内置技能（每个为独立目录）
+builtin-skills/       # 29 个内置技能（每个为独立目录）
 builtin-agents/       # 内置 Agent 定义（预留）
 lingxi-browser-bridge/   # 浏览器桥接 MCP Server
 lingxi-chrome-extension/ # Chrome 扩展（LingXi-Browser 技能依赖）
