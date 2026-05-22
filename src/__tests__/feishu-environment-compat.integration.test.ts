@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { FeishuAuthService } from '../core/feishu/authService';
 import { assessCliCompatibility } from '../core/feishu/compat';
-import { LarkMcpCliAdapter } from '../core/feishu/cliAdapter';
 import type { FeishuCliAdapter, FeishuCliLoginHandle, FeishuCliRawResult } from '../core/feishu/cliAdapter';
 import { detectFeishuEnvironment } from '../core/feishu/env';
+import { LarkMcpAdapter } from '../core/feishu/larkMcpAdapter';
 import { FeishuResultNormalizer } from '../core/feishu/resultNormalizer';
 import { FeishuSessionStore } from '../core/feishu/sessionStore';
 import { FeishuToolMapper } from '../core/feishu/toolMapper';
@@ -101,7 +101,7 @@ class MockStageEAdapter implements FeishuCliAdapter {
   }
 }
 
-describe('Feishu stage E integration', () => {
+describe('Feishu environment and compatibility', () => {
   it('assesses tested and untested cli versions', () => {
     expect(assessCliCompatibility('0.5.1').status).toBe('compatible');
     expect(assessCliCompatibility('1.0.23').status).toBe('untested');
@@ -187,7 +187,7 @@ describe('Feishu stage E integration', () => {
       .toThrow('飞书请求失败(1254030): No permission to access this resource');
   });
 
-  it('passes folder token to the Drive file list MCP tool', async () => {
+  it('passes folder token to the legacy MCP base-listing adapter', async () => {
     type InvokeMcpToolProbe = {
       invokeMcpTool: (
         appId: string | undefined,
@@ -195,7 +195,7 @@ describe('Feishu stage E integration', () => {
         args: Record<string, unknown>,
       ) => Promise<FeishuCliRawResult>;
     };
-    const adapter = new LarkMcpCliAdapter();
+    const adapter = new LarkMcpAdapter();
     const invokeSpy = vi.spyOn(adapter as unknown as InvokeMcpToolProbe, 'invokeMcpTool').mockResolvedValue({
       command: 'drive.v1.file.list',
       stdout: JSON.stringify({ data: { files: [], has_more: false } }),

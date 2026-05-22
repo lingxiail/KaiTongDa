@@ -11,7 +11,7 @@ import type { IMCapabilityLevel, IMResponseMode } from '@/types/imChannel';
 import { getIMPlatformOptions, getPlatformDisplayName } from '@/core/im/platformLabels';
 import { navigateToChatWithInput } from '@/utils/navigation';
 
-const FEISHU_CLI_INSTALL_PROMPT = '帮我安装飞书 CLI：https://open.feishu.cn/document/no_class/mcp-archive/feishu-cli-installation-guide.md';
+const FEISHU_CLI_INSTALL_PROMPT = '帮我安装飞书 CLI，并按官方 lark-cli 流程完成配置和登录';
 
 const CAPABILITY_OPTIONS: { value: IMCapabilityLevel; labelKey: keyof ReturnType<typeof useCapLabels> }[] = [
   { value: 'chat_only', labelKey: 'chat_only' },

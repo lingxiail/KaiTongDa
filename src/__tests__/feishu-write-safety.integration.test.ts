@@ -202,7 +202,7 @@ function createBaseService(
   return new FeishuBaseService(adapter, authService, store, new FeishuFieldMapper(), writePolicy, undefined, writeQueue);
 }
 
-describe('Feishu stage D integration', () => {
+describe('Feishu write safety pipeline', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
   });
@@ -270,6 +270,92 @@ describe('Feishu stage D integration', () => {
     expect(result.success).toBe(false);
     expect(result.confirmation?.required).toBe(true);
     expect(result.message).toContain('超过确认阈值');
+  });
+
+  it('requires confirmation before large create and does not call adapter', async () => {
+    class CountingAdapter extends MockStageDAdapter {
+      createCalls = 0;
+
+      override async createRecords(input: FeishuCreateRecordsInput): Promise<FeishuRecordWriteResult> {
+        this.createCalls += 1;
+        return await super.createRecords(input);
+      }
+    }
+
+    const adapter = new CountingAdapter();
+    const service = createBaseService(new FeishuWritePolicy({
+      createConfirmThreshold: 1,
+      upsertConfirmThreshold: 20,
+      updateMatchConfirmThreshold: 10,
+    }), adapter);
+
+    const result = await service.createRecords({
+      appId: 'cli_stage_d',
+      baseId: 'app_sales',
+      tableId: 'tbl_customer',
+      records: [
+        { 客户名称: 'Tom', 金额: 99 },
+        { 客户名称: 'Jerry', 金额: 88 },
+      ],
+    });
+
+    expect(adapter.createCalls).toBe(0);
+    expect(result.success).toBe(false);
+    expect(result.confirmation).toMatchObject({
+      required: true,
+      confirmed: false,
+      threshold: 1,
+    });
+    expect(result.audit).toMatchObject({
+      action: 'create',
+      baseId: 'app_sales',
+      tableId: 'tbl_customer',
+      successCount: 0,
+      failureCount: 0,
+    });
+  });
+
+  it('allows confirmed large upsert and records audit confirmation state', async () => {
+    class CountingAdapter extends MockStageDAdapter {
+      upsertCalls = 0;
+
+      override async upsertRecords(input: FeishuUpsertRecordsInput): Promise<FeishuRecordWriteResult> {
+        this.upsertCalls += 1;
+        return await super.upsertRecords(input);
+      }
+    }
+
+    const adapter = new CountingAdapter();
+    const service = createBaseService(new FeishuWritePolicy({
+      createConfirmThreshold: 20,
+      upsertConfirmThreshold: 1,
+      updateMatchConfirmThreshold: 10,
+    }), adapter);
+
+    const result = await service.upsertRecords({
+      appId: 'cli_stage_d',
+      baseId: 'app_sales',
+      tableId: 'tbl_customer',
+      matchByFields: ['客户名称'],
+      records: [
+        { 客户名称: 'Tom', 金额: 99 },
+        { 客户名称: 'Jerry', 金额: 88 },
+      ],
+      confirmed: true,
+    });
+
+    expect(adapter.upsertCalls).toBe(1);
+    expect(result.success).toBe(true);
+    expect(result.confirmation).toMatchObject({
+      required: false,
+      confirmed: true,
+      threshold: 1,
+    });
+    expect(result.audit).toMatchObject({
+      action: 'upsert',
+      successCount: 2,
+      failureCount: 0,
+    });
   });
 
   it('serializes same-table writes through the write queue', async () => {

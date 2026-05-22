@@ -181,13 +181,13 @@ function seedConnectedStore(store: FeishuSessionStore, appId = 'cli_stage_b'): v
   });
 }
 
-describe('Feishu stage B integration', () => {
+describe('Feishu read tool normalization', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     registerBuiltinTools();
   });
 
-  it('normalizes stage B read results and reuses cache', async () => {
+  it('normalizes read results and reuses cache', async () => {
     const adapter = new MockStageBAdapter();
     const store = new FeishuSessionStore();
     seedConnectedStore(store);
@@ -236,7 +236,7 @@ describe('Feishu stage B integration', () => {
     expect(store.getCachedBases('cli_stage_b')?.items).toEqual([]);
   });
 
-  it('registers stage B feishu tools and returns structured json', async () => {
+  it('registers read tools and returns structured json', async () => {
     expect(toolRegistry.get('feishu_list_bases')).toBeDefined();
     expect(toolRegistry.get('feishu_list_tables')).toBeDefined();
     expect(toolRegistry.get('feishu_get_table_schema')).toBeDefined();

@@ -1,5 +1,5 @@
 import type { FeishuCommandRawResult, FeishuConnectorAdapter } from './connectorAdapter';
-import { larkMcpAdapter } from './larkMcpAdapter';
+import { larkCliAdapter } from './larkCliAdapter';
 import { FeishuAuthService, feishuAuthService } from './authService';
 import { buildFeishuWriteAuditSummary } from './audit';
 import { FeishuFieldMapper, feishuFieldMapper } from './fieldMapper';
@@ -51,7 +51,7 @@ export class FeishuBaseService {
   private readonly writeQueue: FeishuWriteQueue;
 
   constructor(
-    adapter: FeishuConnectorAdapter = larkMcpAdapter,
+    adapter: FeishuConnectorAdapter = larkCliAdapter,
     authService: FeishuAuthService = feishuAuthService,
     store: FeishuSessionStore = feishuSessionStore,
     fieldMapper: FeishuFieldMapper = feishuFieldMapper,

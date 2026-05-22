@@ -1406,7 +1406,7 @@ const enUS: TranslationDict = {
     addChannel: 'Add Channel',
     installFeishuCli: 'Install Feishu CLI',
     installFeishuCliDesc: 'Follow the official Feishu CLI guide to install the CLI, add the Skill, configure the app, and verify login.',
-    installFeishuCliAction: 'Fill install request in chat',
+    installFeishuCliAction: 'One-click installation',
     editChannel: 'Edit Channel',
     channelName: 'Channel Name',
     channelNamePlaceholder: 'e.g., Dev Team Bot',

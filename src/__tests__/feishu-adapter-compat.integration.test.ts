@@ -1,9 +1,11 @@
 import { describe, expect, it } from 'vitest';
+import { FeishuBaseService } from '../core/feishu/baseService';
+import * as cliAdapterExports from '../core/feishu/cliAdapter';
 import { LarkCliAdapter } from '../core/feishu/larkCliAdapter';
 import { LarkMcpAdapter } from '../core/feishu/larkMcpAdapter';
 
-describe('Feishu phase 1 adapter refactor', () => {
-  it('exposes adapter kind and capabilities for the MCP implementation', () => {
+describe('Feishu adapter defaults and compatibility', () => {
+  it('exposes adapter kind and capabilities for the legacy MCP connector', () => {
     const adapter = new LarkMcpAdapter();
 
     expect(adapter.kind).toBe('lark_mcp');
@@ -23,5 +25,15 @@ describe('Feishu phase 1 adapter refactor', () => {
     expect(writeResult.success).toBe(true);
     expect(writeResult.createdCount).toBe(0);
     expect(writeResult.message).toContain('没有需要新增的记录');
+  });
+
+  it('uses the native CLI adapter as the default base service connector', () => {
+    const service = new FeishuBaseService();
+
+    expect(service['adapter'].kind).toBe('lark_cli');
+  });
+
+  it('keeps cliAdapter as a type-only compatibility module at runtime', () => {
+    expect(Object.keys(cliAdapterExports)).toEqual([]);
   });
 });

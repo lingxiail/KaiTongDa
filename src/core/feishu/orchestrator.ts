@@ -145,7 +145,7 @@ export class FeishuIntentOrchestrator {
     const appId = input.appId || runtimeConfig.appId;
     const appSecret = input.appSecret || runtimeConfig.appSecret;
     const domain = input.domain || runtimeConfig.domain;
-    if (!appId || !appSecret) {
+    if (!appId) {
       return this.buildResult({
         handleInput: input,
         context,
@@ -204,16 +204,17 @@ export class FeishuIntentOrchestrator {
       const runtimeConfig = this.store.getRuntimeConfig(appId);
       const connectResult = await this.authService.startLogin({
         appId: input.appId || runtimeConfig.appId || '',
-        appSecret: input.appSecret || runtimeConfig.appSecret || '',
+        appSecret: input.appSecret || runtimeConfig.appSecret,
         domain: input.domain || runtimeConfig.domain,
       });
       intentContext.appId = connectResult.appId || appId;
       intentContext.authStatus = connectResult;
+      const needsAppId = !connectResult.success && connectResult.message.includes('缺少飞书 App ID');
       return {
         intent,
         resolvedContext: intentContext,
-        needClarification: !connectResult.success && connectResult.message.includes('缺少飞书 App ID 或 App Secret'),
-        clarificationQuestion: !connectResult.success && connectResult.message.includes('缺少飞书 App ID 或 App Secret')
+        needClarification: needsAppId,
+        clarificationQuestion: needsAppId
           ? buildNeedCredentialsMessage()
           : undefined,
         executionPlan: this.mapper.buildExecutionPlan(intent, intentContext),

@@ -222,13 +222,13 @@ function createOrchestrator(
   return new FeishuIntentOrchestrator(authService, baseService, store, mapper, resolver);
 }
 
-describe('Feishu stage C integration', () => {
+describe('Feishu natural language orchestration', () => {
   beforeEach(() => {
     vi.restoreAllMocks();
     registerBuiltinTools();
   });
 
-  it('handles natural language request for listing bases', async () => {
+  it('plans base listing requests without executing remote reads', async () => {
     const store = new FeishuSessionStore();
     seedConnectedStore(store);
     const adapter = new MockStageCAdapter();
@@ -459,7 +459,20 @@ describe('Feishu stage C integration', () => {
     expect(store.getRecentContext('cli_stage_c')?.fieldNames).toContain('客户名称');
   });
 
-  it('registers stage C natural language tool and returns structured json', async () => {
+  it('asks for appId when the natural language request needs a fresh connection', async () => {
+    const store = new FeishuSessionStore();
+    const orchestrator = createOrchestrator(store);
+
+    const result = await orchestrator.handleRequest({
+      query: '列出我的 Base',
+    });
+
+    expect(result.needClarification).toBe(true);
+    expect(result.message).toContain('通常只需要提供 appId');
+    expect(result.clarificationQuestion).toContain('补充 appId');
+  });
+
+  it('registers the natural language tool and returns structured json', async () => {
     expect(toolRegistry.get('feishu_handle_request')).toBeDefined();
 
     vi.spyOn(feishuFacade, 'handleRequest').mockResolvedValue({

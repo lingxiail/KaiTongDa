@@ -1407,7 +1407,7 @@ const zhCN: TranslationDict = {
     addChannel: '添加频道',
     installFeishuCli: '安装飞书 CLI',
     installFeishuCliDesc: '将按官方飞书 CLI 安装指南执行，帮助你安装 CLI、安装 Skill、配置应用并完成登录验证。',
-    installFeishuCliAction: '去对话框填写安装请求',
+    installFeishuCliAction: '一键安装',
     editChannel: '编辑频道',
     channelName: '频道名称',
     channelNamePlaceholder: '例如：研发群机器人',
