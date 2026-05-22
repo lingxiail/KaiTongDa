@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { FEISHU_ERROR_CODES } from './errorCodes';
 import { FeishuAuthService } from './authService';
 import { FeishuSessionStore } from './sessionStore';
-import type { FeishuCliAdapter, FeishuCliLoginHandle, FeishuCliRawResult } from './cliAdapter';
+import type { FeishuCommandRawResult, FeishuConnectorAdapter, FeishuConnectorLoginHandle } from './connectorAdapter';
 import type {
   FeishuCreateRecordsInput,
   FeishuGetTableSchemaInput,
@@ -15,42 +15,42 @@ import type {
   FeishuUpsertRecordsInput,
 } from './types';
 
-class MockFeishuCliAdapter implements FeishuCliAdapter {
-  nodeResult: FeishuCliRawResult = { command: 'node --version', stdout: 'v22.0.0', stderr: '', code: 0 };
-  npxResult: FeishuCliRawResult = { command: 'npx --version', stdout: '10.0.0', stderr: '', code: 0 };
-  cliResult: FeishuCliRawResult = { command: 'lark-cli --version', stdout: '1.0.23', stderr: '', code: 0 };
-  configResult: FeishuCliRawResult = { command: 'lark-cli config init --new', stdout: 'ok', stderr: '', code: 0 };
-  loginResult: FeishuCliRawResult = {
+class MockFeishuConnectorAdapter implements FeishuConnectorAdapter {
+  nodeResult: FeishuCommandRawResult = { command: 'node --version', stdout: 'v22.0.0', stderr: '', code: 0 };
+  npxResult: FeishuCommandRawResult = { command: 'npx --version', stdout: '10.0.0', stderr: '', code: 0 };
+  cliResult: FeishuCommandRawResult = { command: 'lark-cli --version', stdout: '1.0.23', stderr: '', code: 0 };
+  configResult: FeishuCommandRawResult = { command: 'lark-cli config init --new', stdout: 'ok', stderr: '', code: 0 };
+  loginResult: FeishuCommandRawResult = {
     command: 'login',
     stdout: 'Login successful\nname: Tom\nemail: tom@example.com\ntenant_key: tenant_demo',
     stderr: '',
     code: 0,
   };
 
-  async checkNodeVersion(): Promise<FeishuCliRawResult> {
+  async checkNodeVersion(): Promise<FeishuCommandRawResult> {
     return this.nodeResult;
   }
 
-  async checkNpxVersion(): Promise<FeishuCliRawResult> {
+  async checkNpxVersion(): Promise<FeishuCommandRawResult> {
     return this.npxResult;
   }
 
-  async checkCliVersion(): Promise<FeishuCliRawResult> {
+  async checkCliVersion(): Promise<FeishuCommandRawResult> {
     return this.cliResult;
   }
 
-  async installCli(): Promise<FeishuCliRawResult> {
+  async installCli(): Promise<FeishuCommandRawResult> {
     return { command: 'install', stdout: 'installed', stderr: '', code: 0 };
   }
 
-  async initializeConfig(): Promise<FeishuCliRawResult> {
+  async initializeConfig(): Promise<FeishuCommandRawResult> {
     return this.configResult;
   }
 
   async startLogin(
     input: FeishuLoginStartInput,
     onOutput?: (line: string, stream: 'stdout' | 'stderr') => void,
-  ): Promise<FeishuCliLoginHandle> {
+  ): Promise<FeishuConnectorLoginHandle> {
     onOutput?.('Please continue in browser: https://open.feishu.cn/mock-auth', 'stdout');
     if (input.noWait) {
       return {
@@ -71,7 +71,7 @@ class MockFeishuCliAdapter implements FeishuCliAdapter {
     };
   }
 
-  async getAuthStatus(): Promise<FeishuCliRawResult> {
+  async getAuthStatus(): Promise<FeishuCommandRawResult> {
     return {
       command: 'auth status',
       stdout: 'Authorized account\nname: Tom\nemail: tom@example.com\ntenant_key: tenant_demo',
@@ -80,23 +80,23 @@ class MockFeishuCliAdapter implements FeishuCliAdapter {
     };
   }
 
-  async logout(): Promise<FeishuCliRawResult> {
+  async logout(): Promise<FeishuCommandRawResult> {
     return { command: 'logout', stdout: 'ok', stderr: '', code: 0 };
   }
 
-  async listBases(_input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
+  async listBases(_input?: FeishuListBasesInput): Promise<FeishuCommandRawResult> {
     throw new Error('not implemented');
   }
 
-  async listTables(_input: FeishuListTablesInput): Promise<FeishuCliRawResult> {
+  async listTables(_input: FeishuListTablesInput): Promise<FeishuCommandRawResult> {
     throw new Error('not implemented');
   }
 
-  async getTableSchema(_input: FeishuGetTableSchemaInput): Promise<FeishuCliRawResult> {
+  async getTableSchema(_input: FeishuGetTableSchemaInput): Promise<FeishuCommandRawResult> {
     throw new Error('not implemented');
   }
 
-  async queryRecords(_input: FeishuQueryRecordsInput): Promise<FeishuCliRawResult> {
+  async queryRecords(_input: FeishuQueryRecordsInput): Promise<FeishuCommandRawResult> {
     throw new Error('not implemented');
   }
 
@@ -120,7 +120,7 @@ describe('FeishuAuthService', () => {
   });
 
   it('returns environment error when cli is unavailable', async () => {
-    const adapter = new MockFeishuCliAdapter();
+    const adapter = new MockFeishuConnectorAdapter();
     adapter.cliResult = { command: 'cli', stdout: '', stderr: 'not found', code: 1 };
     let installed = false;
     adapter.installCli = async () => {
@@ -142,7 +142,7 @@ describe('FeishuAuthService', () => {
   });
 
   it('returns connected immediately when lark-cli is already authenticated', async () => {
-    const adapter = new MockFeishuCliAdapter();
+    const adapter = new MockFeishuConnectorAdapter();
     let configStarted = false;
     let loginStarted = false;
     adapter.initializeConfig = async () => {
@@ -173,7 +173,7 @@ describe('FeishuAuthService', () => {
   });
 
   it('does not require app secret for lark-cli browser configuration flow', async () => {
-    const adapter = new MockFeishuCliAdapter();
+    const adapter = new MockFeishuConnectorAdapter();
     adapter.getAuthStatus = async () => ({
       command: 'auth status',
       stdout: '',
@@ -200,7 +200,7 @@ describe('FeishuAuthService', () => {
   });
 
   it('returns approval pending when login has started but not finished yet', async () => {
-    const adapter = new MockFeishuCliAdapter();
+    const adapter = new MockFeishuConnectorAdapter();
     adapter.getAuthStatus = async () => ({
       command: 'auth status',
       stdout: '',
@@ -228,7 +228,7 @@ describe('FeishuAuthService', () => {
   });
 
   it('returns pending authUrl when cli prints url before timeout exit', async () => {
-    const adapter = new MockFeishuCliAdapter();
+    const adapter = new MockFeishuConnectorAdapter();
     adapter.getAuthStatus = async () => ({
       command: 'auth status',
       stdout: '',
@@ -262,7 +262,7 @@ describe('FeishuAuthService', () => {
   });
 
   it('returns config_pending when config init needs browser confirmation', async () => {
-    const adapter = new MockFeishuCliAdapter();
+    const adapter = new MockFeishuConnectorAdapter();
     adapter.getAuthStatus = async () => ({
       command: 'auth status',
       stdout: '',
@@ -292,7 +292,7 @@ describe('FeishuAuthService', () => {
   });
 
   it('reuses active login on repeated connect', async () => {
-    const adapter = new MockFeishuCliAdapter();
+    const adapter = new MockFeishuConnectorAdapter();
     adapter.getAuthStatus = async () => ({
       command: 'auth status',
       stdout: '',
@@ -329,7 +329,7 @@ describe('FeishuAuthService', () => {
   });
 
   it('polls auth status and turns pending into connected', async () => {
-    const adapter = new MockFeishuCliAdapter();
+    const adapter = new MockFeishuConnectorAdapter();
     let authChecks = 0;
     adapter.getAuthStatus = async () => {
       authChecks += 1;
@@ -371,7 +371,7 @@ describe('FeishuAuthService', () => {
   });
 
   it('guides cli installation to feishu_setup_cli instead of auto installing from connect', async () => {
-    const adapter = new MockFeishuCliAdapter();
+    const adapter = new MockFeishuConnectorAdapter();
     adapter.cliResult = { command: 'lark-cli --version', stdout: '', stderr: 'not found', code: 1 };
     let installed = false;
     adapter.installCli = async () => {
@@ -395,7 +395,7 @@ describe('FeishuAuthService', () => {
   });
 
   it('polls connected status and caches account summary', async () => {
-    const adapter = new MockFeishuCliAdapter();
+    const adapter = new MockFeishuConnectorAdapter();
     let authChecks = 0;
     adapter.getAuthStatus = async () => {
       authChecks += 1;
@@ -439,7 +439,7 @@ describe('FeishuAuthService', () => {
   });
 
   it('maps expired auth failures to auth_expired', async () => {
-    const adapter = new MockFeishuCliAdapter();
+    const adapter = new MockFeishuConnectorAdapter();
     adapter.getAuthStatus = async () => ({
       command: 'auth status',
       stdout: '',
@@ -472,7 +472,7 @@ describe('FeishuAuthService', () => {
 
   it('disconnect clears connection state', async () => {
     const store = new FeishuSessionStore();
-    const service = new FeishuAuthService(new MockFeishuCliAdapter(), store);
+    const service = new FeishuAuthService(new MockFeishuConnectorAdapter(), store);
     await service.startLogin({
       appId: 'cli_xxx',
       appSecret: 'secret',

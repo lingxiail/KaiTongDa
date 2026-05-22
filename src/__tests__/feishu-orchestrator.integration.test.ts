@@ -5,7 +5,7 @@ import { FeishuBaseService } from '../core/feishu/baseService';
 import { FeishuResourceResolver } from '../core/feishu/resourceResolver';
 import { FeishuSessionStore } from '../core/feishu/sessionStore';
 import { FeishuToolMapper } from '../core/feishu/toolMapper';
-import type { FeishuCliAdapter, FeishuCliLoginHandle, FeishuCliRawResult } from '../core/feishu/cliAdapter';
+import type { FeishuCommandRawResult, FeishuConnectorAdapter, FeishuConnectorLoginHandle } from '../core/feishu/connectorAdapter';
 import type {
   FeishuCreateRecordsInput,
   FeishuGetTableSchemaInput,
@@ -21,31 +21,31 @@ import { registerBuiltinTools } from '../core/tools/builtins';
 import { feishuFacade } from '../core/feishu/facade';
 import { toolRegistry } from '../core/tools/registry';
 
-class MockStageCAdapter implements FeishuCliAdapter {
+class MockStageCAdapter implements FeishuConnectorAdapter {
   listBasesCalls = 0;
   lastListBasesInput?: FeishuListBasesInput;
 
-  async checkNodeVersion(): Promise<FeishuCliRawResult> {
+  async checkNodeVersion(): Promise<FeishuCommandRawResult> {
     return { command: 'node --version', stdout: 'v22.0.0', stderr: '', code: 0 };
   }
 
-  async checkNpxVersion(): Promise<FeishuCliRawResult> {
+  async checkNpxVersion(): Promise<FeishuCommandRawResult> {
     return { command: 'npx --version', stdout: '10.0.0', stderr: '', code: 0 };
   }
 
-  async checkCliVersion(): Promise<FeishuCliRawResult> {
+  async checkCliVersion(): Promise<FeishuCommandRawResult> {
     return { command: 'lark-cli --version', stdout: '1.0.23', stderr: '', code: 0 };
   }
 
-  async installCli(): Promise<FeishuCliRawResult> {
+  async installCli(): Promise<FeishuCommandRawResult> {
     return { command: 'install', stdout: 'installed', stderr: '', code: 0 };
   }
 
-  async initializeConfig(): Promise<FeishuCliRawResult> {
+  async initializeConfig(): Promise<FeishuCommandRawResult> {
     return { command: 'config', stdout: 'ok', stderr: '', code: 0 };
   }
 
-  async startLogin(_input: FeishuLoginStartInput, onOutput?: (line: string) => void): Promise<FeishuCliLoginHandle> {
+  async startLogin(_input: FeishuLoginStartInput, onOutput?: (line: string) => void): Promise<FeishuConnectorLoginHandle> {
     onOutput?.('Please continue in browser: https://open.feishu.cn/mock-auth');
     return {
       id: 'login-1',
@@ -59,7 +59,7 @@ class MockStageCAdapter implements FeishuCliAdapter {
     };
   }
 
-  async getAuthStatus(): Promise<FeishuCliRawResult> {
+  async getAuthStatus(): Promise<FeishuCommandRawResult> {
     return {
       command: 'auth status',
       stdout: 'Authorized account: Tom (tom@example.com)',
@@ -68,11 +68,11 @@ class MockStageCAdapter implements FeishuCliAdapter {
     };
   }
 
-  async logout(): Promise<FeishuCliRawResult> {
+  async logout(): Promise<FeishuCommandRawResult> {
     return { command: 'logout', stdout: 'ok', stderr: '', code: 0 };
   }
 
-  async listBases(input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
+  async listBases(input?: FeishuListBasesInput): Promise<FeishuCommandRawResult> {
     this.listBasesCalls += 1;
     this.lastListBasesInput = input;
     return {
@@ -91,7 +91,7 @@ class MockStageCAdapter implements FeishuCliAdapter {
     };
   }
 
-  async listTables(input: FeishuListTablesInput): Promise<FeishuCliRawResult> {
+  async listTables(input: FeishuListTablesInput): Promise<FeishuCommandRawResult> {
     const items = input.baseId === 'app_sales'
       ? [
           { table_id: 'tbl_customer_a', name: '客户表' },
@@ -113,7 +113,7 @@ class MockStageCAdapter implements FeishuCliAdapter {
     };
   }
 
-  async getTableSchema(_input: FeishuGetTableSchemaInput): Promise<FeishuCliRawResult> {
+  async getTableSchema(_input: FeishuGetTableSchemaInput): Promise<FeishuCommandRawResult> {
     return {
       command: 'bitable.v1.appTableField.list',
       stdout: JSON.stringify({
@@ -130,7 +130,7 @@ class MockStageCAdapter implements FeishuCliAdapter {
     };
   }
 
-  async queryRecords(input: FeishuQueryRecordsInput): Promise<FeishuCliRawResult> {
+  async queryRecords(input: FeishuQueryRecordsInput): Promise<FeishuCommandRawResult> {
     return {
       command: 'bitable.v1.appTableRecord.search',
       stdout: JSON.stringify({
@@ -162,7 +162,7 @@ class MockStageCAdapter implements FeishuCliAdapter {
 }
 
 class DirectBaseTokenAdapter extends MockStageCAdapter {
-  async listBases(_input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
+  async listBases(_input?: FeishuListBasesInput): Promise<FeishuCommandRawResult> {
     this.listBasesCalls += 1;
     return {
       command: 'drive.v1.file.list',
@@ -172,7 +172,7 @@ class DirectBaseTokenAdapter extends MockStageCAdapter {
     };
   }
 
-  async listTables(input: FeishuListTablesInput): Promise<FeishuCliRawResult> {
+  async listTables(input: FeishuListTablesInput): Promise<FeishuCommandRawResult> {
     return {
       command: 'bitable.v1.appTable.list',
       stdout: JSON.stringify({
@@ -213,7 +213,7 @@ function seedConnectedStore(store: FeishuSessionStore, appId = 'cli_stage_c'): v
 
 function createOrchestrator(
   store = new FeishuSessionStore(),
-  adapter: FeishuCliAdapter = new MockStageCAdapter(),
+  adapter: FeishuConnectorAdapter = new MockStageCAdapter(),
 ): FeishuIntentOrchestrator {
   const authService = new FeishuAuthService(adapter, store);
   const baseService = new FeishuBaseService(adapter, authService, store);

@@ -396,9 +396,9 @@ export const feishuUpdateRecordsByFilterTool: ToolDefinition = {
 export const feishuHandleRequestTool: ToolDefinition = {
   name: TOOL_NAMES.FEISHU_HANDLE_REQUEST,
   description: [
-    '承接飞书多维表格自然语言请求，但只做轻量意图识别、最近 Base/Table/字段上下文补全与资源澄清。',
-    '适用于“连接飞书”“列出我的 Base”“查看客户表字段”“帮我查飞书客户表最近 10 条记录”等场景。',
-    '复杂查询与写入仍应继续调用对应的 `feishu_*` 结构化工具；不要让 Agent 直接拼接或执行原始 lark-cli 命令。',
+    '承接飞书多维表格自然语言请求，但只做轻量意图识别、最近 Base/Table/字段上下文补全、资源澄清与执行规划。',
+    '适用于把“连接飞书”“列出我的 Base”“查看客户表字段”“帮我查飞书客户表最近 10 条记录”等说法转换为后续结构化工具调用计划。',
+    '不会直接执行查询或写入；后续读写必须继续调用对应的 `feishu_*` 结构化工具，且不要让 Agent 直接拼接或执行原始 lark-cli 命令。',
   ].join(' '),
   inputSchema: {
     type: 'object',

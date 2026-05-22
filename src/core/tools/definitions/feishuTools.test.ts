@@ -21,6 +21,14 @@ describe('feishu tools', () => {
     expect(toolRegistry.get('feishu_handle_request')).toBeDefined();
   });
 
+  it('describes feishu_handle_request as planning-only', () => {
+    const tool = toolRegistry.get('feishu_handle_request');
+
+    expect(tool?.description).toContain('执行规划');
+    expect(tool?.description).toContain('不会直接执行查询或写入');
+    expect(tool?.description).toContain('结构化工具');
+  });
+
   it('feishu_setup_cli returns structured json', async () => {
     vi.spyOn(feishuFacade, 'setupCli').mockResolvedValue({
       success: true,

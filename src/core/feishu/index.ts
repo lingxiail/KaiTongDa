@@ -1,7 +1,6 @@
 export * from './types';
 export * from './errorCodes';
 export * from './connectorAdapter';
-export * from './cliAdapter';
 export * from './argvExecutor';
 export * from './larkMcpAdapter';
 export * from './larkCliAdapter';

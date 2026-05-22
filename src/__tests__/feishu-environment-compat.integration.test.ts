@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { FeishuAuthService } from '../core/feishu/authService';
 import { assessCliCompatibility } from '../core/feishu/compat';
-import type { FeishuCliAdapter, FeishuCliLoginHandle, FeishuCliRawResult } from '../core/feishu/cliAdapter';
+import type { FeishuCommandRawResult, FeishuConnectorAdapter, FeishuConnectorLoginHandle } from '../core/feishu/connectorAdapter';
 import { detectFeishuEnvironment } from '../core/feishu/env';
 import { LarkMcpAdapter } from '../core/feishu/larkMcpAdapter';
 import { FeishuResultNormalizer } from '../core/feishu/resultNormalizer';
@@ -19,33 +19,33 @@ import type {
   FeishuUpsertRecordsInput,
 } from '../core/feishu/types';
 
-class MockStageEAdapter implements FeishuCliAdapter {
+class MockStageEAdapter implements FeishuConnectorAdapter {
   constructor(
     private readonly cliVersion = '1.0.23',
     private readonly loginOutput = 'Login successful\nname: Tom\nemail: tom@example.com\ntenant_key: tenant_demo',
   ) {}
 
-  async checkNodeVersion(): Promise<FeishuCliRawResult> {
+  async checkNodeVersion(): Promise<FeishuCommandRawResult> {
     return { command: 'node --version', stdout: 'v22.0.0', stderr: '', code: 0 };
   }
 
-  async checkNpxVersion(): Promise<FeishuCliRawResult> {
+  async checkNpxVersion(): Promise<FeishuCommandRawResult> {
     return { command: 'npx --version', stdout: '10.0.0', stderr: '', code: 0 };
   }
 
-  async checkCliVersion(): Promise<FeishuCliRawResult> {
+  async checkCliVersion(): Promise<FeishuCommandRawResult> {
     return { command: 'lark-cli --version', stdout: this.cliVersion, stderr: '', code: 0 };
   }
 
-  async installCli(): Promise<FeishuCliRawResult> {
+  async installCli(): Promise<FeishuCommandRawResult> {
     return { command: 'install', stdout: 'installed', stderr: '', code: 0 };
   }
 
-  async initializeConfig(): Promise<FeishuCliRawResult> {
+  async initializeConfig(): Promise<FeishuCommandRawResult> {
     return { command: 'config', stdout: 'ok', stderr: '', code: 0 };
   }
 
-  async startLogin(_input: FeishuLoginStartInput, onOutput?: (line: string, stream: 'stdout' | 'stderr') => void): Promise<FeishuCliLoginHandle> {
+  async startLogin(_input: FeishuLoginStartInput, onOutput?: (line: string, stream: 'stdout' | 'stderr') => void): Promise<FeishuConnectorLoginHandle> {
     onOutput?.('Please continue in browser: https://open.feishu.cn/mock-auth', 'stdout');
     return {
       id: 'login-stage-e',
@@ -59,7 +59,7 @@ class MockStageEAdapter implements FeishuCliAdapter {
     };
   }
 
-  async getAuthStatus(): Promise<FeishuCliRawResult> {
+  async getAuthStatus(): Promise<FeishuCommandRawResult> {
     return {
       command: 'auth status',
       stdout: 'Authorized account: Tom (tom@example.com)\ntenant_key: tenant_demo',
@@ -68,23 +68,23 @@ class MockStageEAdapter implements FeishuCliAdapter {
     };
   }
 
-  async logout(): Promise<FeishuCliRawResult> {
+  async logout(): Promise<FeishuCommandRawResult> {
     return { command: 'logout', stdout: 'ok', stderr: '', code: 0 };
   }
 
-  async listBases(_input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
+  async listBases(_input?: FeishuListBasesInput): Promise<FeishuCommandRawResult> {
     throw new Error('not implemented');
   }
 
-  async listTables(_input: FeishuListTablesInput): Promise<FeishuCliRawResult> {
+  async listTables(_input: FeishuListTablesInput): Promise<FeishuCommandRawResult> {
     throw new Error('not implemented');
   }
 
-  async getTableSchema(_input: FeishuGetTableSchemaInput): Promise<FeishuCliRawResult> {
+  async getTableSchema(_input: FeishuGetTableSchemaInput): Promise<FeishuCommandRawResult> {
     throw new Error('not implemented');
   }
 
-  async queryRecords(_input: FeishuQueryRecordsInput): Promise<FeishuCliRawResult> {
+  async queryRecords(_input: FeishuQueryRecordsInput): Promise<FeishuCommandRawResult> {
     throw new Error('not implemented');
   }
 
@@ -193,7 +193,7 @@ describe('Feishu environment and compatibility', () => {
         appId: string | undefined,
         toolName: string,
         args: Record<string, unknown>,
-      ) => Promise<FeishuCliRawResult>;
+      ) => Promise<FeishuCommandRawResult>;
     };
     const adapter = new LarkMcpAdapter();
     const invokeSpy = vi.spyOn(adapter as unknown as InvokeMcpToolProbe, 'invokeMcpTool').mockResolvedValue({

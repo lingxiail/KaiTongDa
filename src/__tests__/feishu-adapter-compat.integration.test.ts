@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FeishuBaseService } from '../core/feishu/baseService';
-import * as cliAdapterExports from '../core/feishu/cliAdapter';
+import * as feishuExports from '../core/feishu';
 import { LarkCliAdapter } from '../core/feishu/larkCliAdapter';
 import { LarkMcpAdapter } from '../core/feishu/larkMcpAdapter';
 
@@ -33,7 +33,9 @@ describe('Feishu adapter defaults and compatibility', () => {
     expect(service['adapter'].kind).toBe('lark_cli');
   });
 
-  it('keeps cliAdapter as a type-only compatibility module at runtime', () => {
-    expect(Object.keys(cliAdapterExports)).toEqual([]);
+  it('does not expose the legacy cliAdapter compatibility module from the Feishu barrel', () => {
+    expect('FeishuCliAdapter' in feishuExports).toBe(false);
+    expect('FeishuCliRawResult' in feishuExports).toBe(false);
+    expect('FeishuCliLoginHandle' in feishuExports).toBe(false);
   });
 });

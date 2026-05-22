@@ -3,7 +3,7 @@ import { FeishuAuthService } from '../core/feishu/authService';
 import { FeishuBaseService } from '../core/feishu/baseService';
 import { FEISHU_ERROR_CODES } from '../core/feishu/errorCodes';
 import { FeishuSessionStore } from '../core/feishu/sessionStore';
-import type { FeishuCliAdapter, FeishuCliLoginHandle, FeishuCliRawResult } from '../core/feishu/cliAdapter';
+import type { FeishuCommandRawResult, FeishuConnectorAdapter, FeishuConnectorLoginHandle } from '../core/feishu/connectorAdapter';
 import type {
   FeishuCreateRecordsInput,
   FeishuGetTableSchemaInput,
@@ -19,34 +19,34 @@ import { registerBuiltinTools } from '../core/tools/builtins';
 import { feishuFacade } from '../core/feishu/facade';
 import { toolRegistry } from '../core/tools/registry';
 
-class MockStageBAdapter implements FeishuCliAdapter {
+class MockStageBAdapter implements FeishuConnectorAdapter {
   listBasesCalls = 0;
   listTablesCalls = 0;
   schemaCalls = 0;
   recordCalls = 0;
   lastListBasesInput?: FeishuListBasesInput;
 
-  async checkNodeVersion(): Promise<FeishuCliRawResult> {
+  async checkNodeVersion(): Promise<FeishuCommandRawResult> {
     return { command: 'node --version', stdout: 'v22.0.0', stderr: '', code: 0 };
   }
 
-  async checkNpxVersion(): Promise<FeishuCliRawResult> {
+  async checkNpxVersion(): Promise<FeishuCommandRawResult> {
     return { command: 'npx --version', stdout: '10.0.0', stderr: '', code: 0 };
   }
 
-  async checkCliVersion(): Promise<FeishuCliRawResult> {
+  async checkCliVersion(): Promise<FeishuCommandRawResult> {
     return { command: 'lark-cli --version', stdout: '1.0.23', stderr: '', code: 0 };
   }
 
-  async installCli(): Promise<FeishuCliRawResult> {
+  async installCli(): Promise<FeishuCommandRawResult> {
     return { command: 'install', stdout: 'installed', stderr: '', code: 0 };
   }
 
-  async initializeConfig(): Promise<FeishuCliRawResult> {
+  async initializeConfig(): Promise<FeishuCommandRawResult> {
     return { command: 'config', stdout: 'ok', stderr: '', code: 0 };
   }
 
-  async startLogin(_input: FeishuLoginStartInput): Promise<FeishuCliLoginHandle> {
+  async startLogin(_input: FeishuLoginStartInput): Promise<FeishuConnectorLoginHandle> {
     return {
       id: 'login-1',
       command: 'login',
@@ -54,7 +54,7 @@ class MockStageBAdapter implements FeishuCliAdapter {
     };
   }
 
-  async getAuthStatus(): Promise<FeishuCliRawResult> {
+  async getAuthStatus(): Promise<FeishuCommandRawResult> {
     return {
       command: 'auth status',
       stdout: 'Authorized account: Tom (tom@example.com)',
@@ -63,11 +63,11 @@ class MockStageBAdapter implements FeishuCliAdapter {
     };
   }
 
-  async logout(): Promise<FeishuCliRawResult> {
+  async logout(): Promise<FeishuCommandRawResult> {
     return { command: 'logout', stdout: 'ok', stderr: '', code: 0 };
   }
 
-  async listBases(input?: FeishuListBasesInput): Promise<FeishuCliRawResult> {
+  async listBases(input?: FeishuListBasesInput): Promise<FeishuCommandRawResult> {
     this.listBasesCalls += 1;
     this.lastListBasesInput = input;
     return {
@@ -86,7 +86,7 @@ class MockStageBAdapter implements FeishuCliAdapter {
     };
   }
 
-  async listTables(input: FeishuListTablesInput): Promise<FeishuCliRawResult> {
+  async listTables(input: FeishuListTablesInput): Promise<FeishuCommandRawResult> {
     this.listTablesCalls += 1;
     return {
       command: 'bitable.v1.appTable.list',
@@ -103,7 +103,7 @@ class MockStageBAdapter implements FeishuCliAdapter {
     };
   }
 
-  async getTableSchema(_input: FeishuGetTableSchemaInput): Promise<FeishuCliRawResult> {
+  async getTableSchema(_input: FeishuGetTableSchemaInput): Promise<FeishuCommandRawResult> {
     this.schemaCalls += 1;
     return {
       command: 'bitable.v1.appTableField.list',
@@ -126,7 +126,7 @@ class MockStageBAdapter implements FeishuCliAdapter {
     };
   }
 
-  async queryRecords(_input: FeishuQueryRecordsInput): Promise<FeishuCliRawResult> {
+  async queryRecords(_input: FeishuQueryRecordsInput): Promise<FeishuCommandRawResult> {
     this.recordCalls += 1;
     return {
       command: 'bitable.v1.appTableRecord.search',

@@ -9,7 +9,6 @@ const FEISHU_MESSAGES: Record<FeishuLocale, {
   missingBase: string;
   missingTableWithBase: string;
   missingTableWithoutBase: string;
-  unsupportedWrite: string;
   unknownIntent: string;
   cliVersionUnknown: string;
   cliVersionUntested: string;
@@ -20,7 +19,6 @@ const FEISHU_MESSAGES: Record<FeishuLocale, {
     missingBase: '你想操作哪个 Base？请告诉我 Base 名称或直接提供 baseId。',
     missingTableWithBase: '你想查看 Base「{baseName}」下的哪张表？请告诉我表名或 tableId。',
     missingTableWithoutBase: '你想操作哪张表？请告诉我表名，必要时也可以同时提供所属 Base 名称。',
-    unsupportedWrite: '当前自然语言飞书入口只做意图识别、上下文补全与资源澄清；写入仍请继续调用对应结构化写入工具。',
     unknownIntent: '我暂时没能稳定识别这条飞书请求。你可以换一种说法，例如“列出我的 Base”或“查看客户表字段”。',
     cliVersionUnknown: '尚未识别出飞书 CLI 版本，建议先确认当前安装版本是否在已验证范围内。',
     cliVersionUntested: '当前飞书 CLI 版本 {version} 超出已验证范围 {range}，建议优先回归关键链路。',
@@ -31,7 +29,6 @@ const FEISHU_MESSAGES: Record<FeishuLocale, {
     missingBase: 'Which Base do you want to use? Tell me the Base name or provide baseId directly.',
     missingTableWithBase: 'Which table under Base "{baseName}" do you want to use? Tell me the table name or tableId.',
     missingTableWithoutBase: 'Which table do you want to use? Tell me the table name, and optionally the Base name too.',
-    unsupportedWrite: 'The natural-language Feishu entry only handles intent routing, context completion, and resource clarification. Use the structured write tools for mutations.',
     unknownIntent: 'I could not reliably identify this Feishu request yet. Try a phrasing like "list my Bases" or "show fields of customer table".',
     cliVersionUnknown: 'The Feishu CLI version could not be recognized. Please verify whether the installed version is within the validated range.',
     cliVersionUntested: 'Feishu CLI version {version} is outside the validated range {range}. Please run key regression checks first.',
@@ -75,10 +72,6 @@ export function buildAmbiguousBaseQuestion(candidates: FeishuResourceCandidate[]
 
 export function buildAmbiguousTableQuestion(candidates: FeishuResourceCandidate[]): string {
   return `找到了多个同名或相近的表：${quoteNames(candidates)}。请明确告诉我你要用哪一张。`;
-}
-
-export function buildUnsupportedWriteMessage(locale: FeishuLocale = 'zh-CN'): string {
-  return getLocaleMessages(locale).unsupportedWrite;
 }
 
 export function buildUnknownIntentMessage(locale: FeishuLocale = 'zh-CN'): string {
