@@ -1,6 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { normalizeMessages } from './messageNormalizer';
 import type { Message } from '../../types';
+
+// Mock Tauri file operations
+vi.mock('@tauri-apps/plugin-fs', () => ({
+  readFile: vi.fn(),
+  exists: vi.fn(),
+}));
 
 function makeMessage(overrides: Partial<Message> & Pick<Message, 'role' | 'content'>): Message {
   return {
@@ -12,37 +18,37 @@ function makeMessage(overrides: Partial<Message> & Pick<Message, 'role' | 'conte
 
 describe('messageNormalizer', () => {
   describe('normalizeMessages', () => {
-    it('converts simple user + assistant messages', () => {
+    it('converts simple user + assistant messages', async () => {
       const messages: Message[] = [
         makeMessage({ role: 'user', content: 'Hello' }),
         makeMessage({ role: 'assistant', content: 'Hi there' }),
       ];
 
-      const turns = normalizeMessages(messages);
+      const turns = await normalizeMessages(messages);
 
       expect(turns).toHaveLength(2);
       expect(turns[0]).toEqual({ kind: 'user', content: [{ type: 'text', text: 'Hello' }] });
       expect(turns[1]).toMatchObject({ kind: 'assistant', text: 'Hi there', toolCalls: [] });
     });
 
-    it('skips system messages', () => {
+    it('skips system messages', async () => {
       const messages: Message[] = [
         makeMessage({ role: 'system', content: 'System prompt' }),
         makeMessage({ role: 'user', content: 'Hello' }),
       ];
 
-      const turns = normalizeMessages(messages);
+      const turns = await normalizeMessages(messages);
       expect(turns).toHaveLength(1);
       expect(turns[0].kind).toBe('user');
     });
 
-    it('preserves thinking content', () => {
+    it('preserves thinking content', async () => {
       const messages: Message[] = [
         makeMessage({ role: 'user', content: 'Think about this' }),
         makeMessage({ role: 'assistant', content: 'Result', thinking: 'My internal reasoning' }),
       ];
 
-      const turns = normalizeMessages(messages);
+      const turns = await normalizeMessages(messages);
       const assistant = turns[1];
       expect(assistant.kind).toBe('assistant');
       if (assistant.kind === 'assistant') {
@@ -51,7 +57,7 @@ describe('messageNormalizer', () => {
     });
 
     describe('tool call pairing', () => {
-      it('normalizes tool calls with results (from toolCallsForContext)', () => {
+      it('normalizes tool calls with results (from toolCallsForContext)', async () => {
         const messages: Message[] = [
           makeMessage({ role: 'user', content: 'Read a file' }),
           makeMessage({
@@ -63,7 +69,7 @@ describe('messageNormalizer', () => {
           }),
         ];
 
-        const turns = normalizeMessages(messages);
+        const turns = await normalizeMessages(messages);
         const assistant = turns[1];
         expect(assistant.kind).toBe('assistant');
         if (assistant.kind === 'assistant') {
@@ -75,7 +81,7 @@ describe('messageNormalizer', () => {
         }
       });
 
-      it('prefers toolCallsForContext over toolCalls', () => {
+      it('prefers toolCallsForContext over toolCalls', async () => {
         const messages: Message[] = [
           makeMessage({
             role: 'assistant',
@@ -89,13 +95,13 @@ describe('messageNormalizer', () => {
           }),
         ];
 
-        const turns = normalizeMessages(messages);
+        const turns = await normalizeMessages(messages);
         if (turns[0].kind === 'assistant') {
           expect(turns[0].toolCalls[0].result).toBe('context result');
         }
       });
 
-      it('★ fixes orphaned tool_use with placeholder result', () => {
+      it('★ fixes orphaned tool_use with placeholder result', async () => {
         const messages: Message[] = [
           makeMessage({
             role: 'assistant',
@@ -106,7 +112,7 @@ describe('messageNormalizer', () => {
           }),
         ];
 
-        const turns = normalizeMessages(messages);
+        const turns = await normalizeMessages(messages);
         if (turns[0].kind === 'assistant') {
           expect(turns[0].toolCalls).toHaveLength(1);
           expect(turns[0].toolCalls[0].result).toBe('[Tool execution was interrupted]');
@@ -114,7 +120,7 @@ describe('messageNormalizer', () => {
         }
       });
 
-      it('★ fixes mixed: some results present, some missing', () => {
+      it('★ fixes mixed: some results present, some missing', async () => {
         const messages: Message[] = [
           makeMessage({
             role: 'assistant',
@@ -127,7 +133,7 @@ describe('messageNormalizer', () => {
           }),
         ];
 
-        const turns = normalizeMessages(messages);
+        const turns = await normalizeMessages(messages);
         if (turns[0].kind === 'assistant') {
           const tcs = turns[0].toolCalls;
           expect(tcs[0].result).toBe('content A');
@@ -139,7 +145,7 @@ describe('messageNormalizer', () => {
         }
       });
 
-      it('preserves isError flag from original tool call', () => {
+      it('preserves isError flag from original tool call', async () => {
         const messages: Message[] = [
           makeMessage({
             role: 'assistant',
@@ -150,7 +156,7 @@ describe('messageNormalizer', () => {
           }),
         ];
 
-        const turns = normalizeMessages(messages);
+        const turns = await normalizeMessages(messages);
         if (turns[0].kind === 'assistant') {
           expect(turns[0].toolCalls[0].isError).toBe(true);
           expect(turns[0].toolCalls[0].result).toBe('Error: command failed');
@@ -159,7 +165,7 @@ describe('messageNormalizer', () => {
     });
 
     describe('image handling', () => {
-      it('extracts images from tool result content', () => {
+      it('extracts images from tool result content', async () => {
         const messages: Message[] = [
           makeMessage({
             role: 'assistant',
@@ -179,7 +185,7 @@ describe('messageNormalizer', () => {
           }),
         ];
 
-        const turns = normalizeMessages(messages);
+        const turns = await normalizeMessages(messages);
         if (turns[0].kind === 'assistant') {
           expect(turns[0].toolCalls[0].resultImages).toHaveLength(1);
           expect(turns[0].toolCalls[0].resultImages[0]).toEqual({
@@ -189,7 +195,7 @@ describe('messageNormalizer', () => {
         }
       });
 
-      it('strips images when supportsVision is false', () => {
+      it('strips images when supportsVision is false', async () => {
         const messages: Message[] = [
           makeMessage({
             role: 'assistant',
@@ -208,13 +214,13 @@ describe('messageNormalizer', () => {
           }),
         ];
 
-        const turns = normalizeMessages(messages, { supportsVision: false });
+        const turns = await normalizeMessages(messages, { supportsVision: false });
         if (turns[0].kind === 'assistant') {
           expect(turns[0].toolCalls[0].resultImages).toHaveLength(0);
         }
       });
 
-      it('converts user image content blocks', () => {
+      it('converts user image content blocks', async () => {
         const messages: Message[] = [
           makeMessage({
             role: 'user',
@@ -225,7 +231,7 @@ describe('messageNormalizer', () => {
           }),
         ];
 
-        const turns = normalizeMessages(messages);
+        const turns = await normalizeMessages(messages);
         if (turns[0].kind === 'user') {
           expect(turns[0].content).toHaveLength(2);
           expect(turns[0].content[0]).toEqual({ type: 'text', text: 'What is this?' });
@@ -233,7 +239,7 @@ describe('messageNormalizer', () => {
         }
       });
 
-      it('strips user images and adds hint when vision not supported', () => {
+      it('strips user images and adds hint when vision not supported', async () => {
         const messages: Message[] = [
           makeMessage({
             role: 'user',
@@ -244,7 +250,7 @@ describe('messageNormalizer', () => {
           }),
         ];
 
-        const turns = normalizeMessages(messages, { supportsVision: false });
+        const turns = await normalizeMessages(messages, { supportsVision: false });
         if (turns[0].kind === 'user') {
           expect(turns[0].content).toHaveLength(2);
           expect(turns[0].content[0]).toEqual({ type: 'text', text: 'Check this' });
@@ -254,16 +260,16 @@ describe('messageNormalizer', () => {
     });
 
     describe('edge cases', () => {
-      it('handles empty message list', () => {
-        expect(normalizeMessages([])).toEqual([]);
+      it('handles empty message list', async () => {
+        expect(await normalizeMessages([])).toEqual([]);
       });
 
-      it('handles assistant with no tool calls and no text', () => {
+      it('handles assistant with no tool calls and no text', async () => {
         const messages: Message[] = [
           makeMessage({ role: 'assistant', content: '' }),
         ];
 
-        const turns = normalizeMessages(messages);
+        const turns = await normalizeMessages(messages);
         expect(turns).toHaveLength(1);
         if (turns[0].kind === 'assistant') {
           expect(turns[0].text).toBe('');
@@ -271,7 +277,7 @@ describe('messageNormalizer', () => {
         }
       });
 
-      it('generates unique IDs per tool call', () => {
+      it('generates unique IDs per tool call', async () => {
         const messages: Message[] = [
           makeMessage({
             role: 'assistant',
@@ -283,14 +289,14 @@ describe('messageNormalizer', () => {
           }),
         ];
 
-        const turns = normalizeMessages(messages);
+        const turns = await normalizeMessages(messages);
         if (turns[0].kind === 'assistant') {
           const ids = turns[0].toolCalls.map((tc) => tc.id);
           expect(new Set(ids).size).toBe(2);
         }
       });
 
-      it('handles multi-turn conversation with interleaved tool calls', () => {
+      it('handles multi-turn conversation with interleaved tool calls', async () => {
         const messages: Message[] = [
           makeMessage({ role: 'user', content: 'Read two files' }),
           makeMessage({
@@ -311,7 +317,7 @@ describe('messageNormalizer', () => {
           }),
         ];
 
-        const turns = normalizeMessages(messages);
+        const turns = await normalizeMessages(messages);
         expect(turns).toHaveLength(4);
         expect(turns[0].kind).toBe('user');
         expect(turns[1].kind).toBe('assistant');
@@ -325,7 +331,7 @@ describe('messageNormalizer', () => {
         }
       });
 
-      it('handles assistant message with only tool calls (no text)', () => {
+      it('handles assistant message with only tool calls (no text)', async () => {
         const messages: Message[] = [
           makeMessage({ role: 'user', content: 'Do it' }),
           makeMessage({
@@ -337,23 +343,23 @@ describe('messageNormalizer', () => {
           }),
         ];
 
-        const turns = normalizeMessages(messages);
+        const turns = await normalizeMessages(messages);
         if (turns[1].kind === 'assistant') {
           expect(turns[1].text).toBe('');
           expect(turns[1].toolCalls).toHaveLength(1);
         }
       });
 
-      it('handles user message with empty string content', () => {
+      it('handles user message with empty string content', async () => {
         const messages: Message[] = [
           makeMessage({ role: 'user', content: '' }),
         ];
         // Empty content should produce no turns
-        const turns = normalizeMessages(messages);
+        const turns = await normalizeMessages(messages);
         expect(turns).toHaveLength(0);
       });
 
-      it('handles document content in user messages', () => {
+      it('handles document content in user messages', async () => {
         const messages: Message[] = [
           makeMessage({
             role: 'user',
@@ -363,7 +369,7 @@ describe('messageNormalizer', () => {
           }),
         ];
 
-        const turns = normalizeMessages(messages);
+        const turns = await normalizeMessages(messages);
         if (turns[0].kind === 'user') {
           expect(turns[0].content[0]).toEqual({ type: 'document', mediaType: 'application/pdf', data: 'pdf123' });
         }

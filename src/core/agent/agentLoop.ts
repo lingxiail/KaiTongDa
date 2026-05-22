@@ -1651,8 +1651,10 @@ export async function runAgentLoop(conversationId: string, userMessage: string, 
 
       // Friendly message when a 400 error is likely caused by image content
       // sent to a model that doesn't support vision
+      const modelCaps = resolveCapabilities(effectiveModelId);
       const isLikelyVisionError = errorCode === 'invalid_request'
         && err instanceof LLMError && err.statusCode === 400
+        && !modelCaps.vision
         && conversationHasImages(useChatStore.getState().conversations[conversationId]?.messages ?? []);
       const displayError = isLikelyVisionError
         ? '当前模型可能不支持图片/视觉输入，请尝试移除图片或切换到支持视觉的模型（如 Claude、GPT-4o）。'
