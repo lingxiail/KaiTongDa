@@ -192,8 +192,8 @@ function serializeForOpenAI(turns: PreparedTurn[], systemPrompt?: string): OpenA
 }
 
 /** Convert messages through normalize → serialize pipeline */
-function convertMessages(messages: Message[], systemPrompt?: string, supportsVision?: boolean): OpenAIMessage[] {
-  const turns = normalizeMessages(messages, { supportsVision: supportsVision !== false });
+async function convertMessages(messages: Message[], systemPrompt?: string, supportsVision?: boolean): Promise<OpenAIMessage[]> {
+  const turns = await normalizeMessages(messages, { supportsVision: supportsVision !== false });
   return serializeForOpenAI(turns, systemPrompt);
 }
 
@@ -216,7 +216,7 @@ export class OpenAICompatibleAdapter implements LLMAdapter {
 
     const body: Record<string, unknown> = {
       model: options.model,
-      messages: convertMessages(messages, options.systemPrompt, options.supportsVision),
+      messages: await convertMessages(messages, options.systemPrompt, options.supportsVision),
       max_tokens: options.maxTokens ?? 4096,
       stream: useStreaming,
     };

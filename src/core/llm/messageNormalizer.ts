@@ -9,9 +9,40 @@
  *   1. Orphan fix — tool_use without result gets a placeholder
  *   2. ID generation — stable, provider-agnostic IDs
  *   3. Image extraction — pulled into a dedicated field for serializers
+ *   4. Image reload — re-load base64 from filePath for historical messages
  */
 
 import type { Message, MessageContent, ToolCall, ToolCallForContext, ToolResultContent } from '../../types';
+import { readFile, exists } from '@tauri-apps/plugin-fs';
+
+/** Re-load image from filePath if data is missing (for historical messages) */
+async function reloadImageIfNeeded(block: {
+  type: 'image';
+  source: { media_type: string; data: string };
+  filePath?: string;
+}): Promise<{ data: string; mediaType: string }> {
+  // If data already exists, use it
+  if (block.source.data) {
+    return { data: block.source.data, mediaType: block.source.media_type };
+  }
+
+  // Try to reload from filePath
+  if (block.filePath) {
+    try {
+      if (await exists(block.filePath)) {
+        const bytes = await readFile(block.filePath);
+        const binaryStr = Array.from(bytes).map((b) => String.fromCharCode(b)).join('');
+        const data = btoa(binaryStr);
+        return { data, mediaType: block.source.media_type };
+      }
+    } catch {
+      // Fall through to returning empty data - these images will be skipped
+    }
+  }
+
+  // Return empty data - will be skipped downstream
+  return { data: '', mediaType: block.source.media_type };
+}
 
 // ─── Normalized types ────────────────────────────────────────────────
 
@@ -81,10 +112,10 @@ function extractImages(resultContent: ToolResultContent[] | undefined): Prepared
 }
 
 /** Convert user MessageContent[] to PreparedContentBlock[] */
-function convertUserContent(
+async function convertUserContent(
   content: string | MessageContent[],
   supportsVision: boolean,
-): PreparedContentBlock[] {
+): Promise<PreparedContentBlock[]> {
   if (typeof content === 'string') {
     return content ? [{ type: 'text', text: content }] : [];
   }
@@ -97,7 +128,11 @@ function convertUserContent(
       blocks.push({ type: 'text', text: c.text });
     } else if (c.type === 'image') {
       if (supportsVision) {
-        blocks.push({ type: 'image', mediaType: c.source.media_type, data: c.source.data });
+        const { data, mediaType } = await reloadImageIfNeeded(c);
+        // Skip if data is still empty (couldn't reload)
+        if (data) {
+          blocks.push({ type: 'image', mediaType, data });
+        }
       } else {
         imageCount++;
       }
@@ -127,10 +162,10 @@ function convertUserContent(
  *   - Images are extracted into `resultImages` for easy serializer access
  *   - IDs are freshly generated (no stale cross-provider IDs)
  */
-export function normalizeMessages(
+export async function normalizeMessages(
   messages: Message[],
   options?: NormalizeOptions,
-): PreparedTurn[] {
+): Promise<PreparedTurn[]> {
   const supportsVision = options?.supportsVision !== false;
   const turns: PreparedTurn[] = [];
 
@@ -139,7 +174,7 @@ export function normalizeMessages(
     if (msg.role === 'system') continue;
 
     if (msg.role === 'user') {
-      const content = convertUserContent(msg.content, supportsVision);
+      const content = await convertUserContent(msg.content, supportsVision);
       if (content.length > 0) {
         turns.push({ kind: 'user', content });
       }
