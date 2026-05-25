@@ -1,6 +1,6 @@
 {
   "productName": "LingXi",
-  "version": "0.15.23",
+  "version": "0.15.24",
   "identifier": "com.lingxi.app",
   "build": {
     "beforeDevCommand": "npm run copy-resources && npm run dev",
