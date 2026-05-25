@@ -2,6 +2,7 @@ import { readFile as readBinFile, writeFile as writeBinFile } from '@tauri-apps/
 import { homeDir, desktopDir, documentDir, downloadDir, tempDir } from '@tauri-apps/api/path';
 import { platform } from '@tauri-apps/plugin-os';
 import { invoke } from '@tauri-apps/api/core';
+import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist/legacy/build/pdf.mjs';
 import { initPlatform, isWindows } from '../../../utils/platform';
 import { extractUsername } from '../../../utils/pathUtils';
 
@@ -104,6 +105,57 @@ export function uint8ArrayToBase64(bytes: Uint8Array): string {
 export function getFileExtension(path: string): string {
   const dot = path.lastIndexOf('.');
   return dot >= 0 ? path.slice(dot).toLowerCase() : '';
+}
+
+const MAX_PDF_PAGES = 50;
+const MAX_PDF_TEXT_CHARS = 200_000;
+
+export async function extractPdfText(filePath: string): Promise<string> {
+  const data = new Uint8Array(await readBinFile(filePath));
+  GlobalWorkerOptions.workerSrc ||= '';
+
+  const loadingTask = getDocument({ data, useWorkerFetch: false, useWasm: false, isEvalSupported: false });
+  const pdf = await loadingTask.promise;
+
+  try {
+    const pageCount = pdf.numPages;
+    const pagesToRead = Math.min(pageCount, MAX_PDF_PAGES);
+    const parts = [`[PDF: ${filePath} | Pages: ${pageCount}]`];
+    let chars = parts[0].length;
+    let truncatedByChars = false;
+
+    for (let pageNumber = 1; pageNumber <= pagesToRead; pageNumber++) {
+      const page = await pdf.getPage(pageNumber);
+      const content = await page.getTextContent();
+      const pageText = content.items
+        .flatMap((item) => 'str' in item ? [item.str] : [])
+        .join(' ')
+        .replace(/\s+\n/g, '\n')
+        .replace(/[ \t]+/g, ' ')
+        .trim();
+      const section = `--- Page ${pageNumber} ---\n${pageText}`;
+
+      if (chars + section.length + 1 > MAX_PDF_TEXT_CHARS) {
+        const remaining = MAX_PDF_TEXT_CHARS - chars - 1;
+        if (remaining > 0) {
+          parts.push(section.slice(0, remaining));
+        }
+        truncatedByChars = true;
+        break;
+      }
+
+      parts.push(section);
+      chars += section.length + 1;
+    }
+
+    if (pageCount > pagesToRead || truncatedByChars) {
+      parts.push(`[PDF output truncated: read first ${pagesToRead} of ${pageCount} pages and up to ${MAX_PDF_TEXT_CHARS} characters. Specify a narrower page range in a follow-up request if needed.]`);
+    }
+
+    return parts.join('\n');
+  } finally {
+    await pdf.destroy();
+  }
 }
 
 // Office document extensions that can be extracted as text

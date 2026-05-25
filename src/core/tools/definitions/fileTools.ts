@@ -11,6 +11,7 @@ import {
   resizeImageIfNeeded,
   OFFICE_EXTENSIONS,
   ARCHIVE_EXTENSIONS,
+  extractPdfText,
   extractOfficeText,
   listArchiveContents,
   similarityScore,
@@ -59,6 +60,15 @@ function formatSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)}MB`;
 }
 
+function hasPdfBodyText(text: string): boolean {
+  return text
+    .split('\n')
+    .some((line) => {
+      const trimmed = line.trim();
+      return trimmed && !trimmed.startsWith('[PDF:') && !trimmed.startsWith('--- Page ') && !trimmed.startsWith('[PDF output truncated:');
+    });
+}
+
 export const readFileTool: ToolDefinition = {
   name: TOOL_NAMES.READ_FILE,
   description: '读取文件内容。支持文本文件、图片（png/jpg/gif/webp，返回视觉内容）、PDF（提取文字）、Office 文档（.docx/.xlsx/.pptx，提取文字）和压缩包（.zip/.tar.gz，列出内容）。文本文件支持 offset（起始行号）和 limit（读取行数）参数进行分段读取。',
@@ -94,6 +104,13 @@ export const readFileTool: ToolDefinition = {
 
       // --- PDF files: extract text ---
       if (ext === '.pdf') {
+        try {
+          const text = await extractPdfText(filePath);
+          if (hasPdfBodyText(text)) {
+            return text;
+          }
+        } catch { /* fall through to native tools */ }
+
         // Strategy 1: pdftotext (macOS/Linux — fast, native)
         if (!isWindows()) {
           try {
@@ -122,9 +139,7 @@ export const readFileTool: ToolDefinition = {
         } catch { /* fall through to hint */ }
 
         // Strategy 3: User hint
-        return isWindows()
-          ? 'Error: Cannot read PDF as text. Please install Python and run: pip install pdfplumber'
-          : 'Error: Cannot read PDF as text. Install pdftotext (brew install poppler) or: pip3 install pdfplumber';
+        return 'Error: Cannot read PDF as text. This may be a scanned PDF and OCR is required; OCR is not supported by read_file.';
       }
 
       // --- Office documents: extract text via Python ---

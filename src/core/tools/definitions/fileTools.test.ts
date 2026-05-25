@@ -1,6 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { invoke } from '@tauri-apps/api/core';
 import { readFileTool } from './fileTools';
+import { extractPdfText } from '../helpers/toolHelpers';
+
+vi.mock('../helpers/toolHelpers', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('../helpers/toolHelpers')>();
+  return {
+    ...actual,
+    extractPdfText: vi.fn(),
+  };
+});
 
 // Regression coverage for the shell-injection fixes in the PDF branch of
 // readFileTool. These tests prove the *interface contract* — the migrated
@@ -31,6 +40,19 @@ function nthCall(n: number) {
 describe('readFileTool — PDF shell injection regression', () => {
   beforeEach(() => {
     vi.mocked(invoke).mockReset();
+    vi.mocked(extractPdfText).mockReset();
+    vi.mocked(extractPdfText).mockRejectedValue(new Error('pdfjs unavailable'));
+  });
+
+  it('PDF.js strategy: returns formatted text and skips native fallbacks', async () => {
+    vi.mocked(extractPdfText).mockResolvedValueOnce('[PDF: /tmp/readable.pdf | Pages: 2]\n--- Page 1 ---\nhello\n--- Page 2 ---\nworld');
+
+    const result = await readFileTool.execute({ path: '/tmp/readable.pdf' });
+
+    expect(result).toContain('[PDF: /tmp/readable.pdf | Pages: 2]');
+    expect(result).toContain('--- Page 1 ---');
+    expect(result).toContain('--- Page 2 ---');
+    expect(invoke).not.toHaveBeenCalled();
   });
 
   it('pdftotext strategy: dispatches run_argv_command with filePath as a raw argv element', async () => {
@@ -109,5 +131,16 @@ describe('readFileTool — PDF shell injection regression', () => {
     expect(script).not.toMatch(/`[^`]*`/);
     // Script must actually read from argv
     expect(script).toContain('sys.argv[1]');
+  });
+
+  it('returns an OCR hint when all text extraction strategies are empty', async () => {
+    vi.mocked(extractPdfText).mockResolvedValueOnce('[PDF: /tmp/scanned.pdf | Pages: 1]\n--- Page 1 ---\n');
+    vi.mocked(invoke)
+      .mockResolvedValueOnce({ code: 1, stdout: '', stderr: '' })
+      .mockResolvedValueOnce({ code: 0, stdout: '', stderr: '' });
+
+    const result = await readFileTool.execute({ path: '/tmp/scanned.pdf' });
+
+    expect(result).toBe('Error: Cannot read PDF as text. This may be a scanned PDF and OCR is required; OCR is not supported by read_file.');
   });
 });
