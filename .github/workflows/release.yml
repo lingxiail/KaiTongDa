@@ -60,6 +60,45 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ github.workspace }}/tauri-signing-key.pem
         run: npx tauri build --target ${{ matrix.target }}
 
+      - name: Import Apple certificate (macOS)
+        if: matrix.platform == 'macos-latest'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          # Create temporary keychain
+          security create-keychain -p "" build.keychain
+          security set-keychain-settings -lut 21600 build.keychain
+          security unlock-keychain -p "" build.keychain
+          security set-key-partition-list -S apple: -k build.keychain
+          security list-keychain -d user -s build.keychain
+          # Import certificate
+          echo "$APPLE_CERTIFICATE" | base64 -d -o certificate.p12
+          security import certificate.p12 -P "$APPLE_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k build.keychain
+          rm certificate.p12
+
+      - name: Sign .app bundle (macOS)
+        if: matrix.platform == 'macos-latest'
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+        run: |
+          TARGET="src-tauri/target/${{ matrix.target }}/release/bundle/macos"
+          find "$TARGET" -name "*.app" -exec codesign --force --deep --sign "$APPLE_SIGNING_IDENTITY" {} \;
+
+      - name: Sign and create signed .dmg (macOS)
+        if: matrix.platform == 'macos-latest'
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+        run: |
+          TARGET="src-tauri/target/${{ matrix.target }}/release/bundle"
+          DMG_DIR="$TARGET/dmg"
+          mkdir -p "$DMG_DIR"
+          UNSIGNED_DMG=$(find "$TARGET/macos" -name "*.dmg" 2>/dev/null | head -1)
+          if [[ -n "$UNSIGNED_DMG" ]]; then
+            hdiutil convert "$UNSIGNED_DMG" -format UDZO -o "$DMG_DIR/$(basename "$UNSIGNED_DMG")"
+            codesign --force --sign "$APPLE_SIGNING_IDENTITY" "$DMG_DIR/$(basename "$UNSIGNED_DMG")"
+          fi
+
       - name: Create GitHub Release (idempotent)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

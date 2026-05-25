@@ -2,6 +2,12 @@
 
 本文档记录灵犀的每次版本更新。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/)。
 
+## v0.15.24 · 2026-05-25
+
+### 新增
+
+- **feat(chat): 手动选择 Skill/Agent**：在输入框下方新增选择器，支持用户手动选择技能或代理，无需通过 `/` 或 `@` 文本前缀触发自动路由。状态与 ChatInput 中已有的 selectedSkill/selectedAgent 同步。
+
 ## v0.15.23 · 2026-05-20
 
 ### 其他
