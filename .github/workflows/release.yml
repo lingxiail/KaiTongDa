@@ -50,54 +50,51 @@ jobs:
           npm ci
         shell: bash
 
+      - name: Import Apple certificate (macOS)
+        if: matrix.platform == 'macos-latest'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          KEYCHAIN_PASSWORD="${KEYCHAIN_PASSWORD:-temporary-keychain-password}"
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          echo "$APPLE_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/certificate.p12"
+          security import "$RUNNER_TEMP/certificate.p12" \
+            -P "$APPLE_CERTIFICATE_PASSWORD" \
+            -A \
+            -t cert \
+            -f pkcs12 \
+            -k "$KEYCHAIN_PATH"
+
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+          security default-keychain -s "$KEYCHAIN_PATH"
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s \
+            -k "$KEYCHAIN_PASSWORD" \
+            "$KEYCHAIN_PATH"
+
       - name: Setup embedded Python runtime
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
         run: bash scripts/setup-python-runtime.sh
         shell: bash
 
       - name: Build Tauri app
         env:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          TAURI_SIGNING_PRIVATE_KEY: ${{ github.workspace }}/tauri-signing-key.pem
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         run: npx tauri build --target ${{ matrix.target }}
-
-      - name: Import Apple certificate (macOS)
-        if: matrix.platform == 'macos-latest'
-        env:
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-        run: |
-          # Create temporary keychain
-          security create-keychain -p "" build.keychain
-          security set-keychain-settings -lut 21600 build.keychain
-          security unlock-keychain -p "" build.keychain
-          security set-key-partition-list -S apple: -k build.keychain
-          security list-keychain -d user -s build.keychain
-          # Import certificate
-          echo "$APPLE_CERTIFICATE" | base64 -d -o certificate.p12
-          security import certificate.p12 -P "$APPLE_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k build.keychain
-          rm certificate.p12
-
-      - name: Sign .app bundle (macOS)
-        if: matrix.platform == 'macos-latest'
-        env:
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-        run: |
-          TARGET="src-tauri/target/${{ matrix.target }}/release/bundle/macos"
-          find "$TARGET" -name "*.app" -exec codesign --force --deep --sign "$APPLE_SIGNING_IDENTITY" {} \;
-
-      - name: Sign and create signed .dmg (macOS)
-        if: matrix.platform == 'macos-latest'
-        env:
-          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
-        run: |
-          TARGET="src-tauri/target/${{ matrix.target }}/release/bundle"
-          DMG_DIR="$TARGET/dmg"
-          mkdir -p "$DMG_DIR"
-          UNSIGNED_DMG=$(find "$TARGET/macos" -name "*.dmg" 2>/dev/null | head -1)
-          if [[ -n "$UNSIGNED_DMG" ]]; then
-            hdiutil convert "$UNSIGNED_DMG" -format UDZO -o "$DMG_DIR/$(basename "$UNSIGNED_DMG")"
-            codesign --force --sign "$APPLE_SIGNING_IDENTITY" "$DMG_DIR/$(basename "$UNSIGNED_DMG")"
-          fi
 
       - name: Create GitHub Release (idempotent)
         env:
