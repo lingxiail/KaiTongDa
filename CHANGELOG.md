@@ -2,6 +2,13 @@
 
 本文档记录灵犀的每次版本更新。格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/)。
 
+## v0.15.25 · 2026-05-25
+
+### 修复
+
+- **fix(release): 修复 GitHub Actions macOS 签名流程**：在构建前导入 Developer ID p12 到临时钥匙串，允许 `codesign` 访问私钥，并让 Python runtime 与 Tauri bundle 都走同一套签名配置。
+- **fix(release): 改进证书配置错误提示**：CI 会明确检查导入后的 Developer ID identity，避免 `.cer` 误配成 `APPLE_CERTIFICATE` 时只报 `SecItemCopyMatching`。
+
 ## v0.15.24 · 2026-05-25
 
 ### 新增
