@@ -16,11 +16,11 @@
     } else if (s.reconnecting) {
       statusDot.classList.add("reconnecting");
       statusLabel.textContent = "Reconnecting...";
-      statusDetail.textContent = s.error ? s.error : s.discoveryOk ? "Bridge found, connecting..." : "Looking for abu-browser-bridge...";
+      statusDetail.textContent = s.error ? s.error : s.discoveryOk ? "Bridge found, connecting..." : "Looking for lingxi-browser-bridge...";
     } else {
       statusDot.classList.add("disconnected");
       statusLabel.textContent = "Disconnected";
-      statusDetail.textContent = s.error ?? "Make sure abu-browser-bridge is running";
+      statusDetail.textContent = s.error ?? "Make sure lingxi-browser-bridge is running";
     }
     const tags = [];
     if (s.discoveryOk) {

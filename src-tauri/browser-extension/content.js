@@ -451,7 +451,7 @@
     recordedSteps.length = 0;
     recordClickHandler = (e) => {
       const el = e.target;
-      if (!el || el.id === "abu-status" || el.id === "abu-highlight") return;
+      if (!el || el.id === "lingxi-status" || el.id === "lingxi-highlight") return;
       recordedSteps.push({
         action: "click",
         locator: getBestSelector(el),
@@ -550,7 +550,7 @@
     const rect = el.getBoundingClientRect();
     if (!highlightOverlay) {
       highlightOverlay = document.createElement("div");
-      highlightOverlay.id = "abu-highlight";
+      highlightOverlay.id = "lingxi-highlight";
       highlightOverlay.style.cssText = `
       position: fixed; pointer-events: none; z-index: 2147483647;
       border: 2px solid #d97757; border-radius: 4px;
@@ -579,7 +579,7 @@
   function showStatus(text, type = "info") {
     if (!statusBubble) {
       statusBubble = document.createElement("div");
-      statusBubble.id = "abu-status";
+      statusBubble.id = "lingxi-status";
       statusBubble.style.cssText = `
       position: fixed; bottom: 16px; right: 16px; z-index: 2147483647;
       padding: 8px 14px; border-radius: 8px;
