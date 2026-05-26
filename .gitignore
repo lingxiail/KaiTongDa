@@ -17,10 +17,14 @@ src-tauri/target/
 Thumbs.db
 
 # IDE
+.cursor/
 .vscode/
 .idea/
 *.swp
 *.swo
+
+# GitHub local workflow experiments
+.github/
 
 # Archive (internal docs, personal assets)
 _archive/
