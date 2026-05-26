@@ -1,0 +1,250 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+          shared-key: ${{ matrix.target }}
+
+      - name: Install dependencies
+        run: |
+          if [[ "${{ matrix.platform }}" == "macos-latest" ]]; then
+            brew install create-dmg
+          fi
+          npm ci
+        shell: bash
+
+      - name: Import Apple certificate (macOS)
+        if: matrix.platform == 'macos-latest'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          KEYCHAIN_PASSWORD="${KEYCHAIN_PASSWORD:-temporary-keychain-password}"
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          echo "$APPLE_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/certificate.p12"
+          security import "$RUNNER_TEMP/certificate.p12" \
+            -P "$APPLE_CERTIFICATE_PASSWORD" \
+            -A \
+            -f pkcs12 \
+            -k "$KEYCHAIN_PATH" \
+            -T /usr/bin/codesign \
+            -T /usr/bin/security
+
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+          security default-keychain -s "$KEYCHAIN_PATH"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+          if ! security find-identity -v -p codesigning "$KEYCHAIN_PATH" | grep -q "${APPLE_SIGNING_IDENTITY:-Developer ID Application}"; then
+            echo "::error::No Developer ID signing identity was found in the imported p12. Make sure APPLE_CERTIFICATE is a base64-encoded .p12 exported with the private key, not a .cer file."
+            exit 1
+          fi
+
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s \
+            -k "$KEYCHAIN_PASSWORD" \
+            "$KEYCHAIN_PATH"
+
+      - name: Setup embedded Python runtime
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+        run: bash scripts/setup-python-runtime.sh
+        shell: bash
+
+      - name: Build Tauri app
+        env:
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+        run: npx tauri build --target ${{ matrix.target }}
+
+      - name: Create GitHub Release (idempotent)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --repo "${{ github.repository }}" \
+            --title "LingXi ${{ github.ref_name }}" \
+            --notes "See the assets below for download links." \
+            || true
+
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          TAG="${{ github.ref_name }}"
+          TARGET="${{ matrix.target }}"
+          BUNDLE="src-tauri/target/${TARGET}/release/bundle"
+
+          echo "=== Bundle contents ==="
+          ls -la "$BUNDLE"/macos/ 2>/dev/null || true
+          ls -la "$BUNDLE"/dmg/ 2>/dev/null || true
+          ls -la "$BUNDLE"/nsis/ 2>/dev/null || true
+
+          if [[ "$TARGET" == *"apple"* ]]; then
+            gh release upload "$TAG" "$BUNDLE"/dmg/*.dmg --clobber || true
+          else
+            gh release upload "$TAG" "$BUNDLE"/nsis/*-setup.exe --clobber
+          fi
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout FIRST: actions/checkout@v6 defaults to clean: true which runs
+      # `git clean -ffdx` and would wipe any untracked dirs (like release-assets/)
+      # created by a prior step. Keep checkout ahead of the download.
+      - uses: actions/checkout@v6
+
+      - name: Download updater assets from GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mkdir -p release-assets
+
+          echo "=== All release assets ==="
+          gh release view "${{ github.ref_name }}" --repo "${{ github.repository }}" --json assets --jq '.assets[].name'
+
+          gh release download "${{ github.ref_name }}" \
+            --repo "${{ github.repository }}" \
+            -D release-assets \
+            -p "*-setup.exe" -p "*.dmg" -p "*.sig"
+
+          echo "=== Downloaded ==="
+          ls -la release-assets/
+
+      - name: Generate latest.json
+        shell: bash
+        env:
+          VERSION_TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+          COS_BUCKET: lingxi-1303034624
+          COS_REGION: ap-guangzhou
+        run: |
+          AARCH64_FILE=$(ls release-assets/*aarch64*.dmg 2>/dev/null | head -1 | xargs basename 2>/dev/null || echo "")
+          WINDOWS_FILE=$(ls release-assets/*-setup.exe 2>/dev/null | grep -v '.sig' | head -1 | xargs basename 2>/dev/null || echo "")
+
+          export AARCH64_FILE WINDOWS_FILE
+          python3 <<'PYEOF'
+          import json, os, re
+          from datetime import datetime, timezone
+
+          version_tag = os.environ['VERSION_TAG']  # e.g. "v0.15.9"
+          version_num = version_tag.lstrip('v')
+          repo = os.environ['REPO']
+          cos_bucket = os.environ['COS_BUCKET']
+          cos_region = os.environ['COS_REGION']
+          cos_base = f"https://{cos_bucket}.cos.{cos_region}.myqcloud.com/releases/{version_tag}"
+
+          notes = f"See https://github.com/{repo}/releases/tag/{version_tag}"
+          try:
+              with open('CHANGELOG.md', encoding='utf-8') as f:
+                  cl = f.read()
+              pattern = rf'^## v{re.escape(version_num)}[^\n]*\n(.*?)(?=^## v|\Z)'
+              m = re.search(pattern, cl, re.MULTILINE | re.DOTALL)
+              if m:
+                  body = m.group(1).strip()
+                  if body:
+                      notes = body
+          except FileNotFoundError:
+              pass
+
+          platforms = {}
+          for key, fname in [
+              ('darwin-aarch64', os.environ['AARCH64_FILE']),
+              ('windows-x86_64', os.environ['WINDOWS_FILE']),
+          ]:
+              if fname:
+                  platforms[key] = {'url': f'{cos_base}/{fname}'}
+
+          data = {
+              'version': version_tag,
+              'notes': notes,
+              'pub_date': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'),
+              'platforms': platforms,
+          }
+          with open('latest.json', 'w', encoding='utf-8') as f:
+              json.dump(data, f, indent=2, ensure_ascii=False)
+          print(json.dumps(data, indent=2, ensure_ascii=False))
+          PYEOF
+
+      - name: Install coscli
+        run: |
+          wget -q "https://cosbrowser.cloud.tencent.com/software/coscli/coscli-linux-amd64" -O /usr/local/bin/coscli
+          chmod +x /usr/local/bin/coscli
+
+      - name: Upload to COS
+        env:
+          VERSION: ${{ github.ref_name }}
+          SECRET_ID: ${{ secrets.TENCENT_CLOUD_SECRET_ID }}
+          SECRET_KEY: ${{ secrets.TENCENT_CLOUD_SECRET_KEY }}
+        run: |
+          mkdir -p ~/.cos
+          cat > ~/.cos.yaml <<EOF
+          cos:
+            base:
+              secretid: $SECRET_ID
+              secretkey: $SECRET_KEY
+              sessiontoken: ""
+            buckets:
+              - name: lingxi-1303034624
+                alias: lingxi
+                region: ap-guangzhou
+                endpoint: cos.ap-guangzhou.myqcloud.com
+          EOF
+
+          VERSION="${{ github.ref_name }}"
+          set -x
+          for file in release-assets/*; do
+            [ -f "$file" ] || continue
+            coscli cp "$file" "cos://lingxi/releases/${VERSION}/$(basename $file)"
+          done
+          coscli cp latest.json "cos://lingxi/latest.json" --meta "Cache-Control:no-cache"
+          echo "Done. Listing:"
+          coscli ls "cos://lingxi/releases/${VERSION}/"

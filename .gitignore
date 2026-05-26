@@ -23,9 +23,6 @@ Thumbs.db
 *.swp
 *.swo
 
-# GitHub local workflow experiments
-.github/
-
 # Archive (internal docs, personal assets)
 _archive/
 
