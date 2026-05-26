@@ -125,7 +125,7 @@ function createMemoryFs() {
 }
 
 const CONV_ID = 'conv_test_123';
-const APP_DATA = '/Users/testuser/.abu';
+const APP_DATA = '/Users/testuser/.lingxi';
 const OUTPUTS_DIR = `${APP_DATA}/conversations/${CONV_ID}/outputs`;
 
 describe('outputSnapshots', () => {
@@ -366,16 +366,16 @@ describe('outputSnapshots', () => {
 
     it('expands ~/... to absolute home path before checking existence', async () => {
       // Mock home dir is /Users/testuser per test setup
-      memFs.addUserFile('/Users/testuser/Library/Application Support/com.abu.app/conversations/conv_test_123/outputs/x.pptx', 1000);
+      memFs.addUserFile('/Users/testuser/Library/Application Support/com.lingxi.app/conversations/conv_test_123/outputs/x.pptx', 1000);
 
       const result = await mod.resolveFileSource(
         CONV_ID,
-        '~/Library/Application Support/com.abu.app/conversations/conv_test_123/outputs/x.pptx',
+        '~/Library/Application Support/com.lingxi.app/conversations/conv_test_123/outputs/x.pptx',
       );
       expect(result.status).toBe('available');
       if (result.status === 'available') {
         expect(result.path).toBe(
-          '/Users/testuser/Library/Application Support/com.abu.app/conversations/conv_test_123/outputs/x.pptx',
+          '/Users/testuser/Library/Application Support/com.lingxi.app/conversations/conv_test_123/outputs/x.pptx',
         );
       }
     });

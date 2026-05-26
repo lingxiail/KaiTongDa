@@ -14,8 +14,8 @@
  *
  * ## Scope rules
  *
- *   writable:  workspace-auto  (~/.abu/projects/<key>/skills/)
- *   writable:  draft           (~/.abu/projects/<key>/skills/drafts/) — via create
+ *   writable:  workspace-auto  (~/.lingxi/projects/<key>/skills/)
+ *   writable:  draft           (~/.lingxi/projects/<key>/skills/drafts/) — via create
  *   read-only: user, project, project-standard, standard, builtin
  *
  * Agent attempts to patch a read-only source transparently Copy-on-Modify
@@ -86,7 +86,7 @@ type SkillScope = 'workspace-auto' | 'user';
 async function getWorkspaceAutoSkillsDir(workspacePath: string): Promise<string> {
   const home = await homeDir();
   const key = sanitizePath(normalizeSeparators(workspacePath));
-  return joinPath(home, '.abu/projects', key, 'skills');
+  return joinPath(home, '.lingxi/projects', key, 'skills');
 }
 
 /**
@@ -215,7 +215,7 @@ async function copyDirectoryContents(src: string, dst: string): Promise<void> {
 
 /**
  * Inject Copy-on-Modify provenance keys into the SKILL.md frontmatter.
- * Flat keys (abu-origin-*) to stay compatible with SkillMetadata.metadata
+ * Flat keys (lingxi-origin-*) to stay compatible with SkillMetadata.metadata
  * being typed as Record<string, string>.
  */
 function withProvenance(skill: Skill, originalContent: string): string {
@@ -226,9 +226,9 @@ function withProvenance(skill: Skill, originalContent: string): string {
   const lines = yamlBlock.split('\n');
   // Find existing `metadata:` block or append at end
   const provenance = {
-    'abu-origin-source': skill.source ?? 'unknown',
-    'abu-origin-name': skill.name,
-    'abu-forked-at': String(Date.now()),
+    'lingxi-origin-source': skill.source ?? 'unknown',
+    'lingxi-origin-name': skill.name,
+    'lingxi-forked-at': String(Date.now()),
   };
 
   // Check if metadata block already exists to append beneath it.

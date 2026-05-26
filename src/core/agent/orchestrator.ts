@@ -95,7 +95,7 @@ export interface RouteResult {
 /**
  * Orchestrator: routes user input to the appropriate skill.
  *
- * Like Claude Code/Cowork, Abu is a single unified agent.
+ * Like Claude Code/Cowork, Lingxi is a single unified agent.
  * No @agent selection - users just describe their task.
  *
  * Routing priority:
@@ -109,8 +109,8 @@ export function routeInput(input: string): RouteResult {
   if (!trimmed || trimmed === '/') {
     return {
       type: 'general',
-      name: 'abu',
-      definition: agentRegistry.getAgent('abu'),
+      name: 'lingxi',
+      definition: agentRegistry.getAgent('lingxi'),
       cleanInput: trimmed,
     };
   }
@@ -123,7 +123,7 @@ export function routeInput(input: string): RouteResult {
 
     if (agentName) {
       const agent = agentRegistry.getAgent(agentName);
-      if (agent && agent.name !== 'abu') {
+      if (agent && agent.name !== 'lingxi') {
         // Check if disabled
         const disabledAgents = useSettingsStore.getState().disabledAgents ?? [];
         if (!disabledAgents.includes(agentName)) {
@@ -161,8 +161,8 @@ export function routeInput(input: string): RouteResult {
   // Skills are listed in system prompt, Claude can call use_skill when relevant
   return {
     type: 'general',
-    name: 'abu',
-    definition: agentRegistry.getAgent('abu'),
+    name: 'lingxi',
+    definition: agentRegistry.getAgent('lingxi'),
     cleanInput: trimmed,
   };
 }
@@ -257,7 +257,7 @@ export async function buildSystemPromptSections(
     }
   }
 
-  // Load user-customized soul (Abu's personality) — falls back to default if empty/missing
+  // Load user-customized soul (Lingxi's personality) — falls back to default if empty/missing
   const soulContent = await loadSoul();
   const soulText = soulContent || getDefaultSoul();
 
@@ -357,7 +357,7 @@ export async function buildSystemPromptSections(
 你正在通过 IM 频道（${imContext.platform}）远程服务用户，无法弹出任何桌面弹窗。
 当前管理员未配置工作目录，因此你无法进行文件操作。
 
-如果用户请求涉及文件操作，请回复："当前 IM 频道未配置工作目录，请联系管理员在 Abu 设置中配置后重试。"
+如果用户请求涉及文件操作，请回复："当前 IM 频道未配置工作目录，请联系管理员在 Lingxi 设置中配置后重试。"
 不涉及文件操作的请求（闲聊、知识问答、搜索信息、写作、翻译、计算等）直接回复即可。
 
 生成的文件保存到：${outputDir}`, cacheable: true });
@@ -392,7 +392,7 @@ export async function buildSystemPromptSections(
 **需要工作区的操作**（调用前必须先让用户选工作区，不要先调再看错误）：
 - 文件 / 目录操作：整理、复制、读取、查看桌面等
 - Skill 管理：\`skill_manage\` 的 create / patch / write_file（workspace-auto 作用域）
-- Memory 写入：项目级 memory 写到 \`~/.abu/projects/<key>/memory/\`
+- Memory 写入：项目级 memory 写到 \`~/.lingxi/projects/<key>/memory/\`
 - Copy-on-Modify 触发的任何跨作用域 skill 修改
 
 遇到这些场景时，**直接调用 request_workspace 工具让用户选择工作目录**，不要用文字回复让用户自己去选，也不要先调会失败的工具再看错误。
@@ -474,12 +474,12 @@ ${indexContent.trim()}
       // Memory management instruction. Aligned with Claude Code's
       // buildMemoryLines philosophy but adapted for desktop/office users:
       // examples are non-technical (not git/migration/PR), and the recall
-      // path uses the `recall` tool rather than grep (since Abu users do
+      // path uses the `recall` tool rather than grep (since Lingxi users do
       // not edit .md files directly).
       sections.push({ name: 'memory-mgmt', text: `\n## 记忆管理
 
 你有一套基于文件的持久记忆系统。每条记忆是一个 .md 文件，存在
-\`~/.abu/memory/\`（全局）或 \`{workspace}/.abu/memory/\`（按工作区）。
+\`~/.lingxi/memory/\`（全局）或 \`{workspace}/.lingxi/memory/\`（按工作区）。
 索引（MEMORY.md）已注入到上面的 <memory-index>。详情按需拉取：
 按 filename 精确读取调 \`read_memory\`；按关键词模糊搜调 \`recall\`。
 
@@ -515,7 +515,7 @@ ${indexContent.trim()}
 - **临时状态**："测试通过"、"密钥无效"、"端口被占用"、"服务连不上"
 - **可派生信息**：项目路径、技术栈、代码模式（读项目/grep 就知道）
 - 闲聊、问候、一次性查询（天气、临时计算、新闻）
-- 项目规则文件（.abu/ABU.md）已包含的内容
+- 项目规则文件（.lingxi/LINGXI.md）已包含的内容
 
 即便用户明确说"记住这个清单/总结"，先问：哪一部分是 *意外的、未来
 还有用的*？只记那部分，不要把整个清单原样存下来。
@@ -598,7 +598,7 @@ ${indexContent.trim()}
 事项，用 todo_write 工具，不要塞进记忆。
 
 记忆按当前工作区隔离存储，无工作区时存为全局记忆。项目规则
-（.abu/ABU.md）由用户手动维护，不要用 update_memory 修改。`, cacheable: true });
+（.lingxi/LINGXI.md）由用户手动维护，不要用 update_memory 修改。`, cacheable: true });
     } catch (err) {
       console.warn('Failed to load memories:', err);
     }
@@ -648,13 +648,13 @@ ${isWindows()
 - 应用无响应 → wait 更长时间，或检查是否有弹窗阻挡
 - 无法完成 → 诚实告诉用户卡在哪一步`, cacheable: true });
 
-    // Browser guidance: when bridge is not connected, always guide to Abu-Browser skill.
-    const browserBridgeConnected = mcpManager.isConnected('abu-browser-bridge');
+    // Browser guidance: when bridge is not connected, always guide to Lingxi-Browser skill.
+    const browserBridgeConnected = mcpManager.isConnected('lingxi-browser-bridge');
     if (!browserBridgeConnected) {
       const playwrightConnected = mcpManager.isConnected('playwright');
       let browserNote = `
 ## 浏览器操作
-- 如果用户要求操作他们已打开的浏览器（查看标签页内容、点击页面按钮、填写表单、抓取网页数据等），推荐先调用 use_skill 激活 Abu-Browser 技能，它会自动安装所需组件并连接用户的 Chrome 浏览器`;
+- 如果用户要求操作他们已打开的浏览器（查看标签页内容、点击页面按钮、填写表单、抓取网页数据等），推荐先调用 use_skill 激活 Lingxi-Browser 技能，它会自动安装所需组件并连接用户的 Chrome 浏览器`;
 
       if (playwrightConnected) {
         browserNote += `
@@ -665,7 +665,7 @@ ${isWindows()
     }
   }
 
-  // Inject agent-specific system prompt (Abu unified agent)
+  // Inject agent-specific system prompt (Lingxi unified agent)
   // Skip in fork mode — we already have a minimal identity
   if (!isForkContext && route.definition?.systemPrompt) {
     sections.push({ name: 'agent-role', text: '\n## Role\n' + route.definition.systemPrompt, cacheable: true });
@@ -781,7 +781,7 @@ ${isWindows()
   try {
     const disabledAgents = new Set(settingsState.disabledAgents ?? []);
     const availableAgents = agentRegistry.getAvailableAgents().filter(
-      (a) => a.name !== 'abu' && !disabledAgents.has(a.name)
+      (a) => a.name !== 'lingxi' && !disabledAgents.has(a.name)
     );
     if (availableAgents.length > 0) {
       const agentLines = availableAgents.map((a) => `- ${a.name}: ${a.description}`);

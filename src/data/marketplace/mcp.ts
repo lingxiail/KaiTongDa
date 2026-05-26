@@ -175,13 +175,13 @@ export const mcpTemplates: MCPTemplate[] = [
     configurableArgs: [],
   },
   {
-    id: 'abu-browser-bridge',
-    name: 'abu-browser-bridge',
-    description: '阿布浏览器桥接，配合 Chrome 插件实现网页自动化：点击、填写、提取数据、截图等',
+    id: 'lingxi-browser-bridge',
+    name: 'lingxi-browser-bridge',
+    description: '灵犀浏览器桥接，配合 Chrome 插件实现网页自动化：点击、填写、提取数据、截图等',
     command: 'npx',
-    defaultArgs: ['-y', 'abu-browser-bridge@latest'],
+    defaultArgs: ['-y', 'lingxi-browser-bridge@latest'],
     configurableArgs: [],
-    setupHint: '需要配合 Abu Browser Bridge Chrome 插件使用。请从 GitHub 仓库下载插件，解压后在 Chrome 扩展管理页面（chrome://extensions）开启开发者模式并加载已解压的扩展。',
+    setupHint: '需要配合 Lingxi Browser Bridge Chrome 插件使用。请从 GitHub 仓库下载插件，解压后在 Chrome 扩展管理页面（chrome://extensions）开启开发者模式并加载已解压的扩展。',
     defaultTimeout: 120000, // 120s — browser automation needs longer timeouts (e.g. waiting for popups)
   },
 ];

@@ -29,17 +29,17 @@ describe('sanitizePath', () => {
 describe('getMemoryDir', () => {
   it('returns global memory dir when no workspace', async () => {
     const dir = await getMemoryDir(null);
-    expect(dir).toBe('/Users/testuser/.abu/memory');
+    expect(dir).toBe('/Users/testuser/.lingxi/memory');
   });
 
   it('returns global memory dir when undefined', async () => {
     const dir = await getMemoryDir(undefined);
-    expect(dir).toBe('/Users/testuser/.abu/memory');
+    expect(dir).toBe('/Users/testuser/.lingxi/memory');
   });
 
   it('returns project memory dir with sanitized workspace path', async () => {
     const dir = await getMemoryDir('/Users/didi/Desktop/Test');
-    expect(dir).toContain('/.abu/projects/');
+    expect(dir).toContain('/.lingxi/projects/');
     expect(dir).toContain('/memory');
     expect(dir).not.toContain(' '); // should be sanitized
   });
@@ -48,7 +48,7 @@ describe('getMemoryDir', () => {
 describe('getMemoryEntrypoint', () => {
   it('returns MEMORY.md path in global dir', async () => {
     const path = await getMemoryEntrypoint(null);
-    expect(path).toBe('/Users/testuser/.abu/memory/MEMORY.md');
+    expect(path).toBe('/Users/testuser/.lingxi/memory/MEMORY.md');
   });
 
   it('returns MEMORY.md path in workspace dir', async () => {
@@ -60,26 +60,26 @@ describe('getMemoryEntrypoint', () => {
 
 describe('isMemoryPath', () => {
   it('matches global memory dir', async () => {
-    expect(await isMemoryPath('/Users/testuser/.abu/memory/test.md')).toBe(true);
+    expect(await isMemoryPath('/Users/testuser/.lingxi/memory/test.md')).toBe(true);
   });
 
   it('matches global memory dir root', async () => {
-    expect(await isMemoryPath('/Users/testuser/.abu/memory')).toBe(true);
+    expect(await isMemoryPath('/Users/testuser/.lingxi/memory')).toBe(true);
   });
 
   it('matches project memory dir', async () => {
-    expect(await isMemoryPath('/Users/testuser/.abu/projects/some-key/memory/test.md')).toBe(true);
+    expect(await isMemoryPath('/Users/testuser/.lingxi/projects/some-key/memory/test.md')).toBe(true);
   });
 
-  it('rejects non-memory paths under .abu', async () => {
-    expect(await isMemoryPath('/Users/testuser/.abu/agents/abu/memory.md')).toBe(false);
+  it('rejects non-memory paths under .lingxi', async () => {
+    expect(await isMemoryPath('/Users/testuser/.lingxi/agents/lingxi/memory.md')).toBe(false);
   });
 
-  it('rejects paths outside .abu', async () => {
+  it('rejects paths outside .lingxi', async () => {
     expect(await isMemoryPath('/Users/testuser/Documents/memory/test.md')).toBe(false);
   });
 
   it('rejects project path without memory segment', async () => {
-    expect(await isMemoryPath('/Users/testuser/.abu/projects/some-key/skills/test.md')).toBe(false);
+    expect(await isMemoryPath('/Users/testuser/.lingxi/projects/some-key/skills/test.md')).toBe(false);
   });
 });

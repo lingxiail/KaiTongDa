@@ -22,7 +22,7 @@ const LocatorDescription = `How to find the element. Supports multiple strategie
 function ensureConnected(): void {
   if (!isExtensionConnected()) {
     throw new Error(
-      'Chrome Extension is not connected. Please install the Abu Browser Extension and ensure it is enabled.'
+      'Chrome Extension is not connected. Please install the Lingxi Browser Extension and ensure it is enabled.'
     );
   }
 }
@@ -325,7 +325,7 @@ export function registerTools(server: McpServer): void {
           type: 'text' as const,
           text: connected
             ? 'Chrome Extension is connected and ready.'
-            : 'Chrome Extension is NOT connected. Please ensure the Abu Browser Extension is installed and enabled in Chrome.'
+            : 'Chrome Extension is NOT connected. Please ensure the Lingxi Browser Extension is installed and enabled in Chrome.'
         }]
       };
     }

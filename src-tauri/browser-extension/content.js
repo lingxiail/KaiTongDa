@@ -601,7 +601,7 @@
     statusBubble.style.background = c.bg;
     statusBubble.style.border = `1px solid ${c.border}`;
     statusBubble.style.color = c.text;
-    statusBubble.textContent = `Abu: ${text}`;
+    statusBubble.textContent = `Lingxi: ${text}`;
     statusBubble.style.opacity = "1";
     statusBubble.style.transform = "translateY(0)";
     if (statusTimer) clearTimeout(statusTimer);

@@ -34,14 +34,14 @@ for (const name of resources) {
 }
 
 // Copy Chrome extension build output for bundling with the app
-const extensionSrc = resolve(root, 'abu-chrome-extension', 'dist');
+const extensionSrc = resolve(root, 'lingxi-chrome-extension', 'dist');
 const extensionDest = resolve(dest, 'browser-extension');
 if (existsSync(extensionSrc)) {
   if (existsSync(extensionDest)) {
     rmSync(extensionDest, { recursive: true });
   }
   cpSync(extensionSrc, extensionDest, { recursive: true });
-  console.log('[copy-resources] Copied abu-chrome-extension/dist/ → src-tauri/browser-extension/');
+  console.log('[copy-resources] Copied lingxi-chrome-extension/dist/ → src-tauri/browser-extension/');
 } else {
-  console.warn('[copy-resources] Warning: abu-chrome-extension/dist/ not found, skipping (run extension build first)');
+  console.warn('[copy-resources] Warning: lingxi-chrome-extension/dist/ not found, skipping (run extension build first)');
 }

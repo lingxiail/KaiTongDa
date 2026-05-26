@@ -1,12 +1,12 @@
 {
-  "name": "abu-chrome-extension",
+  "name": "lingxi-chrome-extension",
   "version": "0.2.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "prebuild": "cp ../abu-browser-shared/types.ts src/shared/types.ts",
+    "prebuild": "cp ../lingxi-browser-shared/types.ts src/shared/types.ts",
     "build": "node build.js",
-    "dev": "cp ../abu-browser-shared/types.ts src/shared/types.ts && node build.js --watch"
+    "dev": "cp ../lingxi-browser-shared/types.ts src/shared/types.ts && node build.js --watch"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.287",

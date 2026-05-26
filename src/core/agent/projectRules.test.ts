@@ -85,7 +85,7 @@ describe('loadProjectRules', () => {
     mockReadTextFile.mockResolvedValue('project rules');
     const result = await loadProjectRules('/workspace');
     expect(result).toBe('project rules');
-    expect(mockReadTextFile).toHaveBeenCalledWith('/workspace/.abu/ABU.md');
+    expect(mockReadTextFile).toHaveBeenCalledWith('/workspace/.lingxi/LINGXI.md');
   });
 });
 
@@ -151,7 +151,7 @@ describe('loadAllRules', () => {
     // First call = user rules, second call = project rules
     mockReadTextFile.mockImplementation(async (path: string) => {
       if (path.includes('/mock/home/')) return 'user rules';
-      if (path.includes('ABU.md')) return 'project rules';
+      if (path.includes('LINGXI.md')) return 'project rules';
       return '';
     });
     mockExists.mockResolvedValue(false); // no modular rules dir
@@ -167,7 +167,7 @@ describe('loadAllRules', () => {
     mockReadTextFile.mockResolvedValue('user rules');
     const result = await loadAllRules(null);
     expect(result).toContain('user rules');
-    expect(result).not.toContain('项目规则（.abu/ABU.md）');
+    expect(result).not.toContain('项目规则（.lingxi/ABU.md）');
   });
 
   it('truncates when total exceeds budget', async () => {
@@ -203,7 +203,7 @@ describe('initWorkspaceRules', () => {
     const result = await initWorkspaceRules('/workspace');
     expect(result).toContain('创建了');
     expect(mockWriteTextFile).toHaveBeenCalledWith(
-      '/workspace/.abu/ABU.md',
+      '/workspace/.lingxi/LINGXI.md',
       expect.stringContaining('# 项目规则')
     );
     expect(mockMkdir).toHaveBeenCalled();

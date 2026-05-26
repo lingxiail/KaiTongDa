@@ -1,25 +1,25 @@
 {
-  "name": "abu-browser-bridge",
+  "name": "lingxi-browser-bridge",
   "version": "0.6.6",
-  "description": "MCP Server that bridges Abu AI assistant with Chrome Extension for browser automation",
+  "description": "MCP Server that bridges Lingxi AI assistant with Chrome Extension for browser automation",
   "type": "module",
   "license": "SEE LICENSE IN LICENSE",
   "author": "pm-shawn",
   "repository": {
     "type": "git",
-    "url": "https://github.com/PM-Shawn/Abu-Cowork"
+    "url": "https://github.com/PM-Shawn/Lingxi-Cowork"
   },
-  "keywords": ["mcp", "browser", "automation", "chrome-extension", "abu"],
+  "keywords": ["mcp", "browser", "automation", "chrome-extension", "lingxi"],
   "bin": {
-    "abu-browser-bridge": "dist/index.js"
+    "lingxi-browser-bridge": "dist/index.js"
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "prebuild": "cp ../abu-browser-shared/types.ts src/types.ts",
+    "prebuild": "cp ../lingxi-browser-shared/types.ts src/types.ts",
     "build": "tsc",
-    "dev": "cp ../abu-browser-shared/types.ts src/types.ts && tsc --watch",
+    "dev": "cp ../lingxi-browser-shared/types.ts src/types.ts && tsc --watch",
     "start": "node dist/index.js"
   },
   "dependencies": {

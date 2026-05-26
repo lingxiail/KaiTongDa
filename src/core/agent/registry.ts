@@ -47,7 +47,7 @@ export class AgentRegistry {
     this.registerBuiltins();
 
     const home = await homeDir();
-    const projectDir = await resolve('.abu/agents');
+    const projectDir = await resolve('.lingxi/agents');
 
     // Bundled resources: resolveResource points to the app bundle's resource dir
     let builtinDir: string | null = null;
@@ -58,7 +58,7 @@ export class AgentRegistry {
     }
 
     const dirs = [
-      joinPath(home, '.abu/agents'),  // user-level
+      joinPath(home, '.lingxi/agents'),  // user-level
       projectDir,                     // project-level
       ...(builtinDir ? [builtinDir] : []),  // bundled builtin-agents
     ];
@@ -74,7 +74,7 @@ export class AgentRegistry {
     // Single unified ABU agent - no multiple agent selection like Claude Code/Cowork
     const builtins: SubagentDefinition[] = [
       {
-        name: 'abu',
+        name: 'lingxi',
         description: '你的桌面 AI 助手，交给灵犀就好啦',
         avatar: '🍮',
         systemPrompt: `你叫灵犀，是一个专业靠谱又贴心的桌面 AI 助手。

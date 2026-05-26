@@ -241,31 +241,6 @@ export const AVAILABLE_MODELS = Object.fromEntries(
 ) as Record<LLMProvider, { id: string; label: string }[]>;
 
 // ============================================================
-// Default providers from static config
-// ============================================================
-
-function createDefaultProviders(): ProviderInstance[] {
-  // Exclude 'local' and 'custom' — they are only created via AddProviderModal
-  const builtinIds = Object.keys(PROVIDER_CONFIGS).filter(
-    id => id !== 'local' && id !== 'custom'
-  ) as LLMProvider[];
-
-  return builtinIds.map((id, index) => ({
-    id,
-    source: 'builtin' as const,
-    name: PROVIDER_CONFIGS[id].name,
-    enabled: id === 'qiniu', // default: only qiniu enabled
-    apiFormat: PROVIDER_CONFIGS[id].format,
-    baseUrl: PROVIDER_CONFIGS[id].baseUrl,
-    apiKey: '',
-    models: PROVIDER_CONFIGS[id].models.map(m => ({ id: m.id, label: m.label, capabilities: deriveUiCaps(m.id) })),
-    capabilities: PROVIDER_CONFIGS[id].capabilities,
-    status: 'unchecked' as const,
-    sortOrder: index,
-  }));
-}
-
-// ============================================================
 // View mode types
 // ============================================================
 
@@ -585,14 +560,12 @@ export function getAllEnabledModels(state: SettingsState): Array<{
 
 export type SettingsStore = SettingsState & SettingsActions;
 
-const defaultProviders = createDefaultProviders();
-
 export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set) => ({
       // ── Provider & Model defaults ──
-      providers: defaultProviders,
-      activeModel: { providerId: 'qiniu', modelId: 'deepseek/deepseek-v3.2-251201' },
+      providers: [],
+      activeModel: { providerId: '', modelId: '' },
       recentModels: [],
       favoriteModels: [],
       auxiliaryServices: {},
@@ -949,7 +922,7 @@ export const useSettingsStore = create<SettingsStore>()(
       },
     }),
     {
-      name: 'abu-settings',
+      name: 'lingxi-settings',
       version: 26,
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as Record<string, unknown>;
@@ -1374,7 +1347,7 @@ export const useSettingsStore = create<SettingsStore>()(
           if (state.guideShown === undefined) state.guideShown = false;
         });
         if (version === 0) step('V0 mcp migration + zhipu fix', () => {
-          // Cross-store migration: mcpServers → abu-mcp-store
+          // Cross-store migration: mcpServers → lingxi-mcp-store
           const mcpServers = state.mcpServers as
             | { name: string; command?: string; args?: string[]; url?: string;
                 enabled?: boolean; transport?: string; env?: Record<string, string>;
@@ -1382,7 +1355,7 @@ export const useSettingsStore = create<SettingsStore>()(
             | undefined;
           if (Array.isArray(mcpServers) && mcpServers.length > 0) {
             try {
-              const mcpRaw = localStorage.getItem('abu-mcp-store');
+              const mcpRaw = localStorage.getItem('lingxi-mcp-store');
               const mcpParsed = mcpRaw ? JSON.parse(mcpRaw) : { state: { servers: {} } };
               const existingServers = mcpParsed?.state?.servers ?? {};
               for (const srv of mcpServers) {
@@ -1395,7 +1368,7 @@ export const useSettingsStore = create<SettingsStore>()(
                 }
               }
               mcpParsed.state = { ...mcpParsed.state, servers: existingServers };
-              localStorage.setItem('abu-mcp-store', JSON.stringify(mcpParsed));
+              localStorage.setItem('lingxi-mcp-store', JSON.stringify(mcpParsed));
             } catch { /* ignore */ }
           }
           delete state.mcpServers;

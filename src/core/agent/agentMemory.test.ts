@@ -37,13 +37,13 @@ beforeEach(() => {
 describe('loadAgentMemory', () => {
   it('returns empty string when no memory exists', async () => {
     mockReadTextFile.mockRejectedValue(new Error('not found'));
-    const result = await loadAgentMemory('abu');
+    const result = await loadAgentMemory('lingxi');
     expect(result).toBe('');
   });
 
   it('returns content when memory exists', async () => {
     mockReadTextFile.mockResolvedValue('# Memories\n- User prefers dark mode');
-    const result = await loadAgentMemory('abu');
+    const result = await loadAgentMemory('lingxi');
     expect(result).toBe('# Memories\n- User prefers dark mode');
   });
 
@@ -53,7 +53,7 @@ describe('loadAgentMemory', () => {
     const content = para1 + '\n\n' + para2;
     mockReadTextFile.mockResolvedValue(content);
 
-    const result = await loadAgentMemory('abu');
+    const result = await loadAgentMemory('lingxi');
     expect(result).toContain('WARNING: Memory truncated');
     expect(result).toContain('limit 4000');
     // Should cut at paragraph boundary, preserving para1 intact
@@ -65,7 +65,7 @@ describe('loadAgentMemory', () => {
     const content = 'x'.repeat(5000); // No \n\n anywhere
     mockReadTextFile.mockResolvedValue(content);
 
-    const result = await loadAgentMemory('abu');
+    const result = await loadAgentMemory('lingxi');
     expect(result).toContain('WARNING: Memory truncated');
     expect(result.length).toBeLessThan(5000);
   });
@@ -73,7 +73,7 @@ describe('loadAgentMemory', () => {
   it('does not truncate content within limit', async () => {
     const content = 'short memory';
     mockReadTextFile.mockResolvedValue(content);
-    const result = await loadAgentMemory('abu');
+    const result = await loadAgentMemory('lingxi');
     expect(result).toBe('short memory');
     expect(result).not.toContain('WARNING');
   });
@@ -82,9 +82,9 @@ describe('loadAgentMemory', () => {
 describe('saveAgentMemory', () => {
   it('writes to correct path', async () => {
     mockWriteTextFile.mockResolvedValue(undefined);
-    await saveAgentMemory('abu', 'test content');
+    await saveAgentMemory('lingxi', 'test content');
     expect(mockWriteTextFile).toHaveBeenCalledWith(
-      '/mock/home/.abu/agents/abu/memory.md',
+      '/mock/home/.lingxi/agents/lingxi/memory.md',
       'test content'
     );
   });
@@ -92,7 +92,7 @@ describe('saveAgentMemory', () => {
   it('truncates content exceeding limit on save and returns wasTruncated', async () => {
     mockWriteTextFile.mockResolvedValue(undefined);
     const longContent = 'x'.repeat(5000);
-    const result = await saveAgentMemory('abu', longContent);
+    const result = await saveAgentMemory('lingxi', longContent);
     expect(result.wasTruncated).toBe(true);
     const savedContent = mockWriteTextFile.mock.calls[0][1] as string;
     expect(savedContent).toContain('WARNING: Memory truncated');
@@ -100,7 +100,7 @@ describe('saveAgentMemory', () => {
 
   it('returns wasTruncated false when within limit', async () => {
     mockWriteTextFile.mockResolvedValue(undefined);
-    const result = await saveAgentMemory('abu', 'short');
+    const result = await saveAgentMemory('lingxi', 'short');
     expect(result.wasTruncated).toBe(false);
   });
 });
@@ -109,14 +109,14 @@ describe('appendAgentMemory', () => {
   it('appends to existing memory', async () => {
     mockReadTextFile.mockResolvedValue('existing');
     mockWriteTextFile.mockResolvedValue(undefined);
-    const result = await appendAgentMemory('abu', 'new stuff');
+    const result = await appendAgentMemory('lingxi', 'new stuff');
     expect(result).toBe('existing\n\nnew stuff');
   });
 
   it('creates new memory when none exists', async () => {
     mockReadTextFile.mockRejectedValue(new Error('not found'));
     mockWriteTextFile.mockResolvedValue(undefined);
-    const result = await appendAgentMemory('abu', 'first memory');
+    const result = await appendAgentMemory('lingxi', 'first memory');
     expect(result).toBe('first memory');
   });
 });
@@ -124,9 +124,9 @@ describe('appendAgentMemory', () => {
 describe('clearAgentMemory', () => {
   it('writes empty string', async () => {
     mockWriteTextFile.mockResolvedValue(undefined);
-    await clearAgentMemory('abu');
+    await clearAgentMemory('lingxi');
     expect(mockWriteTextFile).toHaveBeenCalledWith(
-      expect.stringContaining('abu/memory.md'),
+      expect.stringContaining('lingxi/memory.md'),
       ''
     );
   });
@@ -158,7 +158,7 @@ describe('saveProjectMemory', () => {
     mockWriteTextFile.mockResolvedValue(undefined);
     await saveProjectMemory('/workspace', 'project info');
     expect(mockWriteTextFile).toHaveBeenCalledWith(
-      '/workspace/.abu/MEMORY.md',
+      '/workspace/.lingxi/MEMORY.md',
       'project info'
     );
   });
@@ -178,7 +178,7 @@ describe('clearProjectMemory', () => {
     mockWriteTextFile.mockResolvedValue(undefined);
     await clearProjectMemory('/workspace');
     expect(mockWriteTextFile).toHaveBeenCalledWith(
-      '/workspace/.abu/MEMORY.md',
+      '/workspace/.lingxi/MEMORY.md',
       ''
     );
   });

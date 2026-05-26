@@ -1,4 +1,4 @@
-# abu-browser-bridge vs Playwright 原理对比
+# lingxi-browser-bridge vs Playwright 原理对比
 
 ## Playwright
 
@@ -8,7 +8,7 @@
 - 通信链路：`Playwright → CDP WebSocket → Browser Process`
 - 拥有浏览器的完全控制权（网络拦截、多 tab/context 隔离、浏览器生命周期管理等）
 
-## abu-browser-bridge
+## lingxi-browser-bridge
 
 - 通过 **Chrome Extension + 自定义 WebSocket** 协议与**用户已打开的浏览器**通信
 - 通信链路：`MCP Server → WebSocket(:9876) → Extension Service Worker → Content Script → DOM`
@@ -17,7 +17,7 @@
 
 ## 关键差异总结
 
-| 维度 | Playwright | abu-browser-bridge |
+| 维度 | Playwright | lingxi-browser-bridge |
 |------|-----------|-------------------|
 | 协议 | CDP (DevTools Protocol) | 自定义 WebSocket + Chrome Extension API |
 | 浏览器 | 启动新实例，完全受控 | 连接用户已有浏览器，通过扩展协作 |
@@ -26,19 +26,19 @@
 | 控制深度 | 极深（网络层、协议层） | DOM 层为主 |
 | 典型用途 | 自动化测试、爬虫 | AI 助手操控用户真实浏览器 |
 
-## 为什么 abu-browser-bridge 不用 CDP？
+## 为什么 lingxi-browser-bridge 不用 CDP？
 
-abu-browser-bridge 的设计目标是**让 AI 操作用户正在使用的浏览器**——复用用户的登录态、Cookie、已打开的页面。而 Playwright/CDP 模式会启动一个"干净"的浏览器实例，无法直接访问用户的真实浏览环境。
+lingxi-browser-bridge 的设计目标是**让 AI 操作用户正在使用的浏览器**——复用用户的登录态、Cookie、已打开的页面。而 Playwright/CDP 模式会启动一个"干净"的浏览器实例，无法直接访问用户的真实浏览环境。
 
 用 Chrome Extension 作为中间层，虽然控制能力不如 CDP 深，但换来了**对用户真实浏览器会话的无缝接入**，这对 AI 助手场景更实用。
 
-## abu-browser-bridge 架构详解
+## lingxi-browser-bridge 架构详解
 
 ### 三大组件
 
-1. **abu-browser-bridge**（Node.js MCP Server）— 桥接进程
-2. **abu-chrome-extension**（Chrome Extension）— 浏览器端代理
-3. **abu-browser-shared**（共享类型）— 通信协议定义
+1. **lingxi-browser-bridge**（Node.js MCP Server）— 桥接进程
+2. **lingxi-browser-extension**（Chrome Extension）— 浏览器端代理
+3. **lingxi-browser-shared**（共享类型）— 通信协议定义
 
 ### 通信协议
 

@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Abu Browser Bridge",
+  "name": "Lingxi Browser Bridge",
   "version": "0.2.0",
-  "description": "Connect Abu AI assistant to your browser for page automation",
+  "description": "Connect Lingxi AI assistant to your browser for page automation",
   "permissions": [
     "activeTab",
     "tabs",

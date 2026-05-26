@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 /**
- * Abu Browser Bridge — MCP Server + WebSocket Server
+ * Lingxi Browser Bridge — MCP Server + WebSocket Server
  *
- * This process acts as a bridge between Abu (via MCP stdio transport)
+ * This process acts as a bridge between Lingxi (via MCP stdio transport)
  * and the Chrome Extension (via WebSocket).
  *
  * Startup strategy:
@@ -12,7 +12,7 @@
  * 3. Start discovery (9875) + WS (9876) on fixed ports — no fallback
  *
  * Usage:
- *   npx abu-browser-bridge [--port 9876]
+ *   npx lingxi-browser-bridge [--port 9876]
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
@@ -25,7 +25,7 @@ const DEFAULT_WS_PORT = 9876;
 const DISCOVERY_PORT = 9875;
 
 /**
- * Kill any stale abu-browser-bridge by querying the discovery endpoint.
+ * Kill any stale lingxi-browser-bridge by querying the discovery endpoint.
  * If an old bridge is running, its /status returns { pid }, and we kill it.
  * Also kills any process on the WS port range as a fallback.
  */
@@ -46,7 +46,7 @@ async function killStaleBridges(wsPort: number): Promise<void> {
       if (data.pid && data.pid !== myPid) {
         try {
           process.kill(data.pid, 'SIGTERM');
-          console.error(`[abu-bridge] Killed old bridge (pid: ${data.pid}) via discovery`);
+          console.error(`[lingxi-bridge] Killed old bridge (pid: ${data.pid}) via discovery`);
           // Wait a bit for ports to be released
           await new Promise(r => setTimeout(r, 500));
         } catch {
@@ -78,7 +78,7 @@ async function killStaleBridges(wsPort: number): Promise<void> {
       for (const pid of pids) {
         try {
           process.kill(pid, 'SIGTERM');
-          console.error(`[abu-bridge] Killed stale process ${pid} (port scan)`);
+          console.error(`[lingxi-bridge] Killed stale process ${pid} (port scan)`);
         } catch { /* already dead */ }
       }
     } else {
@@ -92,7 +92,7 @@ async function killStaleBridges(wsPort: number): Promise<void> {
         for (const pid of pids) {
           try {
             process.kill(pid, 'SIGTERM');
-            console.error(`[abu-bridge] Killed stale process ${pid} (port scan)`);
+            console.error(`[lingxi-bridge] Killed stale process ${pid} (port scan)`);
           } catch { /* already dead */ }
         }
       }
@@ -131,7 +131,7 @@ async function main(): Promise<void> {
 
   // 2. Create MCP server
   const mcpServer = new McpServer({
-    name: 'abu-browser-bridge',
+    name: 'lingxi-browser-bridge',
     version: PKG_VERSION,
   });
 
@@ -142,12 +142,12 @@ async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await mcpServer.connect(transport);
 
-  console.error('[abu-bridge] MCP server connected via stdio');
-  console.error('[abu-bridge] Ready — waiting for Chrome Extension connection...');
+  console.error('[lingxi-bridge] MCP server connected via stdio');
+  console.error('[lingxi-bridge] Ready — waiting for Chrome Extension connection...');
 
   // Graceful shutdown
   const cleanup = (): void => {
-    console.error('[abu-bridge] Shutting down...');
+    console.error('[lingxi-bridge] Shutting down...');
     stopWSServer();
     process.exit(0);
   };

@@ -2,10 +2,10 @@
  * Memdir Migration — one-time migration from old memory systems to file-based memdir.
  *
  * Migrates from:
- *   1. Structured entries: ~/.abu/memory/entries.json (user scope)
- *   2. Structured entries: {workspace}/.abu/memory/entries.json (project scope)
- *   3. Legacy flat file: ~/.abu/agents/abu/memory.md
- *   4. Legacy flat file: {workspace}/.abu/MEMORY.md
+ *   1. Structured entries: ~/.lingxi/memory/entries.json (user scope)
+ *   2. Structured entries: {workspace}/.lingxi/memory/entries.json (project scope)
+ *   3. Legacy flat file: ~/.lingxi/agents/lingxi/memory.md
+ *   4. Legacy flat file: {workspace}/.lingxi/MEMORY.md
  *
  * Category mapping (7 → 4):
  *   user_preference     → user
@@ -146,8 +146,8 @@ async function migrateFlatFile(
  *
  * Migration logic:
  *   1. Check if new memdir already has files (skip if yes)
- *   2. Migrate global entries.json → ~/.abu/memory/*.md
- *   3. Migrate legacy ~/.abu/agents/abu/memory.md → ~/.abu/memory/*.md
+ *   2. Migrate global entries.json → ~/.lingxi/memory/*.md
+ *   3. Migrate legacy ~/.lingxi/agents/lingxi/memory.md → ~/.lingxi/memory/*.md
  *
  * Note: per-workspace migration happens lazily when the workspace is opened,
  * not at startup (we don't know all workspace paths upfront).
@@ -165,7 +165,7 @@ export async function migrateMemdirIfNeeded(): Promise<void> {
     let totalMigrated = 0;
 
     // 1. Migrate global entries.json
-    const globalEntriesPath = joinPath(home, '.abu', 'memory', 'entries.json');
+    const globalEntriesPath = joinPath(home, '.lingxi', 'memory', 'entries.json');
     const globalEntries = await loadOldEntries(globalEntriesPath);
     if (globalEntries.length > 0) {
       const count = await migrateEntries(globalEntries, null);
@@ -174,10 +174,10 @@ export async function migrateMemdirIfNeeded(): Promise<void> {
     }
 
     // 2. Migrate legacy agent memory.md
-    const legacyPath = joinPath(home, '.abu', 'agents', 'abu', 'memory.md');
+    const legacyPath = joinPath(home, '.lingxi', 'agents', 'lingxi', 'memory.md');
     if (await migrateFlatFile(legacyPath, null)) {
       totalMigrated++;
-      console.log('[Memdir] Migrated legacy agents/abu/memory.md');
+      console.log('[Memdir] Migrated legacy agents/lingxi/memory.md');
     }
 
     if (totalMigrated > 0) {
@@ -201,7 +201,7 @@ export async function migrateWorkspaceIfNeeded(workspacePath: string): Promise<v
     let totalMigrated = 0;
 
     // 1. Migrate workspace entries.json
-    const entriesPath = joinPath(workspacePath, '.abu', 'memory', 'entries.json');
+    const entriesPath = joinPath(workspacePath, '.lingxi', 'memory', 'entries.json');
     const entries = await loadOldEntries(entriesPath);
     if (entries.length > 0) {
       const count = await migrateEntries(entries, workspacePath);
@@ -209,7 +209,7 @@ export async function migrateWorkspaceIfNeeded(workspacePath: string): Promise<v
     }
 
     // 2. Migrate legacy workspace MEMORY.md
-    const legacyPath = joinPath(workspacePath, '.abu', 'MEMORY.md');
+    const legacyPath = joinPath(workspacePath, '.lingxi', 'MEMORY.md');
     if (await migrateFlatFile(legacyPath, workspacePath)) {
       totalMigrated++;
     }

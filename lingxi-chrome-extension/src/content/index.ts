@@ -604,7 +604,7 @@ function startRecording(): { success: boolean; message: string } {
 
   recordClickHandler = (e: MouseEvent) => {
     const el = e.target as Element;
-    if (!el || el.id === 'abu-status' || el.id === 'abu-highlight') return;
+    if (!el || el.id === 'lingxi-status' || el.id === 'lingxi-highlight') return;
     recordedSteps.push({
       action: 'click',
       locator: getBestSelector(el),
@@ -755,7 +755,7 @@ function highlightElement(el: Element): void {
   const rect = el.getBoundingClientRect();
   if (!highlightOverlay) {
     highlightOverlay = document.createElement('div');
-    highlightOverlay.id = 'abu-highlight';
+    highlightOverlay.id = 'lingxi-highlight';
     highlightOverlay.style.cssText = `
       position: fixed; pointer-events: none; z-index: 2147483647;
       border: 2px solid #d97757; border-radius: 4px;
@@ -790,7 +790,7 @@ let statusTimer: ReturnType<typeof setTimeout> | null = null;
 function showStatus(text: string, type: 'info' | 'success' | 'error' = 'info'): void {
   if (!statusBubble) {
     statusBubble = document.createElement('div');
-    statusBubble.id = 'abu-status';
+    statusBubble.id = 'lingxi-status';
     statusBubble.style.cssText = `
       position: fixed; bottom: 16px; right: 16px; z-index: 2147483647;
       padding: 8px 14px; border-radius: 8px;
@@ -813,7 +813,7 @@ function showStatus(text: string, type: 'info' | 'success' | 'error' = 'info'): 
   statusBubble.style.background = c.bg;
   statusBubble.style.border = `1px solid ${c.border}`;
   statusBubble.style.color = c.text;
-  statusBubble.textContent = `Abu: ${text}`;
+  statusBubble.textContent = `Lingxi: ${text}`;
   statusBubble.style.opacity = '1';
   statusBubble.style.transform = 'translateY(0)';
 

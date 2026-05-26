@@ -1,5 +1,5 @@
 ---
-name: Abu-Browser
+name: Lingxi-Browser
 description: 操作用户真实的 Chrome 浏览器：点击、填写、截图、提取数据。当用户要求查看网页内容、抓取页面数据、填写表单、网页截图或浏览器自动化时使用此技能。
 trigger: 用户要求操作浏览器、查看或抓取网页内容、网页截图、填写网页表单、点击网页按钮、浏览器自动化、从浏览器中提取数据
 do-not-trigger: 用户要求用 Playwright 做自动化测试、讨论浏览器技术原理、只是提到"浏览器"一词但无实际操作需求
@@ -11,7 +11,7 @@ tags:
   - chrome
 ---
 
-# Abu-Browser — 浏览器操作技能
+# Lingxi-Browser — 浏览器操作技能
 
 ## 环境自检（每次激活必做，按顺序执行）
 
@@ -23,7 +23,7 @@ tags:
 
 ### Step 1：确保浏览器桥接服务运行
 
-- 如果返回中包含 `"bridge":"offline"` 或返回为空 → 调用 `manage_mcp_server(action: "ensure", name: "abu-browser-bridge")`
+- 如果返回中包含 `"bridge":"offline"` 或返回为空 → 调用 `manage_mcp_server(action: "ensure", name: "lingxi-browser-bridge")`
   - 返回 `connected` 或 `reconnected`：继续 Step 2
   - 返回 `needs_config`：告诉用户缺少配置（一般不会出现）
   - 返回 `install_failed`：告诉用户安装失败，可能需要检查网络或 Node.js 环境
@@ -36,7 +36,7 @@ tags:
 
 #### 扩展安装引导
 
-Abu 安装目录中内置了 Chrome 扩展文件。严格按以下步骤执行：
+Lingxi 安装目录中内置了 Chrome 扩展文件。严格按以下步骤执行：
 
 1. 用 run_command 打开内置扩展目录（路径从 manage_mcp_server 返回值中的 `extensionPath` 行获取）
 2. 告诉用户（**必须使用以下话术，不要自由发挥**）：
@@ -83,7 +83,7 @@ Abu 安装目录中内置了 Chrome 扩展文件。严格按以下步骤执行�
 ## 快速参考
 
 ### 基本流程
-1. 调用 `abu-browser-bridge__get_tabs` 获取所有标签页
+1. 调用 `lingxi-browser-bridge__get_tabs` 获取所有标签页
 2. 关注 `focused: true` 的标签页——那是用户正在看的
 3. 用 `snapshot` 获取页面结构和元素 ref 编号
 4. 用 ref/css/text 定位元素进行后续操作
@@ -110,5 +110,5 @@ Abu 安装目录中内置了 Chrome 扩展文件。严格按以下步骤执行�
 - 页面未加载 → `wait_for` 设置更长超时
 
 ### 工具选择
-- 优先使用 `abu-browser-bridge__` 开头的工具操作用户真实浏览器
+- 优先使用 `lingxi-browser-bridge__` 开头的工具操作用户真实浏览器
 - **不要**使用 `playwright__` 工具——那会启动一个全新的空白浏览器，不是用户正在用的

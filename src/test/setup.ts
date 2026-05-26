@@ -9,7 +9,7 @@ import '@testing-library/jest-dom/vitest';
 // ── @tauri-apps/api ──
 vi.mock('@tauri-apps/api/path', () => ({
   homeDir: vi.fn().mockResolvedValue('/Users/testuser'),
-  appDataDir: vi.fn().mockResolvedValue('/Users/testuser/.abu'),
+  appDataDir: vi.fn().mockResolvedValue('/Users/testuser/.lingxi'),
   resolve: vi.fn((...args: string[]) => Promise.resolve(args.join('/'))),
   join: vi.fn((...args: string[]) => Promise.resolve(args.join('/'))),
 }));

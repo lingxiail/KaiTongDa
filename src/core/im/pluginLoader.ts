@@ -1,5 +1,5 @@
 /**
- * PluginLoader — Discover and load IM plugins from ~/.abu/plugins/
+ * PluginLoader — Discover and load IM plugins from ~/.lingxi/plugins/
  *
  * Plugins are manifest-driven (JSON config, no executable code).
  * Each plugin directory contains:
@@ -83,13 +83,13 @@ export interface PluginManifestFile {
 const PLUGINS_DIR = 'plugins';
 
 /**
- * Discover and load all IM plugins from ~/.abu/plugins/
+ * Discover and load all IM plugins from ~/.lingxi/plugins/
  * Called once at app startup.
  */
 export async function loadIMPlugins(): Promise<void> {
   try {
     const home = await homeDir();
-    const pluginsPath = joinPath(home, '.abu', PLUGINS_DIR);
+    const pluginsPath = joinPath(home, '.lingxi', PLUGINS_DIR);
 
     let entries: { name: string; isDirectory: boolean }[];
     try {
@@ -226,7 +226,7 @@ function parseManifestInbound(
   const botId = String(extractPath(payload, 'bot_id') ?? '');
   // DM is always treated as mention (user is talking directly to bot)
   const isMention = isDirect ||
-    /(@Abu|@abu)/i.test(textStr) ||
+    /@Lingxi/i.test(textStr) ||
     (!!manifest.displayName && new RegExp(`@${manifest.displayName}`, 'i').test(textStr)) ||
     (!!botId && textStr.includes(`@<=#${botId}=>`));
 

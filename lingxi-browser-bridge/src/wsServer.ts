@@ -101,7 +101,7 @@ function startDiscoveryServer(): Promise<void> {
 
     discoveryServer.on('error', (err: NodeJS.ErrnoException) => {
       if (err.code === 'EADDRINUSE') {
-        console.error(`[abu-bridge] Discovery port ${DISCOVERY_PORT} in use — old bridge still running?`);
+        console.error(`[lingxi-bridge] Discovery port ${DISCOVERY_PORT} in use — old bridge still running?`);
         // Not fatal — extension can still fall back to fixed port
         resolve();
       } else {
@@ -110,7 +110,7 @@ function startDiscoveryServer(): Promise<void> {
     });
 
     discoveryServer.listen(DISCOVERY_PORT, '127.0.0.1', () => {
-      console.error(`[abu-bridge] Discovery endpoint: http://127.0.0.1:${DISCOVERY_PORT}/status`);
+      console.error(`[lingxi-bridge] Discovery endpoint: http://127.0.0.1:${DISCOVERY_PORT}/status`);
       resolve();
     });
   });
@@ -140,30 +140,30 @@ function listenOnPort(port: number): Promise<void> {
         if (protocol === authToken) {
           callback(true);
         } else {
-          console.error(`[abu-bridge] Rejected WS connection: invalid auth token`);
+          console.error(`[lingxi-bridge] Rejected WS connection: invalid auth token`);
           callback(false, 401, 'Unauthorized');
         }
       },
     });
 
     wss.on('listening', () => {
-      console.error(`[abu-bridge] WS server listening on ws://127.0.0.1:${port}`);
+      console.error(`[lingxi-bridge] WS server listening on ws://127.0.0.1:${port}`);
       startHeartbeat();
       resolve();
     });
 
     wss.on('error', (err) => {
-      console.error(`[abu-bridge] WS server error:`, err.message);
+      console.error(`[lingxi-bridge] WS server error:`, err.message);
       reject(err);
     });
 
     wss.on('connection', (ws, req) => {
       const origin = req.headers.origin ?? 'unknown';
-      console.error(`[abu-bridge] Extension connected (origin: ${origin})`);
+      console.error(`[lingxi-bridge] Extension connected (origin: ${origin})`);
 
       // Only allow one extension connection at a time
       if (extensionSocket && extensionSocket.readyState === WebSocket.OPEN) {
-        console.error('[abu-bridge] Replacing existing extension connection');
+        console.error('[lingxi-bridge] Replacing existing extension connection');
         extensionSocket.close(1000, 'Replaced by new connection');
       }
 
@@ -180,12 +180,12 @@ function listenOnPort(port: number): Promise<void> {
           const msg = JSON.parse(data.toString()) as BridgeResponse;
           handleResponse(msg);
         } catch (err) {
-          console.error('[abu-bridge] Invalid message from extension:', err);
+          console.error('[lingxi-bridge] Invalid message from extension:', err);
         }
       });
 
       ws.on('close', (code, reason) => {
-        console.error(`[abu-bridge] Extension disconnected (code: ${code}, reason: ${reason.toString()})`);
+        console.error(`[lingxi-bridge] Extension disconnected (code: ${code}, reason: ${reason.toString()})`);
         if (extensionSocket === ws) {
           extensionSocket = null;
         }
@@ -198,7 +198,7 @@ function listenOnPort(port: number): Promise<void> {
       });
 
       ws.on('error', (err) => {
-        console.error('[abu-bridge] Extension socket error:', err.message);
+        console.error('[lingxi-bridge] Extension socket error:', err.message);
       });
     });
   });
@@ -209,7 +209,7 @@ function startHeartbeat(): void {
     if (extensionSocket && extensionSocket.readyState === WebSocket.OPEN) {
       if (!pongReceived) {
         // No pong since last ping — connection is dead
-        console.error('[abu-bridge] Extension not responding to heartbeat, closing connection');
+        console.error('[lingxi-bridge] Extension not responding to heartbeat, closing connection');
         extensionSocket.terminate();
         extensionSocket = null;
         return;
@@ -223,7 +223,7 @@ function startHeartbeat(): void {
 function handleResponse(msg: BridgeResponse): void {
   const pending = pendingRequests.get(msg.id);
   if (!pending) {
-    console.error(`[abu-bridge] Received response for unknown request: ${msg.id}`);
+    console.error(`[lingxi-bridge] Received response for unknown request: ${msg.id}`);
     return;
   }
   clearTimeout(pending.timer);
@@ -242,7 +242,7 @@ export function sendToExtension(
   return new Promise((resolve, reject) => {
     if (!extensionSocket || extensionSocket.readyState !== WebSocket.OPEN) {
       reject(new Error(
-        'Chrome Extension is not connected. Please install and enable the Abu Browser Extension, then check the connection status in the extension popup.'
+        'Chrome Extension is not connected. Please install and enable the Lingxi Browser Extension, then check the connection status in the extension popup.'
       ));
       return;
     }

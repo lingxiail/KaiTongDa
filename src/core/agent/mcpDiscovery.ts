@@ -130,11 +130,11 @@ const BUILTIN_REGISTRY: MCPRegistryEntry[] = [
     env: {},
   },
   {
-    name: 'abu-browser-bridge',
+    name: 'lingxi-browser-bridge',
     description: '浏览器桥接：操作用户真实的 Chrome 浏览器，点击、填写、截图、提取数据',
     keywords: ['browser', 'chrome', 'click', 'fill', 'screenshot', 'scrape', 'web', 'automation', 'tab'],
     command: 'npx',
-    args: ['-y', 'abu-browser-bridge@latest'],
+    args: ['-y', 'lingxi-browser-bridge@latest'],
     env: {},
     bundledResourceDir: 'browser-extension',
   },

@@ -3,7 +3,7 @@
  * fflate, writes the resulting bytes to disk via Tauri fs, and returns the
  * absolute output path.
  *
- * Output location: `~/Downloads/Abu-Diagnostic/abu-diagnostic-{shortId}-{ts}.zip`
+ * Output location: `~/Downloads/Lingxi-Diagnostic/lingxi-diagnostic-{shortId}-{ts}.zip`
  * (creates the directory if missing). We write into the user's Downloads
  * folder rather than appData so the file is easy to attach in any
  * upload/email flow without further finder navigation.
@@ -40,7 +40,7 @@ function fmtTimestampForFilename(d: Date): string {
 export async function produceBundle(opts: ProduceOptions): Promise<ProduceResult> {
   const convId = opts.conversationId ?? useChatStore.getState().activeConversationId ?? 'global';
   const shortId = convId.slice(0, 8);
-  const filename = `abu-diagnostic-${shortId}-${fmtTimestampForFilename(new Date())}.zip`;
+  const filename = `lingxi-diagnostic-${shortId}-${fmtTimestampForFilename(new Date())}.zip`;
 
   // 1. Collect & scrub
   const { files, scrubbedTextCount } = await collectBundleFiles(opts);
@@ -54,9 +54,9 @@ export async function produceBundle(opts: ProduceOptions): Promise<ProduceResult
   // 3. Zip (level 6 default — text compresses well, fflate is fast)
   const bytes = zipSync(zipInput, { level: 6 });
 
-  // 4. Write to ~/Downloads/Abu-Diagnostic/
+  // 4. Write to ~/Downloads/Lingxi-Diagnostic/
   const dlDir = await downloadDir();
-  const outDir = joinPath(dlDir, 'Abu-Diagnostic');
+  const outDir = joinPath(dlDir, 'Lingxi-Diagnostic');
   if (!(await exists(outDir))) {
     await mkdir(outDir, { recursive: true });
   }

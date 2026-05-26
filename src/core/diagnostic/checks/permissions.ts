@@ -6,7 +6,7 @@
  * Tested locations:
  *  - app data dir (always)
  *  - workspace root (only if a workspace is selected)
- *  - workspace `.abu/` (only if a workspace is selected) — the spot that
+ *  - workspace `.lingxi/` (only if a workspace is selected) — the spot that
  *    bit us in v0.13.10 (require_literal_leading_dot)
  */
 
@@ -46,7 +46,7 @@ function failedRow(
 async function probeWrite(path: string): Promise<{ ok: boolean; durationMs: number; error?: string }> {
   const start = Date.now();
   try {
-    await writeTextFile(path, 'abu-diag-test');
+    await writeTextFile(path, 'lingxi-diag-test');
     await remove(path).catch(() => {});
     return { ok: true, durationMs: Date.now() - start };
   } catch (e) {
@@ -67,7 +67,7 @@ export async function runPermissionsChecks(): Promise<CheckResult[]> {
   // 1. App data dir
   try {
     const dir = await appDataDir();
-    const probe = await probeWrite(joinPath(dir, `abu-diag-${ts}.tmp`));
+    const probe = await probeWrite(joinPath(dir, `lingxi-diag-${ts}.tmp`));
     if (probe.ok) {
       out.push({
         id: 'permissions:app-data',
@@ -87,7 +87,7 @@ export async function runPermissionsChecks(): Promise<CheckResult[]> {
 
   // 2 + 3. Workspace tests (only if a workspace is selected)
   if (ws) {
-    const wsProbe = await probeWrite(joinPath(ws, `abu-diag-${ts}.tmp`));
+    const wsProbe = await probeWrite(joinPath(ws, `lingxi-diag-${ts}.tmp`));
     if (wsProbe.ok) {
       out.push({
         id: 'permissions:workspace',
@@ -102,27 +102,27 @@ export async function runPermissionsChecks(): Promise<CheckResult[]> {
       out.push(failedRow('permissions:workspace', t.diagnostic.permWorkspace, wsProbe.error ?? '', wsProbe.durationMs));
     }
 
-    // workspace/.abu — needs mkdir first if missing
-    const abuDir = joinPath(ws, '.abu');
-    let abuProbe: { ok: boolean; durationMs: number; error?: string };
+    // workspace/.lingxi — needs mkdir first if missing
+    const lingxiDir = joinPath(ws, '.lingxi');
+    let lingxiProbe: { ok: boolean; durationMs: number; error?: string };
     try {
-      if (!(await exists(abuDir))) await mkdir(abuDir, { recursive: true });
-      abuProbe = await probeWrite(joinPath(abuDir, `abu-diag-${ts}.tmp`));
+      if (!(await exists(lingxiDir))) await mkdir(lingxiDir, { recursive: true });
+      lingxiProbe = await probeWrite(joinPath(lingxiDir, `lingxi-diag-${ts}.tmp`));
     } catch (e) {
-      abuProbe = { ok: false, durationMs: 0, error: e instanceof Error ? e.message : String(e) };
+      lingxiProbe = { ok: false, durationMs: 0, error: e instanceof Error ? e.message : String(e) };
     }
-    if (abuProbe.ok) {
+    if (lingxiProbe.ok) {
       out.push({
-        id: 'permissions:workspace-abu',
+        id: 'permissions:workspace-lingxi',
         category: 'permissions',
-        name: t.diagnostic.permWorkspaceAbu,
+        name: t.diagnostic.permWorkspaceLingxi,
         status: 'passed',
-        metric: `${abuProbe.durationMs}ms`,
+        metric: `${lingxiProbe.durationMs}ms`,
         checkedAt: Date.now(),
-        durationMs: abuProbe.durationMs,
+        durationMs: lingxiProbe.durationMs,
       });
     } else {
-      out.push(failedRow('permissions:workspace-abu', t.diagnostic.permWorkspaceAbu, abuProbe.error ?? '', abuProbe.durationMs));
+      out.push(failedRow('permissions:workspace-lingxi', t.diagnostic.permWorkspaceLingxi, lingxiProbe.error ?? '', lingxiProbe.durationMs));
     }
   } else {
     out.push({

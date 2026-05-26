@@ -1,4 +1,4 @@
-# Abu 教程生成 Skill 方案
+# Lingxi 教程生成 Skill 方案
 
 > 状态：方案 v4（浏览器方案定稿）
 > 日期：2025-03-15
@@ -7,18 +7,18 @@
 
 ## 一、需求概述
 
-用户在操作软件（浏览器 Web 端 / 桌面客户端）时，Abu 能自动录制操作步骤、截图，并生成结构化的使用教程文档。
+用户在操作软件（浏览器 Web 端 / 桌面客户端）时，Lingxi 能自动录制操作步骤、截图，并生成结构化的使用教程文档。
 
 支持两种模式：
-- **手动录制**：用户自己操作，Abu 在后台录制
-- **AI 自主操作**：用户下达指令，Abu 自己去操作目标系统并生成手册
+- **手动录制**：用户自己操作，Lingxi 在后台录制
+- **AI 自主操作**：用户下达指令，Lingxi 自己去操作目标系统并生成手册
 
 ---
 
 ## 二、场景矩阵与优先级
 
 ```
-                  手动操作(用户操作)          AI操作(阿布操作)
+                  手动操作(用户操作)          AI操作(灵犀操作)
               ┌──────────────────────┬──────────────────────┐
    Web 端     │  P1: 录制浏览器操作   │  P3: AI操作Web后台    │
    (浏览器)    │  可行度 9/10         │  可行度 8/10          │
@@ -34,24 +34,24 @@
 
 ---
 
-## 三、架构设计原则：与 Abu 完全解耦
+## 三、架构设计原则：与 Lingxi 完全解耦
 
 ### 3.1 设计目标
 
-整个教程生成功能**不改动 Abu 任何核心代码**，全部通过以下机制实现：
+整个教程生成功能**不改动 Lingxi 任何核心代码**，全部通过以下机制实现：
 - **Skill**（纯新增文件）：编排流程、指导 LLM 行为
-- **abu-browser-bridge 扩展**：教程工具 + 截图存储 + 文档生成
+- **lingxi-browser-bridge 扩展**：教程工具 + 截图存储 + 文档生成
 - **Chrome Extension 增强**：录制时实时截图
 
 ### 3.2 架构总览
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│  Abu 主体（零改动）                                    │
+│  Lingxi 主体（零改动）                                    │
 │                                                      │
 │  ┌───────────┐  ┌────────────────────────────────┐   │
 │  │ Agent Loop │──│ MCP Manager                    │   │
-│  │ (不修改)   │  │  └ abu-browser-bridge (扩展)    │   │
+│  │ (不修改)   │  │  └ lingxi-browser-bridge (扩展)    │   │
 │  └───────────┘  └────────────────────────────────┘   │
 │                                                      │
 │  ┌────────────────────────────────────────────┐      │
@@ -62,7 +62,7 @@
 └─────────────────────────────────────────────────────┘
 
 ┌────────────────────────────────────────────────────┐
-│  abu-browser-bridge (Node.js MCP Server)            │
+│  lingxi-browser-bridge (Node.js MCP Server)            │
 │                                                     │
 │  已有工具（不改）          新增教程工具                 │
 │  ├ screenshot             ├ tutorial_start           │
@@ -97,13 +97,13 @@
 | 截图数据流 | **进程内直接获取，不出进程** | 需要跨 MCP 通信，base64 搬运问题 |
 | 安装体验 | 用户已有 bridge，零额外安装 | 多装一个 MCP server |
 | 领域归属 | 教程录制本质是浏览器操作的"录像"，天然同域 | 分离后两边都不完整 |
-| Abu 改动 | 零 | 零（但 MCP 间通信有问题） |
+| Lingxi 改动 | 零 | 零（但 MCP 间通信有问题） |
 | 可复用性 | 绑定 bridge | 理论上更通用（实际因截图问题也绑定） |
 
 ### 3.4 改动范围总结
 
 ```
-              改 Abu 核心    改 Bridge    改 Extension    新增 Skill
+              改 Lingxi 核心    改 Bridge    改 Extension    新增 Skill
 P1 手动录制      ❌            ✅           ✅             ✅
 P3 AI 操作       ❌            (复用P1)     ❌             ✅
 P2 桌面录制      ❌            ❌           ❌             ✅
@@ -122,7 +122,7 @@ P2 桌面录制      ❌            ❌           ❌             ✅
 | Tango | 在线链接 | PDF / HTML / Markdown / 嵌入 | 自动截图 + 箭头/框/模糊 |
 | Dubble | 在线链接 | PDF / 嵌入 Notion/Confluence | 同时生成视频 + 图文 SOP |
 
-竞品默认都是在线链接（SaaS 模式）。Abu 是桌面端，无在线托管，需要本地文件方案。
+竞品默认都是在线链接（SaaS 模式）。Lingxi 是桌面端，无在线托管，需要本地文件方案。
 
 ### 4.2 默认输出：HTML 单文件
 
@@ -155,12 +155,12 @@ P2 桌面录制      ❌            ❌           ❌             ✅
 
 ---
 
-## 五、abu-browser-bridge 教程模块设计
+## 五、lingxi-browser-bridge 教程模块设计
 
 ### 5.1 新增模块结构
 
 ```
-abu-browser-bridge/src/
+lingxi-browser-bridge/src/
 ├── index.ts           (已有，不改)
 ├── wsServer.ts        (已有，不改)
 ├── tools.ts           (已有，新增 5 个教程工具注册)
@@ -208,7 +208,7 @@ class TutorialManager {
 
   start(): string
   // 创建新 session，分配 ID，创建存储目录
-  // 存储目录：~/.abu-browser-bridge/tutorials/{sessionId}/
+  // 存储目录：~/.lingxi-browser-bridge/tutorials/{sessionId}/
 
   isActive(): boolean
 
@@ -360,7 +360,7 @@ export function generateTutorialHtml(params: {
   </div>
   `).join('')}
 
-  <footer>由 Abu 自动生成</footer>
+  <footer>由 Lingxi 自动生成</footer>
 </body>
 </html>
 ```
@@ -497,7 +497,7 @@ case 'stop_recording': {
 ### 6.2 Content Script 改动（~5 行）
 
 ```typescript
-// abu-chrome-extension/src/content/index.ts
+// lingxi-browser-extension/src/content/index.ts
 // 在录制事件 handler 中，每次记录步骤后通知 background
 
 // 现有：recordedSteps.push(step)
@@ -511,7 +511,7 @@ chrome.runtime.sendMessage({
 ### 6.3 Background Script 改动（~30 行）
 
 ```typescript
-// abu-chrome-extension/src/background/index.ts
+// lingxi-browser-extension/src/background/index.ts
 
 // 新增：录制截图缓存
 const recordingScreenshots = new Map<number, string>()  // stepIndex → base64
@@ -545,7 +545,7 @@ return result
 ### 6.4 Shared Types 改动
 
 ```typescript
-// abu-browser-shared/types.ts 新增
+// lingxi-browser-shared/types.ts 新增
 
 interface StopRecordingResponse {
   steps: RecordedStep[]
@@ -615,14 +615,14 @@ do-not-trigger: 用户只是要截图、用户要求AI去操作某个系统
 user-invocable: true
 context: inline
 allowed-tools:
-  - abu-browser-bridge__tutorial_start
-  - abu-browser-bridge__tutorial_set_descriptions
-  - abu-browser-bridge__tutorial_generate_html
-  - abu-browser-bridge__tutorial_clear
-  - abu-browser-bridge__start_recording
-  - abu-browser-bridge__stop_recording
-  - abu-browser-bridge__get_tabs
-  - abu-browser-bridge__connection_status
+  - lingxi-browser-bridge__tutorial_start
+  - lingxi-browser-bridge__tutorial_set_descriptions
+  - lingxi-browser-bridge__tutorial_generate_html
+  - lingxi-browser-bridge__tutorial_clear
+  - lingxi-browser-bridge__start_recording
+  - lingxi-browser-bridge__stop_recording
+  - lingxi-browser-bridge__get_tabs
+  - lingxi-browser-bridge__connection_status
   - write_file
 tags:
   - tutorial
@@ -635,7 +635,7 @@ max-turns: 30
 
 ### 前置检查
 1. 调用 `connection_status` 确认浏览器插件已连接
-2. 如未连接，提示用户安装 Abu Chrome Extension 并刷新页面
+2. 如未连接，提示用户安装 Lingxi Chrome Extension 并刷新页面
 
 ### 录制流程
 1. 确认用户要录制的内容
@@ -721,12 +721,12 @@ LLM: tutorial_generate_html(
 ---
 name: tutorial-autopilot
 description: AI自主操作Web系统并生成操作手册
-trigger: 用户要求阿布去操作某个系统并写手册、帮我写个xx的使用教程、你去操作xx后台
-do-not-trigger: 用户要自己操作让阿布录制
+trigger: 用户要求灵犀去操作某个系统并写手册、帮我写个xx的使用教程、你去操作xx后台
+do-not-trigger: 用户要自己操作让灵犀录制
 user-invocable: true
 context: inline
 allowed-tools:
-  - abu-browser-bridge__*
+  - lingxi-browser-bridge__*
   - write_file
   - read_file
   - http_fetch
@@ -833,7 +833,7 @@ P2 无法复用 browser-bridge（桌面 App 不在浏览器里），需要独立
 
 | 问题 | 解决思路 |
 |------|---------|
-| 阿布窗口挡住操作 | 录制模式下缩为悬浮球或用 tray icon 控制 |
+| 灵犀窗口挡住操作 | 录制模式下缩为悬浮球或用 tray icon 控制 |
 | 无关操作过滤 | 记录窗口标题，对话式删除无关步骤 |
 | 录制开始/结束 | 全局快捷键 `Cmd+Shift+R` 或 tray icon |
 | macOS 权限 | 需要 Accessibility + Screen Recording 权限（已有检测基础） |
@@ -893,8 +893,8 @@ Phase 3 — P2 手动录制桌面（6 天，累计 11.5 天）
 
 | 问题 | 决策 | 理由 |
 |------|------|------|
-| 与 Abu 的耦合度 | **完全解耦**，Abu 核心零改动 | 教程功能全在 bridge + extension + skill |
-| 教程功能放哪里 | **abu-browser-bridge 内**，不独立 MCP | 避免截图 base64 跨进程搬运 |
+| 与 Lingxi 的耦合度 | **完全解耦**，Lingxi 核心零改动 | 教程功能全在 bridge + extension + skill |
+| 教程功能放哪里 | **lingxi-browser-bridge 内**，不独立 MCP | 避免截图 base64 跨进程搬运 |
 | 录制截图方式 | **Background 实时截图 + 缓存**，stop 时批量返回 | 确保截图与操作时刻一致 |
 | stop_recording 行为 | **外部不变、内部增强**，静默缓存到 TutorialManager | 不破坏已有 API |
 | 截图标注 | **pngjs 纯 JS**，画红色圆圈 | 零 native 依赖，安装可靠 |

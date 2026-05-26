@@ -6,14 +6,14 @@
 
 ### 可视区域截图
 ```
-abu-browser-bridge__screenshot({ tabId: <number> })
+lingxi-browser-bridge__screenshot({ tabId: <number> })
 ```
 - 返回当前可视区域的截图（base64 PNG）
 - 适合快速查看页面状态、让用户确认操作
 
 ### 整页截图
 ```
-abu-browser-bridge__screenshot_full_page({ tabId: <number> })
+lingxi-browser-bridge__screenshot_full_page({ tabId: <number> })
 ```
 - 自动滚动拼接，适合长页面
 - 耗时较长（每屏约 600ms），大页面可能需要数秒
@@ -23,8 +23,8 @@ abu-browser-bridge__screenshot_full_page({ tabId: <number> })
 
 ### 提取文本
 ```
-abu-browser-bridge__extract_text({ tabId: <number> })
-abu-browser-bridge__extract_text({ tabId: <number>, locator: { css: ".article-body" } })
+lingxi-browser-bridge__extract_text({ tabId: <number> })
+lingxi-browser-bridge__extract_text({ tabId: <number>, locator: { css: ".article-body" } })
 ```
 - 不指定 locator：提取整页文本
 - 指定 locator：只提取匹配元素的文本
@@ -32,8 +32,8 @@ abu-browser-bridge__extract_text({ tabId: <number>, locator: { css: ".article-bo
 
 ### 提取表格
 ```
-abu-browser-bridge__extract_table({ tabId: <number> })
-abu-browser-bridge__extract_table({ tabId: <number>, locator: { css: "table.data" }, format: "markdown" })
+lingxi-browser-bridge__extract_table({ tabId: <number> })
+lingxi-browser-bridge__extract_table({ tabId: <number>, locator: { css: "table.data" }, format: "markdown" })
 ```
 - 自动识别页面中的 HTML `<table>` 元素
 - `format` 支持 `"array"`（默认，嵌套数组）和 `"markdown"`
@@ -41,7 +41,7 @@ abu-browser-bridge__extract_table({ tabId: <number>, locator: { css: "table.data
 
 ### 页面快照（交互元素树）
 ```
-abu-browser-bridge__snapshot({ tabId: <number> })
+lingxi-browser-bridge__snapshot({ tabId: <number> })
 ```
 - 返回页面所有可交互元素的树状结构
 - 每个元素有唯一 ref 编号（如 `e1`, `e2`, `e3`）
@@ -52,9 +52,9 @@ abu-browser-bridge__snapshot({ tabId: <number> })
 
 ### 点击
 ```
-abu-browser-bridge__click({ tabId: <number>, locator: { ref: "e3" } })
-abu-browser-bridge__click({ tabId: <number>, locator: { text: "提交" } })
-abu-browser-bridge__click({ tabId: <number>, locator: { css: "#submit-btn" } })
+lingxi-browser-bridge__click({ tabId: <number>, locator: { ref: "e3" } })
+lingxi-browser-bridge__click({ tabId: <number>, locator: { text: "提交" } })
+lingxi-browser-bridge__click({ tabId: <number>, locator: { css: "#submit-btn" } })
 ```
 定位策略优先级：
 1. `ref` — 从 snapshot 获取，最精确
@@ -66,7 +66,7 @@ abu-browser-bridge__click({ tabId: <number>, locator: { css: "#submit-btn" } })
 
 ### 填写输入框
 ```
-abu-browser-bridge__fill({ tabId: <number>, locator: { ref: "e5" }, value: "hello@example.com" })
+lingxi-browser-bridge__fill({ tabId: <number>, locator: { ref: "e5" }, value: "hello@example.com" })
 ```
 - 自动清空原有内容再填写
 - 自动触发 input/change 事件
@@ -74,32 +74,32 @@ abu-browser-bridge__fill({ tabId: <number>, locator: { ref: "e5" }, value: "hell
 
 ### 选择下拉菜单
 ```
-abu-browser-bridge__select({ tabId: <number>, locator: { ref: "e7" }, value: "option_value" })
+lingxi-browser-bridge__select({ tabId: <number>, locator: { ref: "e7" }, value: "option_value" })
 ```
 - `value` 是 `<option>` 的 value 属性值
 
 ### 键盘操作
 ```
-abu-browser-bridge__keyboard({ tabId: <number>, key: "Enter" })
-abu-browser-bridge__keyboard({ tabId: <number>, key: "a", modifiers: ["Control"] })
+lingxi-browser-bridge__keyboard({ tabId: <number>, key: "Enter" })
+lingxi-browser-bridge__keyboard({ tabId: <number>, key: "a", modifiers: ["Control"] })
 ```
 - 支持修饰键组合：Control, Shift, Alt, Meta
 - 常用：Enter（确认）、Tab（切换焦点）、Escape（关闭弹窗）
 
 ### 滚动
 ```
-abu-browser-bridge__scroll({ tabId: <number>, direction: "down" })
-abu-browser-bridge__scroll({ tabId: <number>, direction: "down", amount: 500 })
-abu-browser-bridge__scroll({ tabId: <number>, locator: { css: ".scroll-container" }, direction: "down" })
+lingxi-browser-bridge__scroll({ tabId: <number>, direction: "down" })
+lingxi-browser-bridge__scroll({ tabId: <number>, direction: "down", amount: 500 })
+lingxi-browser-bridge__scroll({ tabId: <number>, locator: { css: ".scroll-container" }, direction: "down" })
 ```
 - direction: `up`, `down`, `left`, `right`
 - 不指定 locator 时滚动整个页面
 
 ## 等待页面变化
 ```
-abu-browser-bridge__wait_for({ tabId: <number>, condition: { type: "element", locator: { css: ".result" } } })
-abu-browser-bridge__wait_for({ tabId: <number>, condition: { type: "text", text: "加载完成" } })
-abu-browser-bridge__wait_for({ tabId: <number>, condition: { type: "url", pattern: "/success" } })
+lingxi-browser-bridge__wait_for({ tabId: <number>, condition: { type: "element", locator: { css: ".result" } } })
+lingxi-browser-bridge__wait_for({ tabId: <number>, condition: { type: "text", text: "加载完成" } })
+lingxi-browser-bridge__wait_for({ tabId: <number>, condition: { type: "url", pattern: "/success" } })
 ```
 - `type: "element"` — 等待元素出现
 - `type: "element_gone"` — 等待元素消失（如 loading spinner）
@@ -109,15 +109,15 @@ abu-browser-bridge__wait_for({ tabId: <number>, condition: { type: "url", patter
 
 ## 导航
 ```
-abu-browser-bridge__navigate({ tabId: <number>, url: "https://example.com" })
-abu-browser-bridge__navigate({ tabId: <number>, action: "back" })
-abu-browser-bridge__navigate({ tabId: <number>, action: "forward" })
-abu-browser-bridge__navigate({ tabId: <number>, action: "reload" })
+lingxi-browser-bridge__navigate({ tabId: <number>, url: "https://example.com" })
+lingxi-browser-bridge__navigate({ tabId: <number>, action: "back" })
+lingxi-browser-bridge__navigate({ tabId: <number>, action: "forward" })
+lingxi-browser-bridge__navigate({ tabId: <number>, action: "reload" })
 ```
 
 ## 执行 JavaScript
 ```
-abu-browser-bridge__execute_js({ tabId: <number>, code: "document.title" })
+lingxi-browser-bridge__execute_js({ tabId: <number>, code: "document.title" })
 ```
 - 在页面上下文中执行任意 JS
 - 返回执行结果

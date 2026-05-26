@@ -1,9 +1,9 @@
 /**
- * Shared types for Abu Browser Bridge communication protocol.
+ * Shared types for Lingxi Browser Bridge communication protocol.
  *
  * Single source of truth — imported by both:
- *   - abu-browser-bridge (MCP server)
- *   - abu-chrome-extension (Chrome Extension)
+ *   - lingxi-browser-bridge (MCP server)
+ *   - lingxi-chrome-extension (Chrome Extension)
  */
 
 // --- Bridge Messages (WS protocol between Bridge and Extension) ---

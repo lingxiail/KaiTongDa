@@ -16,7 +16,7 @@
 import { useEffect, useRef } from 'react';
 import { getCurrentWindow, primaryMonitor, PhysicalPosition } from '@tauri-apps/api/window';
 
-const STORAGE_KEY = 'abu-pet-position';
+const STORAGE_KEY = 'lingxi-pet-position';
 const SNAP_THRESHOLD = 20;
 const HIDE_RATIO = 0.4;
 const DEBOUNCE_MS = 220;

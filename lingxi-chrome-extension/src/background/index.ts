@@ -1,9 +1,9 @@
 /**
- * Service Worker — Background script for Abu Browser Extension.
+ * Service Worker — Background script for Lingxi Browser Extension.
  *
  * Responsibilities:
  * 1. Discover bridge WS port + auth token via HTTP discovery endpoint (port 9875)
- * 2. Maintain WebSocket connection to abu-browser-bridge
+ * 2. Maintain WebSocket connection to lingxi-browser-bridge
  * 3. Route commands from bridge to content scripts
  * 4. Handle tab-level operations (get_tabs, navigate, screenshot)
  */
@@ -38,7 +38,7 @@ let lastActiveWindowId: number | null = null;
 chrome.storage.session.get(['lastActiveTabId', 'lastActiveWindowId'], (result) => {
   if (result.lastActiveTabId) lastActiveTabId = result.lastActiveTabId;
   if (result.lastActiveWindowId) lastActiveWindowId = result.lastActiveWindowId;
-  console.log(`[abu-ext] Restored tracking: tab=${lastActiveTabId}, window=${lastActiveWindowId}`);
+  console.log(`[lingxi-ext] Restored tracking: tab=${lastActiveTabId}, window=${lastActiveWindowId}`);
 
   // If tracking is empty (extension just installed/reloaded), initialize from current state
   if (!lastActiveTabId || !lastActiveWindowId) {
@@ -47,7 +47,7 @@ chrome.storage.session.get(['lastActiveTabId', 'lastActiveWindowId'], (result) =
         const activeTab = win.tabs.find(t => t.active);
         if (activeTab?.id) {
           saveTracking(activeTab.id, win.id);
-          console.log(`[abu-ext] Initialized tracking from getLastFocused: tab=${activeTab.id}, window=${win.id}`);
+          console.log(`[lingxi-ext] Initialized tracking from getLastFocused: tab=${activeTab.id}, window=${win.id}`);
         }
       }
     });
@@ -130,7 +130,7 @@ async function discoverPort(): Promise<number | null> {
     }
 
     if (data.wsPort) {
-      console.log(`[abu-ext] Discovery: bridge on port ${data.wsPort} (pid: ${data.pid}, uptime: ${data.uptime}s)`);
+      console.log(`[lingxi-ext] Discovery: bridge on port ${data.wsPort} (pid: ${data.pid}, uptime: ${data.uptime}s)`);
       return data.wsPort;
     }
     return null;
@@ -162,7 +162,7 @@ async function connect(): Promise<void> {
     }
 
     // Failed
-    state.error = 'Bridge not found. Is abu-browser-bridge running?';
+    state.error = 'Bridge not found. Is lingxi-browser-bridge running?';
     scheduleReconnect();
   } finally {
     isConnecting = false;
@@ -200,7 +200,7 @@ function tryConnectPort(port: number): Promise<boolean> {
       if (resolved) return;
       resolved = true;
       clearTimeout(connectTimeout);
-      console.log(`[abu-ext] Connected to bridge on port ${port}`);
+      console.log(`[lingxi-ext] Connected to bridge on port ${port}`);
       ws = socket;
       state.connected = true;
       state.lastConnected = Date.now();
@@ -237,7 +237,7 @@ function setupSocketHandlers(socket: WebSocket): void {
       logOp(request.action, response.success);
       socket.send(JSON.stringify(response));
     } catch (err) {
-      console.error('[abu-ext] Error handling message:', err);
+      console.error('[lingxi-ext] Error handling message:', err);
       try {
         const parsed = JSON.parse(event.data as string);
         const errorMsg = err instanceof Error ? err.message : String(err);
@@ -250,14 +250,14 @@ function setupSocketHandlers(socket: WebSocket): void {
   };
 
   socket.onclose = (event) => {
-    console.log(`[abu-ext] Disconnected (code: ${event.code})`);
+    console.log(`[lingxi-ext] Disconnected (code: ${event.code})`);
     state.connected = false;
     ws = null;
     scheduleReconnect();
   };
 
   socket.onerror = (err) => {
-    console.error('[abu-ext] WebSocket error:', err);
+    console.error('[lingxi-ext] WebSocket error:', err);
   };
 }
 
@@ -265,7 +265,7 @@ function scheduleReconnect(): void {
   if (reconnectTimer) return;
   state.reconnecting = true;
   const delay = RECONNECT_DELAYS[Math.min(reconnectAttempt, RECONNECT_DELAYS.length - 1)];
-  console.log(`[abu-ext] Reconnecting in ${delay}ms (attempt ${reconnectAttempt + 1})`);
+  console.log(`[lingxi-ext] Reconnecting in ${delay}ms (attempt ${reconnectAttempt + 1})`);
   reconnectTimer = setTimeout(() => {
     reconnectTimer = null;
     reconnectAttempt++;
@@ -331,7 +331,7 @@ async function handleRequest(request: BridgeRequest): Promise<BridgeResponse> {
         let strategy = 'none';
 
         const normalWindows = allWindows.filter(w => w.type === 'normal');
-        console.log(`[abu-ext] get_tabs debug:`, {
+        console.log(`[lingxi-ext] get_tabs debug:`, {
           tracking: { lastActiveTabId, lastActiveWindowId },
           normalWindows: normalWindows.map(w => ({ id: w.id, focused: w.focused })),
           lastFocusedWindow: { id: lastFocusedWindow.id, type: lastFocusedWindow.type, focused: lastFocusedWindow.focused },
@@ -368,7 +368,7 @@ async function handleRequest(request: BridgeRequest): Promise<BridgeResponse> {
           }
         }
 
-        console.log(`[abu-ext] get_tabs result: strategy=${strategy}, targetWindowId=${targetWindowId}`);
+        console.log(`[lingxi-ext] get_tabs result: strategy=${strategy}, targetWindowId=${targetWindowId}`);
 
         let focusedTabId: number | undefined;
         if (lastActiveTabId) {
@@ -572,7 +572,7 @@ async function sendToContentScript(
     const msg = err instanceof Error ? err.message : '';
     // Auto-retry once on "context invalidated" — re-inject content script
     if (msg.includes('context invalidated') || msg.includes('Receiving end does not exist')) {
-      console.log(`[abu-ext] Content script stale for tab ${tabId}, re-injecting...`);
+      console.log(`[lingxi-ext] Content script stale for tab ${tabId}, re-injecting...`);
       injectedTabs.delete(tabId);
       await ensureContentScript(tabId);
       return doSend();

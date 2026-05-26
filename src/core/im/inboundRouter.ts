@@ -16,7 +16,7 @@ export interface NormalizedIMMessage {
   senderName: string;
   /** Message text content */
   text: string;
-  /** Whether Abu was @mentioned */
+  /** Whether Lingxi was @mentioned */
   isMention: boolean;
   /** Whether this is a direct/private message */
   isDirect: boolean;
@@ -117,7 +117,7 @@ function parseFeishu(payload: Record<string, unknown>): NormalizedIMMessage | nu
   // Check: mentions array has entries, or text contains mention tags, or common bot names.
   const mentions = (event.message as Record<string, unknown>)?.mentions as { name?: string; id?: { open_id?: string } }[] | undefined;
   const hasMentions = mentions != null && mentions.length > 0;
-  const isMention = hasMentions || /(@_user_\d+|@Abu|@abu|@阿布)/.test(text);
+  const isMention = hasMentions || /(@_user_\d+|@Lingxi|@灵犀)/.test(text);
   const isDirect = chatType === 'p2p';
 
   // Clean mention tags from text
@@ -198,13 +198,13 @@ function parseWeCom(payload: Record<string, unknown>): NormalizedIMMessage | nul
   const senderName = String(from?.Name ?? payload.userName ?? senderId);
 
   const chatId = String(payload.ChatId ?? payload.chatid ?? '');
-  const isMention = text.includes('@Abu') || text.includes('@abu');
+  const isMention = text.includes('@Lingxi') || text.includes('@Lingxi');
   const isDirect = !chatId || chatId === senderId;
 
   return {
     senderId,
     senderName,
-    text: text.replace(/@[Aa]bu\s*/g, '').trim(),
+    text: text.replace(/@[Ll]ingxi\s*/g, '').trim(),
     isMention,
     isDirect,
     chatId: chatId || senderId,

@@ -9,7 +9,7 @@
  * preview. The full content can be loaded on demand.
  *
  * Layout:
- *   ~/Library/Application Support/com.abu.app/conversations/{convId}/results/{toolCallId}.txt
+ *   ~/Library/Application Support/com.lingxi.app/conversations/{convId}/results/{toolCallId}.txt
  */
 
 import { exists, mkdir, readTextFile, writeTextFile, remove } from '@tauri-apps/plugin-fs';
