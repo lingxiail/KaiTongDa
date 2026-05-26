@@ -50,35 +50,59 @@ jobs:
           npm ci
         shell: bash
 
+      - name: Import Apple certificate (macOS)
+        if: matrix.platform == 'macos-latest'
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
+        run: |
+          KEYCHAIN_PASSWORD="${KEYCHAIN_PASSWORD:-temporary-keychain-password}"
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          echo "$APPLE_CERTIFICATE" | base64 --decode > "$RUNNER_TEMP/certificate.p12"
+          security import "$RUNNER_TEMP/certificate.p12" \
+            -P "$APPLE_CERTIFICATE_PASSWORD" \
+            -A \
+            -f pkcs12 \
+            -k "$KEYCHAIN_PATH" \
+            -T /usr/bin/codesign \
+            -T /usr/bin/security
+
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+          security default-keychain -s "$KEYCHAIN_PATH"
+          security find-identity -v -p codesigning "$KEYCHAIN_PATH"
+
+          if ! security find-identity -v -p codesigning "$KEYCHAIN_PATH" | grep -q "${APPLE_SIGNING_IDENTITY:-Developer ID Application}"; then
+            echo "::error::No Developer ID signing identity was found in the imported p12. Make sure APPLE_CERTIFICATE is a base64-encoded .p12 exported with the private key, not a .cer file."
+            exit 1
+          fi
+
+          security set-key-partition-list \
+            -S apple-tool:,apple:,codesign: \
+            -s \
+            -k "$KEYCHAIN_PASSWORD" \
+            "$KEYCHAIN_PATH"
+
       - name: Setup embedded Python runtime
+        env:
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
         run: bash scripts/setup-python-runtime.sh
         shell: bash
 
       - name: Build Tauri app
         env:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-          RAW_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-        shell: bash
-        run: |
-          # Write signing key to file. GitHub Secrets injection or shell expansion
-          # can append trailing bytes (observed: extra %/\n at end). Use Python to
-          # strip all non-base64 chars then truncate to a multiple of 4, which is
-          # the only valid length for base64.
-          #
-          # Tauri 2 only reads TAURI_SIGNING_PRIVATE_KEY; it auto-detects file path vs content.
-          python3 <<'PYEOF' > "$RUNNER_TEMP/tauri-signing-key.txt"
-          import os, sys, re
-          raw = os.environ.get('RAW_KEY', '')
-          cleaned = re.sub(r'[^A-Za-z0-9+/=]', '', raw)
-          valid_len = (len(cleaned) // 4) * 4
-          sys.stdout.write(cleaned[:valid_len])
-          PYEOF
-          echo "Key file size: $(wc -c < "$RUNNER_TEMP/tauri-signing-key.txt") bytes"
-          echo "Last 16 bytes (hex):"
-          tail -c 16 "$RUNNER_TEMP/tauri-signing-key.txt" | od -c | head -2
-          export TAURI_SIGNING_PRIVATE_KEY="$RUNNER_TEMP/tauri-signing-key.txt"
-          npx tauri build --target ${{ matrix.target }}
-          rm -f "$RUNNER_TEMP/tauri-signing-key.txt"
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: npx tauri build --target ${{ matrix.target }}
 
       - name: Create GitHub Release (idempotent)
         env:

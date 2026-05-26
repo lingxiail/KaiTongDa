@@ -123,8 +123,8 @@ function serializeForAnthropic(turns: PreparedTurn[]): Anthropic.MessageParam[] 
 }
 
 /** Convert messages through normalize → serialize pipeline */
-function convertMessages(messages: Message[]): Anthropic.MessageParam[] {
-  const turns = normalizeMessages(messages);
+async function convertMessages(messages: Message[]): Promise<Anthropic.MessageParam[]> {
+  const turns = await normalizeMessages(messages);
   return serializeForAnthropic(turns);
 }
 
@@ -148,7 +148,7 @@ export class ClaudeAdapter implements LLMAdapter {
     const params: Anthropic.MessageCreateParams = {
       model: options.model,
       max_tokens: options.maxTokens ?? 4096,
-      messages: convertMessages(messages),
+      messages: await convertMessages(messages),
       stream: true,
     };
 
