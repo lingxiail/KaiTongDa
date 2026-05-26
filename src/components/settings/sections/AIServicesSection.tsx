@@ -36,11 +36,11 @@ export default function AIServicesSection() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-base font-semibold text-[var(--abu-text-primary)]">
+          <h3 className="text-base font-semibold text-[var(--lingxi-text-primary)]">
             {t.settings.aiServices}
           </h3>
           {enabledCount > 0 && (
-            <p className="text-xs text-[var(--abu-text-muted)] mt-0.5">
+            <p className="text-xs text-[var(--lingxi-text-muted)] mt-0.5">
               {t.settings.enabledCount.replace('{count}', String(enabledCount))}
             </p>
           )}
@@ -59,8 +59,8 @@ export default function AIServicesSection() {
       {/* Provider List */}
       {visibleProviders.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <p className="text-sm text-[var(--abu-text-muted)]">{t.settings.noProviders}</p>
-          <p className="text-xs text-[var(--abu-text-muted)] mt-1">{t.settings.noProvidersHint}</p>
+          <p className="text-sm text-[var(--lingxi-text-muted)]">{t.settings.noProviders}</p>
+          <p className="text-xs text-[var(--lingxi-text-muted)] mt-1">{t.settings.noProvidersHint}</p>
           <Button
             variant="outline"
             size="sm"

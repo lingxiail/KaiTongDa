@@ -2,8 +2,8 @@
  * Memdir Paths — memory directory resolution.
  *
  * Resolution (aligned with Claude Code):
- *   With workspace:  ~/.abu/projects/<sanitized-workspace-path>/memory/
- *   Without:         ~/.abu/memory/                    (global fallback)
+ *   With workspace:  ~/.lingxi/projects/<sanitized-workspace-path>/memory/
+ *   Without:         ~/.lingxi/memory/                    (global fallback)
  *
  * sanitizePath replaces non-alphanumeric chars with hyphens, truncates + hashes
  * if the result exceeds filesystem limits (255 bytes).
@@ -65,9 +65,9 @@ export async function getMemoryDir(workspacePath?: string | null): Promise<strin
   if (workspacePath) {
     const normalized = normalizeSeparators(workspacePath);
     const key = sanitizePath(normalized);
-    return joinPath(home, '.abu', 'projects', key, 'memory');
+    return joinPath(home, '.lingxi', 'projects', key, 'memory');
   }
-  return joinPath(home, '.abu', 'memory');
+  return joinPath(home, '.lingxi', 'memory');
 }
 
 /**
@@ -79,21 +79,21 @@ export async function getMemoryEntrypoint(workspacePath?: string | null): Promis
 }
 
 /**
- * Check if an absolute path is inside any Abu memory directory.
+ * Check if an absolute path is inside any Lingxi memory directory.
  * Used by pathSafety.ts to whitelist memory directories for file tools.
  */
 export async function isMemoryPath(absolutePath: string): Promise<boolean> {
   const home = await getCachedHome();
   const normalized = normalizeSeparators(absolutePath);
 
-  // Global memory dir: ~/.abu/memory/
-  const globalDir = joinPath(home, '.abu', 'memory');
+  // Global memory dir: ~/.lingxi/memory/
+  const globalDir = joinPath(home, '.lingxi', 'memory');
   if (normalized.startsWith(globalDir + '/') || normalized === globalDir) {
     return true;
   }
 
-  // Per-project memory dir: ~/.abu/projects/*/memory/
-  const projectsPrefix = joinPath(home, '.abu', 'projects');
+  // Per-project memory dir: ~/.lingxi/projects/*/memory/
+  const projectsPrefix = joinPath(home, '.lingxi', 'projects');
   if (normalized.startsWith(projectsPrefix + '/')) {
     const rest = normalized.slice(projectsPrefix.length + 1);
     // rest looks like "<sanitized-key>/memory/..." or "<sanitized-key>/memory"

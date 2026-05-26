@@ -22,33 +22,33 @@ export default function SourceCard({ result, index, isHighlighted }: SourceCardP
       className={cn(
         "flex items-center gap-2 w-full text-left px-2 py-1.5 rounded-md transition-all group",
         isHighlighted
-          ? "bg-[var(--abu-clay-bg)]"
-          : "hover:bg-[var(--abu-bg-muted)]"
+          ? "bg-[var(--lingxi-clay-bg)]"
+          : "hover:bg-[var(--lingxi-bg-muted)]"
       )}
     >
       {/* Index number */}
-      <span className="shrink-0 text-[11px] text-[var(--abu-text-muted)] w-4 text-right tabular-nums">
+      <span className="shrink-0 text-[11px] text-[var(--lingxi-text-muted)] w-4 text-right tabular-nums">
         {index}
       </span>
 
       {/* Favicon placeholder — small colored dot derived from domain */}
-      <span className="shrink-0 w-4 h-4 rounded-sm bg-[var(--abu-border)] flex items-center justify-center text-[9px] font-medium text-[var(--abu-text-tertiary)] uppercase">
+      <span className="shrink-0 w-4 h-4 rounded-sm bg-[var(--lingxi-border)] flex items-center justify-center text-[9px] font-medium text-[var(--lingxi-text-tertiary)] uppercase">
         {(result.source || result.title)?.[0] || '?'}
       </span>
 
       {/* Title + domain */}
-      <span className="flex-1 min-w-0 truncate text-[13px] text-[var(--abu-text-primary)] group-hover:text-[var(--abu-clay)] transition-colors">
+      <span className="flex-1 min-w-0 truncate text-[13px] text-[var(--lingxi-text-primary)] group-hover:text-[var(--lingxi-clay)] transition-colors">
         {result.title}
       </span>
 
       {/* Domain */}
       {result.source && (
-        <span className="shrink-0 text-[11px] text-[var(--abu-text-muted)] hidden sm:inline">
+        <span className="shrink-0 text-[11px] text-[var(--lingxi-text-muted)] hidden sm:inline">
           {result.source}
         </span>
       )}
 
-      <ExternalLink className="h-3 w-3 text-[var(--abu-text-muted)] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+      <ExternalLink className="h-3 w-3 text-[var(--lingxi-text-muted)] opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
     </button>
   );
 }

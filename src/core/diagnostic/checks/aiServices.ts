@@ -33,7 +33,7 @@ function withTimeout(p: Promise<HealthCheckResult>, ms: number): Promise<HealthC
 
 export async function runAIServicesChecks(): Promise<CheckResult[]> {
   const t = getI18n();
-  const providers = useSettingsStore.getState().providers.filter((p) => p.enabled);
+  const providers = useSettingsStore.getState().providers.filter((p) => p.enabled && p.id !== 'qiniu');
 
   if (providers.length === 0) {
     return [{

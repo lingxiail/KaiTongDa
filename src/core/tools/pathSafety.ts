@@ -235,21 +235,21 @@ function isInAuthorizedWorkspace(path: string, capability: 'read' | 'write' = 'r
 }
 
 /**
- * Check if an absolute path is inside an Abu memory directory.
- * Whitelists ~/.abu/memory/ and ~/.abu/projects/{key}/memory/.
+ * Check if an absolute path is inside an Lingxi memory directory.
+ * Whitelists ~/.lingxi/memory/ and ~/.lingxi/projects/{key}/memory/.
  * This allows file tools (read_file, write_file, edit_file) to operate
  * on memory files without triggering permission dialogs.
  */
-async function isAbuMemoryPath(normalizedPath: string): Promise<boolean> {
+async function isLingxiMemoryPath(normalizedPath: string): Promise<boolean> {
   const home = await getHomeDir();
-  const abuBase = `${home}/.abu`;
+  const abuBase = `${home}/.lingxi`;
 
-  // ~/.abu/memory/
+  // ~/.lingxi/memory/
   if (normalizedPath.startsWith(`${abuBase}/memory/`) || normalizedPath === `${abuBase}/memory`) {
     return true;
   }
 
-  // ~/.abu/projects/*/memory/
+  // ~/.lingxi/projects/*/memory/
   const projectsPrefix = `${abuBase}/projects/`;
   if (normalizedPath.startsWith(projectsPrefix)) {
     const rest = normalizedPath.slice(projectsPrefix.length);
@@ -489,8 +489,8 @@ export async function checkReadPath(path: string): Promise<PathCheckResult> {
     return { allowed: true };
   }
 
-  // Check Abu memory directories (~/.abu/memory/, ~/.abu/projects/*/memory/)
-  if (await isAbuMemoryPath(normalizedPath)) {
+  // Check Lingxi memory directories (~/.lingxi/memory/, ~/.lingxi/projects/*/memory/)
+  if (await isLingxiMemoryPath(normalizedPath)) {
     return { allowed: true };
   }
 
@@ -580,8 +580,8 @@ export async function checkWritePath(path: string): Promise<PathCheckResult> {
     return { allowed: true };
   }
 
-  // Check Abu memory directories (~/.abu/memory/, ~/.abu/projects/*/memory/)
-  if (await isAbuMemoryPath(normalizedPath)) {
+  // Check Lingxi memory directories (~/.lingxi/memory/, ~/.lingxi/projects/*/memory/)
+  if (await isLingxiMemoryPath(normalizedPath)) {
     return { allowed: true };
   }
 

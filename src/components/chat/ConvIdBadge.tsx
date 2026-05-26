@@ -22,7 +22,7 @@ export default function ConvIdBadge({ conversationId }: { conversationId: string
       type="button"
       onClick={handleCopy}
       title={t.chat.copyConvIdTooltip}
-      className="inline-flex items-center gap-1 text-[11px] text-[var(--abu-text-muted)] hover:text-[var(--abu-text-tertiary)] transition-colors font-mono tabular-nums"
+      className="inline-flex items-center gap-1 text-[11px] text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-tertiary)] transition-colors font-mono tabular-nums"
       aria-label={t.chat.copyConvIdTooltip}
     >
       <span>#{short}</span>

@@ -47,28 +47,28 @@ function ChipMultiSelect({ selected, options, onChange, placeholder }: {
         onClick={() => setOpen(!open)}
         className={cn(
           'flex items-center gap-2 w-full min-h-9 px-3 py-1.5 rounded-lg border text-sm text-left transition-all',
-          'border-[var(--abu-border)] bg-[var(--abu-bg-muted)]',
-          'focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]',
-          'hover:border-[var(--abu-border-hover)]',
-          open && 'ring-2 ring-[var(--abu-clay-ring)] border-[var(--abu-clay)]',
+          'border-[var(--lingxi-border)] bg-[var(--lingxi-bg-muted)]',
+          'focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]',
+          'hover:border-[var(--lingxi-border-hover)]',
+          open && 'ring-2 ring-[var(--lingxi-clay-ring)] border-[var(--lingxi-clay)]',
         )}
       >
         <span className="flex flex-wrap gap-1 flex-1 min-w-0">
           {selected.length === 0 ? (
-            <span className="text-[var(--abu-text-placeholder)]">{placeholder}</span>
+            <span className="text-[var(--lingxi-text-placeholder)]">{placeholder}</span>
           ) : (
             selected.map((v) => {
               const opt = options.find((o) => o.value === v);
               return (
                 <span
                   key={v}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--abu-clay-bg)] text-xs text-[var(--abu-clay)]"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--lingxi-clay-bg)] text-xs text-[var(--lingxi-clay)]"
                 >
                   {opt?.label ?? v}
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); onChange(selected.filter((s) => s !== v)); }}
-                    className="text-[var(--abu-clay)] hover:text-[var(--abu-text-primary)]"
+                    className="text-[var(--lingxi-clay)] hover:text-[var(--lingxi-text-primary)]"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -77,18 +77,18 @@ function ChipMultiSelect({ selected, options, onChange, placeholder }: {
             })
           )}
         </span>
-        <ChevronDown className={cn('h-3.5 w-3.5 shrink-0 text-[var(--abu-text-muted)] transition-transform', open && 'rotate-180')} />
+        <ChevronDown className={cn('h-3.5 w-3.5 shrink-0 text-[var(--lingxi-text-muted)] transition-transform', open && 'rotate-180')} />
       </button>
 
       {open && createPortal(
         <>
           <div className="fixed inset-0 z-[10000]" onClick={() => setOpen(false)} />
           <div
-            className="fixed z-[10001] py-1 bg-white border border-[var(--abu-border)] rounded-xl shadow-lg max-h-60 overflow-auto"
+            className="fixed z-[10001] py-1 bg-white border border-[var(--lingxi-border)] rounded-xl shadow-lg max-h-60 overflow-auto"
             style={dropdownStyle}
           >
             {options.length === 0 ? (
-              <div className="px-3 py-2 text-sm text-[var(--abu-text-muted)]">-</div>
+              <div className="px-3 py-2 text-sm text-[var(--lingxi-text-muted)]">-</div>
             ) : (
               options.map((opt) => {
                 const isSelected = selected.includes(opt.value);
@@ -100,15 +100,15 @@ function ChipMultiSelect({ selected, options, onChange, placeholder }: {
                       onChange(isSelected ? selected.filter((s) => s !== opt.value) : [...selected, opt.value]);
                     }}
                     className={cn(
-                      'w-full px-3 py-2 text-sm text-left transition-colors hover:bg-[var(--abu-bg-muted)]',
+                      'w-full px-3 py-2 text-sm text-left transition-colors hover:bg-[var(--lingxi-bg-muted)]',
                       isSelected
-                        ? 'text-[var(--abu-clay)] bg-[var(--abu-clay-bg)]'
-                        : 'text-[var(--abu-text-primary)]',
+                        ? 'text-[var(--lingxi-clay)] bg-[var(--lingxi-clay-bg)]'
+                        : 'text-[var(--lingxi-text-primary)]',
                     )}
                   >
                     <span className="inline-flex items-center gap-2">
                       <span className="w-4 shrink-0">
-                        {isSelected && <Check className="h-4 w-4 text-[var(--abu-clay)]" />}
+                        {isSelected && <Check className="h-4 w-4 text-[var(--lingxi-clay)]" />}
                       </span>
                       <span className="truncate">{opt.label}</span>
                     </span>
@@ -213,12 +213,12 @@ export default function ProjectSettingsDialog({ open, onClose, projectId }: Proj
         <div className="bg-white rounded-2xl shadow-xl w-[480px] max-h-[85vh] flex flex-col animate-in zoom-in-95 duration-150">
           {/* Header */}
           <div className="flex items-center justify-between px-6 pt-6 pb-2 shrink-0">
-            <h2 className="text-[16px] font-semibold text-[var(--abu-text-primary)]">
+            <h2 className="text-[16px] font-semibold text-[var(--lingxi-text-primary)]">
               {t.project.settingsTitle}
             </h2>
             <button
               onClick={onClose}
-              className="p-1.5 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-lg"
+              className="p-1.5 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-lg"
             >
               <X className="h-4 w-4" />
             </button>
@@ -232,7 +232,7 @@ export default function ProjectSettingsDialog({ open, onClose, projectId }: Proj
                 {/* Icon + Name row */}
                 <div className="flex items-end gap-3">
                   <div className="relative">
-                    <label className="text-[13px] font-medium text-[var(--abu-text-secondary)] mb-1.5 block">
+                    <label className="text-[13px] font-medium text-[var(--lingxi-text-secondary)] mb-1.5 block">
                       {t.project.iconLabel}
                     </label>
                     <button
@@ -240,7 +240,7 @@ export default function ProjectSettingsDialog({ open, onClose, projectId }: Proj
                       onClick={() => setShowEmojiPicker(!showEmojiPicker)}
                       className={cn(
                         'flex items-center justify-center w-[36px] h-[36px] rounded-lg border text-[18px]',
-                        'border-[var(--abu-border)] hover:border-[var(--abu-border-hover)] bg-[var(--abu-bg-primary)]',
+                        'border-[var(--lingxi-border)] hover:border-[var(--lingxi-border-hover)] bg-[var(--lingxi-bg-primary)]',
                       )}
                     >
                       {icon || '📁'}
@@ -248,13 +248,13 @@ export default function ProjectSettingsDialog({ open, onClose, projectId }: Proj
                     {showEmojiPicker && (
                       <>
                         <div className="fixed inset-0 z-10" onClick={() => setShowEmojiPicker(false)} />
-                        <div className="absolute z-20 mt-1 left-0 grid grid-cols-8 gap-1 p-2 rounded-lg border border-[var(--abu-border)] bg-[var(--abu-bg-primary)] shadow-lg">
+                        <div className="absolute z-20 mt-1 left-0 grid grid-cols-8 gap-1 p-2 rounded-lg border border-[var(--lingxi-border)] bg-[var(--lingxi-bg-primary)] shadow-lg">
                           {EMOJI_PALETTE.map((emoji) => (
                             <button
                               key={emoji}
                               type="button"
                               onClick={() => { setIcon(emoji); setShowEmojiPicker(false); }}
-                              className="flex items-center justify-center w-8 h-8 rounded hover:bg-[var(--abu-bg-hover)] text-[16px]"
+                              className="flex items-center justify-center w-8 h-8 rounded hover:bg-[var(--lingxi-bg-hover)] text-[16px]"
                             >
                               {emoji}
                             </button>
@@ -263,7 +263,7 @@ export default function ProjectSettingsDialog({ open, onClose, projectId }: Proj
                             <button
                               type="button"
                               onClick={() => { setIcon(''); setShowEmojiPicker(false); }}
-                              className="flex items-center justify-center w-8 h-8 rounded hover:bg-[var(--abu-bg-hover)] text-[11px] text-[var(--abu-text-muted)] col-span-8 border-t border-[var(--abu-border)] mt-1 pt-1"
+                              className="flex items-center justify-center w-8 h-8 rounded hover:bg-[var(--lingxi-bg-hover)] text-[11px] text-[var(--lingxi-text-muted)] col-span-8 border-t border-[var(--lingxi-border)] mt-1 pt-1"
                             >
                               {t.project.delete}
                             </button>
@@ -273,7 +273,7 @@ export default function ProjectSettingsDialog({ open, onClose, projectId }: Proj
                     )}
                   </div>
                   <div className="flex-1">
-                    <label className="text-[13px] font-medium text-[var(--abu-text-secondary)] mb-1.5 block">
+                    <label className="text-[13px] font-medium text-[var(--lingxi-text-secondary)] mb-1.5 block">
                       {t.project.nameLabel}
                     </label>
                     <Input
@@ -286,7 +286,7 @@ export default function ProjectSettingsDialog({ open, onClose, projectId }: Proj
 
                 {/* Description */}
                 <div>
-                  <label className="text-[13px] font-medium text-[var(--abu-text-secondary)] mb-1.5 block">
+                  <label className="text-[13px] font-medium text-[var(--lingxi-text-secondary)] mb-1.5 block">
                     {t.project.descLabel}
                   </label>
                   <Input
@@ -297,7 +297,7 @@ export default function ProjectSettingsDialog({ open, onClose, projectId }: Proj
                 </div>
 
                 {/* Folder path (read-only) */}
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--abu-bg-subtle)] text-[12px] text-[var(--abu-text-tertiary)]">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--lingxi-bg-subtle)] text-[12px] text-[var(--lingxi-text-tertiary)]">
                   <FolderOpen className="h-3.5 w-3.5 shrink-0" />
                   <span className="truncate flex-1">{project.workspacePath}</span>
                   <span className="shrink-0">{format(t.project.conversationCount, { count: String(convCount) })}</span>
@@ -306,13 +306,13 @@ export default function ProjectSettingsDialog({ open, onClose, projectId }: Proj
 
               {/* === Defaults (inherited by new conversations) === */}
               <div className="space-y-3">
-                <h3 className="text-[12px] font-semibold text-[var(--abu-text-muted)] uppercase tracking-wider">
+                <h3 className="text-[12px] font-semibold text-[var(--lingxi-text-muted)] uppercase tracking-wider">
                   {t.project.defaultsSection}
                 </h3>
 
                 {/* Model Override */}
                 <div>
-                  <label className="text-[13px] font-medium text-[var(--abu-text-secondary)] mb-1.5 block">
+                  <label className="text-[13px] font-medium text-[var(--lingxi-text-secondary)] mb-1.5 block">
                     {t.project.modelOverrideLabel}
                   </label>
                   <Select
@@ -325,7 +325,7 @@ export default function ProjectSettingsDialog({ open, onClose, projectId }: Proj
 
                 {/* Default Skills */}
                 <div>
-                  <label className="text-[13px] font-medium text-[var(--abu-text-secondary)] mb-1.5 block">
+                  <label className="text-[13px] font-medium text-[var(--lingxi-text-secondary)] mb-1.5 block">
                     {t.project.defaultSkillsLabel}
                   </label>
                   <ChipMultiSelect
@@ -338,7 +338,7 @@ export default function ProjectSettingsDialog({ open, onClose, projectId }: Proj
 
                 {/* Default MCP Servers */}
                 <div>
-                  <label className="text-[13px] font-medium text-[var(--abu-text-secondary)] mb-1.5 block">
+                  <label className="text-[13px] font-medium text-[var(--lingxi-text-secondary)] mb-1.5 block">
                     {t.project.defaultMCPLabel}
                   </label>
                   <ChipMultiSelect
@@ -367,7 +367,7 @@ export default function ProjectSettingsDialog({ open, onClose, projectId }: Proj
               </div>
 
               {/* Save / Cancel */}
-              <div className="flex items-center justify-end gap-3 pt-2 border-t border-[var(--abu-border)]">
+              <div className="flex items-center justify-end gap-3 pt-2 border-t border-[var(--lingxi-border)]">
                 <Button variant="ghost" onClick={onClose}>
                   {t.project.cancel}
                 </Button>
@@ -387,16 +387,16 @@ export default function ProjectSettingsDialog({ open, onClose, projectId }: Proj
           onMouseDown={(e) => { if (e.target === e.currentTarget) setShowArchiveConfirm(false); }}
         >
           <div className="bg-white rounded-2xl shadow-xl w-[380px] p-6 animate-in zoom-in-95 duration-150">
-            <h3 className="text-[16px] font-semibold text-[var(--abu-text-primary)] mb-2">
+            <h3 className="text-[16px] font-semibold text-[var(--lingxi-text-primary)] mb-2">
               {t.project.archiveProject}
             </h3>
-            <p className="text-[14px] text-[var(--abu-text-tertiary)] leading-relaxed mb-6">
+            <p className="text-[14px] text-[var(--lingxi-text-tertiary)] leading-relaxed mb-6">
               {format(t.project.archiveConfirm, { name: project.name })}
             </p>
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setShowArchiveConfirm(false)}
-                className="px-4 py-2 rounded-lg text-[13px] font-medium text-[var(--abu-text-tertiary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+                className="px-4 py-2 rounded-lg text-[13px] font-medium text-[var(--lingxi-text-tertiary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
               >
                 {t.project.cancel}
               </button>

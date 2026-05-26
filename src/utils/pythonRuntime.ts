@@ -1,6 +1,6 @@
 /**
  * Embedded Python Runtime
- * Resolves the path to Abu's bundled Python interpreter.
+ * Resolves the path to Lingxi's bundled Python interpreter.
  * Falls back to system Python if embedded runtime is not available (dev mode).
  */
 

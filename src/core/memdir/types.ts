@@ -2,8 +2,8 @@
  * Memdir Types — file-based persistent memory system (aligned with Claude Code).
  *
  * Each memory is a standalone .md file with YAML frontmatter:
- *   ~/.abu/memory/              — global memories (no workspace)
- *   ~/.abu/projects/<key>/memory/ — per-workspace memories
+ *   ~/.lingxi/memory/              — global memories (no workspace)
+ *   ~/.lingxi/projects/<key>/memory/ — per-workspace memories
  *
  * MEMORY.md in each directory is the index (always injected into system prompt).
  */
@@ -84,7 +84,7 @@ export const MAX_INDEX_BYTES = 25_000;
 export const MAX_MEMORY_FILES = 200;
 export const MAX_MEMORY_FILE_BYTES = 4_000;
 
-/** Filename-safe ID generator (same convention as the rest of Abu) */
+/** Filename-safe ID generator (same convention as the rest of Lingxi) */
 export function generateMemoryId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
 }

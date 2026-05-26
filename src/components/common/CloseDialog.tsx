@@ -50,17 +50,17 @@ export default function CloseDialog({
         if (e.target === e.currentTarget) onCancel();
       }}
     >
-      <div className="relative bg-[var(--abu-bg-base)] rounded-2xl shadow-2xl ring-1 ring-black/8 w-[400px] p-7 animate-in zoom-in-95 duration-150">
+      <div className="relative bg-[var(--lingxi-bg-base)] rounded-2xl shadow-2xl ring-1 ring-black/8 w-[400px] p-7 animate-in zoom-in-95 duration-150">
         <button
           onClick={onCancel}
-          className="absolute top-4 right-4 p-1 rounded-md text-[var(--abu-text-placeholder)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] transition-colors"
+          className="absolute top-4 right-4 p-1 rounded-md text-[var(--lingxi-text-placeholder)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] transition-colors"
         >
           <X className="h-4 w-4" />
         </button>
-        <h3 className="text-[16px] font-semibold text-[var(--abu-text-primary)] mb-1.5">
+        <h3 className="text-[16px] font-semibold text-[var(--lingxi-text-primary)] mb-1.5">
           {t.windowClose.title}
         </h3>
-        <p className="text-[13.5px] text-[var(--abu-text-muted)] leading-relaxed mb-3">
+        <p className="text-[13.5px] text-[var(--lingxi-text-muted)] leading-relaxed mb-3">
           {t.windowClose.message}
         </p>
         {hasRunningAgent && (
@@ -79,23 +79,23 @@ export default function CloseDialog({
               type="checkbox"
               checked={remember}
               onChange={(e) => setRemember(e.target.checked)}
-              className="w-3.5 h-3.5 rounded border-[var(--abu-border-hover)] text-[var(--abu-clay)] focus:ring-[var(--abu-clay)] accent-[var(--abu-clay)]"
+              className="w-3.5 h-3.5 rounded border-[var(--lingxi-border-hover)] text-[var(--lingxi-clay)] focus:ring-[var(--lingxi-clay)] accent-[var(--lingxi-clay)]"
             />
-            <span className="text-[12px] text-[var(--abu-text-muted)]">
+            <span className="text-[12px] text-[var(--lingxi-text-muted)]">
               {t.windowClose.rememberChoice}
             </span>
           </label>
           <div className="flex items-center gap-2">
             <button
               onClick={handleMinimize}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium border border-[var(--abu-border)] bg-white text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)] transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium border border-[var(--lingxi-border)] bg-white text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)] transition-colors"
             >
               <Minus className="h-3.5 w-3.5" />
               {t.windowClose.minimize}
             </button>
             <button
               onClick={handleQuit}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium bg-[var(--abu-clay)] text-white hover:bg-[var(--abu-clay-hover)] transition-colors"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-[13px] font-medium bg-[var(--lingxi-clay)] text-white hover:bg-[var(--lingxi-clay-hover)] transition-colors"
             >
               <X className="h-3.5 w-3.5" />
               {t.windowClose.quit}

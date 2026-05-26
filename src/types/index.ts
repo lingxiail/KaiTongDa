@@ -60,7 +60,7 @@ export interface SkillPatchedPayload {
 }
 
 /**
- * Payload for a "Abu deleted this skill" notice (Task #17 · v2 delete).
+ * Payload for a "Lingxi deleted this skill" notice (Task #17 · v2 delete).
  * Read-only surface — destructive action already happened, we just let
  * the user see it. workspace-auto deletes are permanent; draft deletes
  * go to trash (7-day recovery), indicated by `rescuable`.
@@ -253,7 +253,7 @@ export interface Conversation {
    */
   pendingProposalSignal?: import('../core/agent/proposalSignal').ProposalSignal;
   /**
-   * True if this conversation was imported from a shared bundle (.abu.json).
+   * True if this conversation was imported from a shared bundle (.lingxi.json).
    * Read-only — user cannot continue the conversation. Persisted via
    * ConversationMeta (index.json) so the flag survives restarts.
    */
@@ -391,13 +391,13 @@ export interface SkillHookEntry {
 // Skill source — where the skill was loaded from.
 //
 // Priority order (first-win; earlier scans beat later ones on name collision):
-//   1. project            — {workspace}/.abu/skills/, git-shareable
+//   1. project            — {workspace}/.lingxi/skills/, git-shareable
 //   2. project-standard   — {workspace}/.agents/skills/, git-shareable cross-client
-//   3. workspace-auto     — ~/.abu/projects/<key>/skills/, agent-auto-written for this project
-//   4. draft              — ~/.abu/projects/<key>/skills/drafts/, pending user review
-//   5. user               — ~/.abu/skills/, user's personal global
+//   3. workspace-auto     — ~/.lingxi/projects/<key>/skills/, agent-auto-written for this project
+//   4. draft              — ~/.lingxi/projects/<key>/skills/drafts/, pending user review
+//   5. user               — ~/.lingxi/skills/, user's personal global
 //   6. standard           — ~/.agents/skills/, cross-client global
-//   7. builtin            — bundled with Abu, read-only
+//   7. builtin            — bundled with Lingxi, read-only
 //
 // Agent is allowed to create/modify only `workspace-auto` and (with confirm) `user`
 // scopes — everything else is read-only to the agent (see PRD 2.4).
@@ -420,7 +420,7 @@ export type SkillSource =
 export type SkillUXCategory =
   | 'mine'           // user / standard / project / project-standard
   | 'agent-evolved'  // workspace-auto / draft
-  | 'builtin';       // bundled with Abu
+  | 'builtin';       // bundled with Lingxi
 
 export interface SkillMetadata {
   name: string;

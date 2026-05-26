@@ -40,13 +40,13 @@ const noticeTitle: Record<string, string> = {
   permission_request: '需要你的确认',
   user_input_needed: '需要你的输入',
   meeting_prep: '会议准备就绪',
-  skill_proposal_offer: '阿布想存一个技能',
+  skill_proposal_offer: '灵犀想存一个技能',
   skill_draft_ready: '技能草稿就绪',
   im_inbound: '收到新消息',
 };
 
 function getTitle(notice: Notice): string {
-  return noticeTitle[notice.type] ?? 'Abu';
+  return noticeTitle[notice.type] ?? 'Lingxi';
 }
 
 function getBody(notice: Notice): string {

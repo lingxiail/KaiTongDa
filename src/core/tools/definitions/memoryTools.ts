@@ -33,7 +33,7 @@ export const reportPlanTool: ToolDefinition = {
 
 export const updateMemoryTool: ToolDefinition = {
   name: TOOL_NAMES.UPDATE_MEMORY,
-  description: '保存或更新持久记忆。**调用前先核对 system prompt 中的 <memory-index>**：如果已有相同主题的记忆，根据情况选择 edit 覆盖或 delete 删除，不要写重复条目。\n\n四种 action：\n- append（默认）：新写一条记忆。仅在索引中没有相似主题时使用。\n- edit：用 filename 覆盖某条已有记忆（用户改主意/补充 Why/How 时用）。\n- delete：用 filename 删除某条已过时的记忆（信息冲突且新值更合适时用）。\n- clear：清空所有记忆（极少用，仅用户明确要求时）。\n\n**private 标记 + description 写法**（重要）：保存身份证/银行卡/手机号/薪资/医疗等敏感信息时传 `private: true`。**对于 private 记忆，description 必须只写"主题"，不要写"具体值"**——因为 description 会出现在 MEMORY.md 索引里被注入到每轮对话的 system prompt。例：\n  ✅ description="个人身份证号"（主题，安全）\n  ❌ description="身份证号 110105199003078412"（值泄露，等于没保护）\n  ✅ description="银行账户信息"\n  ❌ description="工行卡 6228...0018，密码 xxx"\n普通用户偏好/工作习惯保持非私密，description 可以写得详细一些方便每轮自动引用。\n\n不要保存一次性任务结果（"X 已生成"）、临时状态（"测试通过"）、可派生信息（"项目位于 /Users/X"）。项目规则（.abu/ABU.md）由用户手动维护，不要用此工具修改。',
+  description: '保存或更新持久记忆。**调用前先核对 system prompt 中的 <memory-index>**：如果已有相同主题的记忆，根据情况选择 edit 覆盖或 delete 删除，不要写重复条目。\n\n四种 action：\n- append（默认）：新写一条记忆。仅在索引中没有相似主题时使用。\n- edit：用 filename 覆盖某条已有记忆（用户改主意/补充 Why/How 时用）。\n- delete：用 filename 删除某条已过时的记忆（信息冲突且新值更合适时用）。\n- clear：清空所有记忆（极少用，仅用户明确要求时）。\n\n**private 标记 + description 写法**（重要）：保存身份证/银行卡/手机号/薪资/医疗等敏感信息时传 `private: true`。**对于 private 记忆，description 必须只写"主题"，不要写"具体值"**——因为 description 会出现在 MEMORY.md 索引里被注入到每轮对话的 system prompt。例：\n  ✅ description="个人身份证号"（主题，安全）\n  ❌ description="身份证号 110105199003078412"（值泄露，等于没保护）\n  ✅ description="银行账户信息"\n  ❌ description="工行卡 6228...0018，密码 xxx"\n普通用户偏好/工作习惯保持非私密，description 可以写得详细一些方便每轮自动引用。\n\n不要保存一次性任务结果（"X 已生成"）、临时状态（"测试通过"）、可派生信息（"项目位于 /Users/X"）。项目规则（.lingxi/LINGXI.md）由用户手动维护，不要用此工具修改。',
   inputSchema: {
     type: 'object',
     properties: {

@@ -1,5 +1,5 @@
 /**
- * Structured Logger — lightweight ring-buffer logger for Abu desktop app.
+ * Structured Logger — lightweight ring-buffer logger for Lingxi desktop app.
  *
  * - In-memory ring buffer (500 entries) for all levels
  * - Disk persistence for warn/error (Tauri appDataDir/logs/)

@@ -49,8 +49,8 @@ const mockInvoke = vi.mocked(invoke);
 
 const WS = '/Users/testuser/projects/myapp';
 // sanitizePath('/Users/testuser/projects/myapp') → '-Users-testuser-projects-myapp'
-const DRAFTS = '/Users/testuser/.abu/projects/-Users-testuser-projects-myapp/skills/drafts';
-const SKILLS = '/Users/testuser/.abu/projects/-Users-testuser-projects-myapp/skills';
+const DRAFTS = '/Users/testuser/.lingxi/projects/-Users-testuser-projects-myapp/skills/drafts';
+const SKILLS = '/Users/testuser/.lingxi/projects/-Users-testuser-projects-myapp/skills';
 
 /**
  * Track an in-memory VFS so exists/readTextFile/readDir see consistent state
@@ -160,7 +160,7 @@ describe('drafts · writeDraft', () => {
     expect(writes).toHaveLength(2);
     const paths = writes.map(([, args]) => (args as { path: string }).path).sort();
     expect(paths).toEqual([
-      `${DRAFTS}/daily-report/.abu-draft-meta.json`,
+      `${DRAFTS}/daily-report/.lingxi-draft-meta.json`,
       `${DRAFTS}/daily-report/SKILL.md`,
     ]);
   });
@@ -245,13 +245,13 @@ describe('drafts · listDrafts', () => {
     vfs.seed(`${DRAFTS}/a`);
     vfs.seed(`${DRAFTS}/a/SKILL.md`, '---\nname: a\n---\nA');
     vfs.seed(
-      `${DRAFTS}/a/.abu-draft-meta.json`,
+      `${DRAFTS}/a/.lingxi-draft-meta.json`,
       JSON.stringify({ action: 'create', triggerReason: 'A', createdAt: 100, expiresAt: 200 }),
     );
     vfs.seed(`${DRAFTS}/b`);
     vfs.seed(`${DRAFTS}/b/SKILL.md`, '---\nname: b\n---\nB');
     vfs.seed(
-      `${DRAFTS}/b/.abu-draft-meta.json`,
+      `${DRAFTS}/b/.lingxi-draft-meta.json`,
       JSON.stringify({ action: 'create', triggerReason: 'B', createdAt: 200, expiresAt: 300 }),
     );
     vfs.install();
@@ -310,7 +310,7 @@ describe('drafts · readDraft', () => {
     vfs.seed(`${DRAFTS}/x`);
     vfs.seed(`${DRAFTS}/x/SKILL.md`, '---\n---\n');
     vfs.seed(
-      `${DRAFTS}/x/.abu-draft-meta.json`,
+      `${DRAFTS}/x/.lingxi-draft-meta.json`,
       JSON.stringify({ action: 'create', triggerReason: 'hi', createdAt: 1, expiresAt: 2 }),
     );
     vfs.install();
@@ -326,14 +326,14 @@ describe('drafts · acceptDraft', () => {
     const vfs = makeVfs();
     vfs.seed(`${DRAFTS}/good`);
     vfs.seed(`${DRAFTS}/good/SKILL.md`, '---\n---\nbody');
-    vfs.seed(`${DRAFTS}/good/.abu-draft-meta.json`, '{}');
+    vfs.seed(`${DRAFTS}/good/.lingxi-draft-meta.json`, '{}');
     vfs.install();
 
     const { targetDir } = await acceptDraft('good', WS);
     expect(targetDir).toBe(`${SKILLS}/good`);
 
     // Sidecar removed before rename
-    expect(mockRemove).toHaveBeenCalledWith(`${DRAFTS}/good/.abu-draft-meta.json`);
+    expect(mockRemove).toHaveBeenCalledWith(`${DRAFTS}/good/.lingxi-draft-meta.json`);
     // Rename to final location
     expect(renameMock).toHaveBeenCalledWith(`${DRAFTS}/good`, `${SKILLS}/good`);
   });
@@ -384,13 +384,13 @@ describe('drafts · cleanExpiredDrafts', () => {
     vfs.seed(`${DRAFTS}/old`);
     vfs.seed(`${DRAFTS}/old/SKILL.md`, '---\n---\n');
     vfs.seed(
-      `${DRAFTS}/old/.abu-draft-meta.json`,
+      `${DRAFTS}/old/.lingxi-draft-meta.json`,
       JSON.stringify({ action: 'create', triggerReason: '', createdAt: now - 1e8, expiresAt: now - 1000 }),
     );
     vfs.seed(`${DRAFTS}/fresh`);
     vfs.seed(`${DRAFTS}/fresh/SKILL.md`, '---\n---\n');
     vfs.seed(
-      `${DRAFTS}/fresh/.abu-draft-meta.json`,
+      `${DRAFTS}/fresh/.lingxi-draft-meta.json`,
       JSON.stringify({ action: 'create', triggerReason: '', createdAt: now, expiresAt: now + 1e6 }),
     );
     vfs.install();

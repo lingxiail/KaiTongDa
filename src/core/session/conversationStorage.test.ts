@@ -138,8 +138,8 @@ describe('conversationStorage', () => {
 
   describe('loadMessages · corruption resilience', () => {
     // Path shape matches ensureBase() + messagesPath() (see conversationStorage.ts).
-    // appDataDir is mocked globally to '/Users/testuser/.abu'.
-    const PATH = '/Users/testuser/.abu/conversations/corrupt-conv/messages.jsonl';
+    // appDataDir is mocked globally to '/Users/testuser/.lingxi'.
+    const PATH = '/Users/testuser/.lingxi/conversations/corrupt-conv/messages.jsonl';
 
     it('skips a single corrupt line and returns intact messages', async () => {
       const good1 = JSON.stringify(makeMsg({ id: 'a', content: 'First' }));
@@ -259,10 +259,10 @@ describe('conversationStorage', () => {
     it('populates dedup cache on load', async () => {
       // Write directly to "disk" to simulate pre-existing data
       const msg = makeMsg({ id: 'preexisting', content: 'From disk' });
-      const path = '/Users/testuser/.abu/conversations/conv-2/messages.jsonl';
+      const path = '/Users/testuser/.lingxi/conversations/conv-2/messages.jsonl';
       memFs.files.set(path, JSON.stringify(msg) + '\n');
-      memFs.dirs.add('/Users/testuser/.abu/conversations/conv-2');
-      memFs.dirs.add('/Users/testuser/.abu/conversations');
+      memFs.dirs.add('/Users/testuser/.lingxi/conversations/conv-2');
+      memFs.dirs.add('/Users/testuser/.lingxi/conversations');
 
       // Load messages (populates dedup cache)
       const loaded = await storage.loadMessages('conv-2');
@@ -376,7 +376,7 @@ describe('conversationStorage', () => {
       await storage.flushIndex();
 
       // Read index from "disk"
-      const indexPath = '/Users/testuser/.abu/conversations/index.json';
+      const indexPath = '/Users/testuser/.lingxi/conversations/index.json';
       const raw = memFs.files.get(indexPath);
       expect(raw).toBeDefined();
 
@@ -399,7 +399,7 @@ describe('conversationStorage', () => {
       await storage.removeIndexEntry('conv-del');
       await storage.flushIndex();
 
-      const indexPath = '/Users/testuser/.abu/conversations/index.json';
+      const indexPath = '/Users/testuser/.lingxi/conversations/index.json';
       const parsed = JSON.parse(memFs.files.get(indexPath)!);
       expect(parsed.entries['conv-del']).toBeUndefined();
     });

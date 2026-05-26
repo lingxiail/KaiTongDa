@@ -145,14 +145,14 @@ export default function SensitiveAuditDialog() {
     // button. Same reasoning for not handling ESC.
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40 animate-in fade-in duration-150">
       <div className="bg-white rounded-2xl shadow-xl w-[480px] max-h-[80vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-150">
-        <div className="px-6 pt-6 pb-3 border-b border-[var(--abu-bg-muted)]">
+        <div className="px-6 pt-6 pb-3 border-b border-[var(--lingxi-bg-muted)]">
           <div className="flex items-center gap-2 mb-2">
             <ShieldAlert className="h-5 w-5 text-amber-600" />
-            <h3 className="text-[16px] font-semibold text-[var(--abu-text-primary)]">
+            <h3 className="text-[16px] font-semibold text-[var(--lingxi-text-primary)]">
               {t.memory.auditTitle}
             </h3>
           </div>
-          <p className="text-[13px] text-[var(--abu-text-tertiary)] leading-relaxed">
+          <p className="text-[13px] text-[var(--lingxi-text-tertiary)] leading-relaxed">
             {isEmpty
               ? t.memory.auditEmpty
               : format(t.memory.auditIntro, { count: String(entries.length) })}
@@ -169,21 +169,21 @@ export default function SensitiveAuditDialog() {
                   key={key}
                   className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${
                     entry.selected
-                      ? 'border-[var(--abu-clay)] bg-orange-50/40'
-                      : 'border-[var(--abu-border)] bg-[var(--abu-bg-muted)]'
+                      ? 'border-[var(--lingxi-clay)] bg-orange-50/40'
+                      : 'border-[var(--lingxi-border)] bg-[var(--lingxi-bg-muted)]'
                   }`}
                 >
                   <input
                     type="checkbox"
                     checked={entry.selected}
                     onChange={() => toggleEntry(h.filename, entry.workspacePath)}
-                    className="mt-0.5 h-3.5 w-3.5 accent-[var(--abu-clay)] cursor-pointer"
+                    className="mt-0.5 h-3.5 w-3.5 accent-[var(--lingxi-clay)] cursor-pointer"
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="text-[13px] text-[var(--abu-text-primary)] truncate">
+                    <div className="text-[13px] text-[var(--lingxi-text-primary)] truncate">
                       {h.name}
                     </div>
-                    <div className="text-[11px] text-[var(--abu-text-placeholder)] mt-0.5">
+                    <div className="text-[11px] text-[var(--lingxi-text-placeholder)] mt-0.5">
                       {h.filename}
                     </div>
                     <div className="flex flex-wrap gap-1 mt-1.5">
@@ -203,9 +203,9 @@ export default function SensitiveAuditDialog() {
           </div>
         )}
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[var(--abu-bg-muted)]">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[var(--lingxi-bg-muted)]">
           {!isEmpty && (
-            <span className="text-[11px] text-[var(--abu-text-placeholder)] mr-auto">
+            <span className="text-[11px] text-[var(--lingxi-text-placeholder)] mr-auto">
               {format(t.memory.bulkSelected, { count: String(selectedCount) })}
             </span>
           )}

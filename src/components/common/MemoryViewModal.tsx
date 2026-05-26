@@ -129,7 +129,7 @@ export default function MemoryViewModal(props: MemoryViewModalProps) {
 
   const title = isPersonal ? t.sidebar.personalMemoryTitle : t.panel.memoryTitle;
   const desc = isPersonal ? t.sidebar.personalMemoryDesc : t.panel.memoryDesc;
-  const accentColor = isPersonal ? 'var(--abu-clay)' : '#8b7ec8';
+  const accentColor = isPersonal ? 'var(--lingxi-clay)' : '#8b7ec8';
 
   return (
     <>
@@ -162,10 +162,10 @@ export default function MemoryViewModal(props: MemoryViewModalProps) {
         }}
       >
         <div className="bg-white rounded-2xl shadow-xl w-[480px] max-h-[80vh] flex flex-col p-6 animate-in zoom-in-95 duration-150">
-          <h3 className="text-[16px] font-semibold text-[var(--abu-text-primary)] mb-1">
+          <h3 className="text-[16px] font-semibold text-[var(--lingxi-text-primary)] mb-1">
             {title}
           </h3>
-          <p className="text-[13px] text-[var(--abu-text-muted)] mb-4">
+          <p className="text-[13px] text-[var(--lingxi-text-muted)] mb-4">
             {desc}
           </p>
 
@@ -178,43 +178,43 @@ export default function MemoryViewModal(props: MemoryViewModalProps) {
             </div>
           ) : headers.length > 0 ? (
             <div className="flex-1 min-h-0 overflow-y-auto space-y-2 mb-4">
-              <div className="text-[12px] text-[var(--abu-text-placeholder)] mb-2">
+              <div className="text-[12px] text-[var(--lingxi-text-placeholder)] mb-2">
                 {format(t.memory.entryCount, { count: String(headers.length) })}
               </div>
               {headers.map((header) => (
                 <div
                   key={header.filename}
-                  className="border border-[var(--abu-border)] rounded-lg bg-[var(--abu-bg-muted)] overflow-hidden"
+                  className="border border-[var(--lingxi-border)] rounded-lg bg-[var(--lingxi-bg-muted)] overflow-hidden"
                 >
                   <div
-                    className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[var(--abu-bg-hover)] transition-colors"
+                    className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-[var(--lingxi-bg-hover)] transition-colors"
                     onClick={() => handleExpand(header)}
                   >
                     <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded shrink-0 ${TYPE_COLORS[header.type]}`}>
                       {TYPE_LABELS[header.type]}
                     </span>
-                    <span className="text-[12px] text-[var(--abu-text-primary)] flex-1 truncate">
+                    <span className="text-[12px] text-[var(--lingxi-text-primary)] flex-1 truncate">
                       {header.name}
                     </span>
-                    <span className="text-[10px] text-[var(--abu-text-placeholder)] whitespace-nowrap shrink-0">
+                    <span className="text-[10px] text-[var(--lingxi-text-placeholder)] whitespace-nowrap shrink-0">
                       {formatAge(header.updated)}
                     </span>
                     {expandedId === header.filename ? (
-                      <ChevronUp className="h-3 w-3 text-[var(--abu-text-placeholder)] shrink-0" />
+                      <ChevronUp className="h-3 w-3 text-[var(--lingxi-text-placeholder)] shrink-0" />
                     ) : (
-                      <ChevronDown className="h-3 w-3 text-[var(--abu-text-placeholder)] shrink-0" />
+                      <ChevronDown className="h-3 w-3 text-[var(--lingxi-text-placeholder)] shrink-0" />
                     )}
                   </div>
 
                   {expandedId === header.filename && (
-                    <div className="px-3 pb-2.5 border-t border-[var(--abu-bg-active)]">
-                      <p className="text-[11px] text-[var(--abu-text-tertiary)] leading-relaxed mt-2 whitespace-pre-wrap">
+                    <div className="px-3 pb-2.5 border-t border-[var(--lingxi-bg-active)]">
+                      <p className="text-[11px] text-[var(--lingxi-text-tertiary)] leading-relaxed mt-2 whitespace-pre-wrap">
                         {expandedContent[header.filename] ?? header.description}
                       </p>
                       <div className="flex justify-end mt-2">
                         <button
                           onClick={(e) => { e.stopPropagation(); setDeleteTarget(header); }}
-                          className="p-1 rounded text-[var(--abu-text-placeholder)] hover:text-red-500 hover:bg-red-50 transition-colors"
+                          className="p-1 rounded text-[var(--lingxi-text-placeholder)] hover:text-red-500 hover:bg-red-50 transition-colors"
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </button>
@@ -226,7 +226,7 @@ export default function MemoryViewModal(props: MemoryViewModalProps) {
             </div>
           ) : (
             <div className="flex-1 flex items-center justify-center py-12">
-              <p className="text-[13px] text-[var(--abu-text-placeholder)]">
+              <p className="text-[13px] text-[var(--lingxi-text-placeholder)]">
                 {t.panel.memoryEmpty}
               </p>
             </div>
@@ -244,7 +244,7 @@ export default function MemoryViewModal(props: MemoryViewModalProps) {
             <div className="flex-1" />
             <button
               onClick={onClose}
-              className="px-4 py-2.5 rounded-lg text-[13px] font-medium bg-[var(--abu-bg-muted)] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)] transition-colors"
+              className="px-4 py-2.5 rounded-lg text-[13px] font-medium bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)] transition-colors"
             >
               {t.common.close}
             </button>

@@ -23,7 +23,7 @@ describe('parseArgs', () => {
 });
 
 describe('substituteVariables', () => {
-  const skillDir = '/Users/test/.abu/skills/my-skill';
+  const skillDir = '/Users/test/.lingxi/skills/my-skill';
   const sessionId = 'sess-123';
 
   it('replaces $ARGUMENTS with full args string', () => {

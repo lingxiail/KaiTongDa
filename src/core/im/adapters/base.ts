@@ -5,11 +5,11 @@
  * Subclasses only implement formatOutbound().
  */
 
-import type { AdapterConfig, AbuMessage, IMAdapter } from './types';
+import type { AdapterConfig, LingxiMessage, IMAdapter } from './types';
 
 export abstract class BaseAdapter implements IMAdapter {
   abstract readonly config: AdapterConfig;
-  abstract formatOutbound(message: AbuMessage): unknown;
+  abstract formatOutbound(message: LingxiMessage): unknown;
 
   /**
    * Send a single HTTP request.
@@ -97,18 +97,18 @@ export abstract class BaseAdapter implements IMAdapter {
    * Send a complete message with auto-chunking + per-chunk retry.
    *
    * @param webhookUrl - Target webhook URL
-   * @param message - AbuMessage to send
+   * @param message - LingxiMessage to send
    * @param headers - Optional custom HTTP headers (used by CustomAdapter)
    */
   async sendMessage(
     webhookUrl: string,
-    message: AbuMessage,
+    message: LingxiMessage,
     headers?: Record<string, string>,
   ): Promise<void> {
     const chunks = this.chunkContent(message.content);
 
     for (let i = 0; i < chunks.length; i++) {
-      const chunkMessage: AbuMessage = {
+      const chunkMessage: LingxiMessage = {
         ...message,
         content: chunks[i],
         title: i === 0 ? message.title : undefined, // Title only on first chunk

@@ -36,7 +36,7 @@ function StatusBadge({ provider, t }: { provider: ProviderInstance; t: ReturnTyp
       );
     case 'checking':
       return (
-        <span className="inline-flex items-center gap-1 text-[11px] text-[var(--abu-text-muted)]">
+        <span className="inline-flex items-center gap-1 text-[11px] text-[var(--lingxi-text-muted)]">
           <Loader2 className="h-3 w-3 animate-spin" />
           {t.settings.validating}
         </span>
@@ -188,8 +188,8 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
   if (editing) {
     return (
       <div className={cn(
-        'rounded-xl border border-[var(--abu-border)] bg-[var(--abu-bg-muted)] p-4 space-y-3',
-        isActive && 'ring-2 ring-[var(--abu-clay-ring)]',
+        'rounded-xl border border-[var(--lingxi-border)] bg-[var(--lingxi-bg-muted)] p-4 space-y-3',
+        isActive && 'ring-2 ring-[var(--lingxi-clay-ring)]',
       )}>
         {keyDecryptFailed && (
           <div className="flex items-start gap-2 rounded-md border border-red-300 bg-red-50 px-3 py-2 text-[11px] text-red-700">
@@ -199,14 +199,14 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
         )}
         {/* Edit: Name */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[var(--abu-text-tertiary)]">{t.settings.serviceName}</label>
+          <label className="text-xs font-medium text-[var(--lingxi-text-tertiary)]">{t.settings.serviceName}</label>
           <Input value={formName} onChange={(e) => setFormName(e.target.value)} />
         </div>
 
         {/* Edit: API Key */}
         {!isOllama && (
           <div className="space-y-1">
-            <label className="text-xs font-medium text-[var(--abu-text-tertiary)]">{t.settings.apiKey}</label>
+            <label className="text-xs font-medium text-[var(--lingxi-text-tertiary)]">{t.settings.apiKey}</label>
             <div className="relative">
               <Input
                 type={showApiKey ? 'text' : 'password'}
@@ -218,7 +218,7 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
               <button
                 type="button"
                 onClick={() => setShowApiKey(!showApiKey)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--abu-text-muted)] hover:text-[var(--abu-text-tertiary)]"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-tertiary)]"
               >
                 {showApiKey ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
               </button>
@@ -228,16 +228,16 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
 
         {/* Edit: Base URL — read-only for builtin providers */}
         <div className="space-y-1">
-          <label className="text-xs font-medium text-[var(--abu-text-tertiary)]">{t.settings.apiUrl}</label>
+          <label className="text-xs font-medium text-[var(--lingxi-text-tertiary)]">{t.settings.apiUrl}</label>
           {isBuiltin ? (
-            <p className="text-xs text-[var(--abu-text-secondary)] font-mono bg-[var(--abu-bg-hover)] rounded-lg px-3 py-2 break-all select-all">
+            <p className="text-xs text-[var(--lingxi-text-secondary)] font-mono bg-[var(--lingxi-bg-hover)] rounded-lg px-3 py-2 break-all select-all">
               {formBaseUrl}
             </p>
           ) : (
             <Input value={formBaseUrl} onChange={(e) => setFormBaseUrl(e.target.value)} />
           )}
           {!isOllama && formBaseUrl.trim() && (
-            <p className="text-[11px] font-mono text-[var(--abu-text-muted)] break-all">
+            <p className="text-[11px] font-mono text-[var(--lingxi-text-muted)] break-all">
               ↳ POST {buildFullChatUrl(formBaseUrl, provider.apiFormat)}
             </p>
           )}
@@ -246,13 +246,13 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
         {/* Edit: Models */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-medium text-[var(--abu-text-tertiary)]">{t.settings.models}</label>
+            <label className="text-xs font-medium text-[var(--lingxi-text-tertiary)]">{t.settings.models}</label>
             {!isOllama && provider.apiFormat !== 'anthropic' && (
               <button
                 type="button"
                 onClick={handleFetchModels}
                 disabled={fetchingModels || !formBaseUrl.trim()}
-                className="flex items-center gap-1 text-[11px] text-[var(--abu-clay)] hover:underline disabled:opacity-40 disabled:no-underline"
+                className="flex items-center gap-1 text-[11px] text-[var(--lingxi-clay)] hover:underline disabled:opacity-40 disabled:no-underline"
               >
                 {fetchingModels
                   ? <Loader2 className="h-3 w-3 animate-spin" />
@@ -279,13 +279,13 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
                 {visible.map((model) => (
                   <span
                     key={model.id}
-                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] bg-[var(--abu-bg-muted)] text-[var(--abu-text-secondary)] border border-[var(--abu-border)]"
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-secondary)] border border-[var(--lingxi-border)]"
                   >
                     {model.label || model.id}
                     <button
                       type="button"
                       onClick={() => setFormModels(prev => prev.filter(m => m.id !== model.id))}
-                      className="text-[var(--abu-text-muted)] hover:text-red-400"
+                      className="text-[var(--lingxi-text-muted)] hover:text-red-400"
                     >
                       <X className="h-2.5 w-2.5" />
                     </button>
@@ -296,7 +296,7 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
                   <button
                     type="button"
                     onClick={() => setModelsExpanded(true)}
-                    className="px-2 py-0.5 rounded text-[11px] text-[var(--abu-clay)] border border-dashed border-[var(--abu-clay)]/50 hover:border-[var(--abu-clay)] transition-colors"
+                    className="px-2 py-0.5 rounded text-[11px] text-[var(--lingxi-clay)] border border-dashed border-[var(--lingxi-clay)]/50 hover:border-[var(--lingxi-clay)] transition-colors"
                   >
                     +{hidden} 展开全部
                   </button>
@@ -305,7 +305,7 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
                   <button
                     type="button"
                     onClick={() => setModelsExpanded(false)}
-                    className="px-2 py-0.5 rounded text-[11px] text-[var(--abu-clay)] border border-dashed border-[var(--abu-clay)]/50 hover:border-[var(--abu-clay)] transition-colors"
+                    className="px-2 py-0.5 rounded text-[11px] text-[var(--lingxi-clay)] border border-dashed border-[var(--lingxi-clay)]/50 hover:border-[var(--lingxi-clay)] transition-colors"
                   >
                     收起
                   </button>
@@ -320,14 +320,14 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
               value={newModelId}
               onChange={(e) => setNewModelId(e.target.value)}
               placeholder={t.settings.addModelPlaceholder}
-              className="h-6 w-28 px-2 text-[11px] rounded border border-[var(--abu-border)] bg-transparent text-[var(--abu-text-primary)] placeholder:text-[var(--abu-text-placeholder)] outline-none focus:border-[var(--abu-clay)]"
+              className="h-6 w-28 px-2 text-[11px] rounded border border-[var(--lingxi-border)] bg-transparent text-[var(--lingxi-text-primary)] placeholder:text-[var(--lingxi-text-placeholder)] outline-none focus:border-[var(--lingxi-clay)]"
               onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleAddModel(); } }}
             />
             <button
               type="button"
               onClick={handleAddModel}
               disabled={!newModelId.trim()}
-              className="h-6 w-6 flex items-center justify-center rounded border border-[var(--abu-border)] text-[var(--abu-text-muted)] hover:border-[var(--abu-clay)] hover:text-[var(--abu-clay)] disabled:opacity-30 transition-colors"
+              className="h-6 w-6 flex items-center justify-center rounded border border-[var(--lingxi-border)] text-[var(--lingxi-text-muted)] hover:border-[var(--lingxi-clay)] hover:text-[var(--lingxi-clay)] disabled:opacity-30 transition-colors"
             >
               <Plus className="h-3 w-3" />
             </button>
@@ -335,7 +335,7 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
         </div>
 
         {/* Edit: Actions */}
-        <div className="flex justify-end gap-2 pt-2 border-t border-[var(--abu-border)]">
+        <div className="flex justify-end gap-2 pt-2 border-t border-[var(--lingxi-border)]">
           <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>{t.settings.cancelEdit}</Button>
           <Button size="sm" onClick={handleSave}>{t.settings.saveChanges}</Button>
         </div>
@@ -350,8 +350,8 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
         'group rounded-xl border px-4 py-2.5 transition-colors',
         keyDecryptFailed
           ? 'border-red-300 bg-red-50/30'
-          : 'border-[var(--abu-border)] hover:border-[var(--abu-clay-ring)]',
-        isActive && 'ring-1 ring-[var(--abu-clay-ring)]',
+          : 'border-[var(--lingxi-border)] hover:border-[var(--lingxi-clay-ring)]',
+        isActive && 'ring-1 ring-[var(--lingxi-clay-ring)]',
         !provider.enabled && !keyDecryptFailed && 'opacity-50',
       )}
     >
@@ -363,7 +363,7 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
       )}
       {/* Row 1: Name + status + toggle */}
       <div className="flex items-center gap-3">
-        <span className="text-sm font-medium text-[var(--abu-text-primary)] truncate min-w-0 flex-1">
+        <span className="text-sm font-medium text-[var(--lingxi-text-primary)] truncate min-w-0 flex-1">
           {provider.name}
         </span>
         {(showStatus || provider.status === 'checking') && <StatusBadge provider={provider} t={t} />}
@@ -373,11 +373,11 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
       {/* Row 2: Models + caps + actions */}
       <div className="flex items-center gap-2 mt-1.5">
         {/* Info */}
-        <div className="flex items-center gap-2 text-[11px] text-[var(--abu-text-muted)] truncate min-w-0 flex-1">
+        <div className="flex items-center gap-2 text-[11px] text-[var(--lingxi-text-muted)] truncate min-w-0 flex-1">
           {modelsSummary && <span className="truncate">{modelsSummary}</span>}
           {caps.length > 0 && (
             <>
-              <span className="text-[var(--abu-border)]">·</span>
+              <span className="text-[var(--lingxi-border)]">·</span>
               <span className="shrink-0">{caps.join(', ')}</span>
             </>
           )}
@@ -387,7 +387,7 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
         <div className="flex items-center gap-0.5 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             onClick={handleEditStart}
-            className="p-1 rounded text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] transition-colors"
+            className="p-1 rounded text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] transition-colors"
             title={t.settings.editProvider}
           >
             <Pencil className="h-3.5 w-3.5" />
@@ -395,14 +395,14 @@ export default function ProviderCard({ provider, isActive }: ProviderCardProps) 
           <button
             onClick={handleRevalidate}
             disabled={provider.status === 'checking'}
-            className="p-1 rounded text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] transition-colors disabled:opacity-40"
+            className="p-1 rounded text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] transition-colors disabled:opacity-40"
             title={t.settings.revalidate}
           >
             <RefreshCw className={cn('h-3.5 w-3.5', provider.status === 'checking' && 'animate-spin')} />
           </button>
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="p-1 rounded text-[var(--abu-text-muted)] hover:text-red-500 hover:bg-red-50 transition-colors"
+            className="p-1 rounded text-[var(--lingxi-text-muted)] hover:text-red-500 hover:bg-red-50 transition-colors"
             title={t.settings.deleteProvider}
           >
             <Trash2 className="h-3.5 w-3.5" />

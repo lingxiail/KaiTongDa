@@ -610,7 +610,7 @@ describe('chatStore', () => {
       // updatedAt must be ignored — external refs are intentionally not
       // carried by the bundle shape.
       const makeBundle = () => ({
-        schema: { abuShareVersion: 1, tier: 'standard', exportedAt: Date.now() },
+        schema: { lingxiShareVersion: 1, tier: 'standard', exportedAt: Date.now() },
         conversation: {
           id: 'original-conv-id',
           title: 'Shared from Alice',
@@ -702,7 +702,7 @@ describe('chatStore', () => {
       // This test reproduces that exact shape to pin the data contract down.
       it('imports real-world shape: user + assistant(content="", toolCall) + assistant(text)', () => {
         const bundle = {
-          schema: { abuShareVersion: 1, tier: 'standard', exportedAt: Date.now() },
+          schema: { lingxiShareVersion: 1, tier: 'standard', exportedAt: Date.now() },
           conversation: {
             id: 'mo5tgdm8mg7l1b',
             title: '看看当前文件夹下有什么',

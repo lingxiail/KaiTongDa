@@ -7,7 +7,7 @@
  * - Association point for scheduled tasks, triggers, and IM channels
  *
  * Memory and rules are NOT stored per-project — they live in the
- * workspace folder ({workspacePath}/.abu/) and are unchanged.
+ * workspace folder ({workspacePath}/.lingxi/) and are unchanged.
  */
 
 export interface Project {

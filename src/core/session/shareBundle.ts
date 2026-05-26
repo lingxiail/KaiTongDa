@@ -1,6 +1,6 @@
 /**
- * Share Bundle — serialize a conversation into a portable `.abu.json` file
- * that another Abu user can import as a read-only dialogue.
+ * Share Bundle — serialize a conversation into a portable `.lingxi.json` file
+ * that another Lingxi user can import as a read-only dialogue.
  *
  * Responsibilities:
  *   1. Strip ephemeral / machine-local state (streaming flags, proposal
@@ -48,7 +48,7 @@ export interface ShareAttachment {
 
 export interface ShareBundle {
   schema: {
-    abuShareVersion: typeof SHARE_SCHEMA_VERSION;
+    lingxiShareVersion: typeof SHARE_SCHEMA_VERSION;
     tier: ShareTier;
     exportedAt: number;
   };
@@ -106,7 +106,7 @@ export async function buildShareBundle(
   const embeddedCount = Object.values(attachments).filter((a) => a.data).length;
   const bundle: ShareBundle = {
     schema: {
-      abuShareVersion: SHARE_SCHEMA_VERSION,
+      lingxiShareVersion: SHARE_SCHEMA_VERSION,
       tier,
       exportedAt: Date.now(),
     },

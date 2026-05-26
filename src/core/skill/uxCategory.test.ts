@@ -12,7 +12,7 @@ describe('sourceToUXCategory', () => {
   it('puts workspace-auto into "mine" (per-row badge shows origin)', () => {
     // workspace-auto skills land in "我的" with a "自进化" badge via
     // sourceBadge(). Keeping them in a separate category was confusing
-    // when the user explicitly asked Abu to create the skill.
+    // when the user explicitly asked Lingxi to create the skill.
     expect(sourceToUXCategory('workspace-auto')).toBe('mine');
   });
 

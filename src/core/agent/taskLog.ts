@@ -1,7 +1,7 @@
 /**
  * Task Log — records completed tasks for pattern analysis
  *
- * Stores at ~/.abu/task-log.json, FIFO keeps latest 100 entries.
+ * Stores at ~/.lingxi/task-log.json, FIFO keeps latest 100 entries.
  * Used by orchestrator to inject task patterns into system prompt,
  * enabling the agent to propose Skill/Agent sedimentation.
  */
@@ -48,7 +48,7 @@ let cachedHome: string | null = null;
 
 async function getLogPath(): Promise<string> {
   if (!cachedHome) cachedHome = await homeDir();
-  return joinPath(cachedHome, '.abu', 'task-log.json');
+  return joinPath(cachedHome, '.lingxi', 'task-log.json');
 }
 
 /**
@@ -95,7 +95,7 @@ export function analyzePatterns(entries: TaskLogEntry[]): TaskPattern[] {
   const availableSkills = new Set(skillLoader.getAvailableSkills().map((s) => s.name));
   const availableAgents = new Set(
     agentRegistry.getAvailableAgents()
-      .filter((a) => a.name !== 'abu')
+      .filter((a) => a.name !== 'lingxi')
       .map((a) => a.name)
   );
 

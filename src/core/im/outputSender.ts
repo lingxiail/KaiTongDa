@@ -7,7 +7,7 @@
 import { useChatStore } from '../../stores/chatStore';
 import { useIMChannelStore } from '../../stores/imChannelStore';
 import { getAdapter } from './adapters/registry';
-import type { AbuMessage, OutputContext } from './adapters/types';
+import type { LingxiMessage, OutputContext } from './adapters/types';
 import type { TriggerOutput, OutputPlatform, OutputExtractMode } from '../../types/trigger';
 import type { IMReplyContext } from '../../types/im';
 import type { MessageContent } from '../../types';
@@ -38,7 +38,7 @@ class OutputSender {
       case 'full': {
         return messages
           .filter((m) => m.role === 'user' || m.role === 'assistant')
-          .map((m) => `**${m.role === 'user' ? '事件' : 'Abu'}**: ${contentToString(m.content)}`)
+          .map((m) => `**${m.role === 'user' ? '事件' : 'Lingxi'}**: ${contentToString(m.content)}`)
           .join('\n\n');
       }
       case 'custom_template': {
@@ -50,18 +50,18 @@ class OutputSender {
   }
 
   /**
-   * Build AbuMessage from conversation results
+   * Build LingxiMessage from conversation results
    *
    * 1. extractAIResponse → get raw AI reply
    * 2. Fill context.aiResponse
    * 3. If template mode → variable replacement
-   * 4. Assemble AbuMessage
+   * 4. Assemble LingxiMessage
    */
   buildMessage(
     conversationId: string,
     output: TriggerOutput,
     context: OutputContext,
-  ): AbuMessage {
+  ): LingxiMessage {
     // Step 1: Extract AI response
     const aiResponse = this.extractAIResponse(conversationId, output.extractMode);
     // Step 2: Fill into context (for template variables)
@@ -80,7 +80,7 @@ class OutputSender {
       content,
       title: context.triggerName,
       color: 'info',
-      footer: `Abu AI · ${context.timestamp}`,
+      footer: `Lingxi AI · ${context.timestamp}`,
     };
   }
 
@@ -90,7 +90,7 @@ class OutputSender {
    */
   async send(
     output: TriggerOutput,
-    message: AbuMessage,
+    message: LingxiMessage,
     replyContext?: IMReplyContext,
     receiveIdType?: 'chat_id' | 'open_id',
   ): Promise<{ success: boolean; error?: string }> {
@@ -124,7 +124,7 @@ class OutputSender {
    */
   private async sendViaIMChannel(
     output: TriggerOutput,
-    message: AbuMessage,
+    message: LingxiMessage,
     replyContext?: IMReplyContext,
     receiveIdType?: 'chat_id' | 'open_id',
   ): Promise<{ success: boolean; error?: string }> {
@@ -239,11 +239,11 @@ class OutputSender {
     const adapter = getAdapter(platform);
     if (!adapter) return { success: false, error: `Unknown platform: ${platform}` };
 
-    const testMessage: AbuMessage = {
-      content: 'Abu AI 连接测试成功',
+    const testMessage: LingxiMessage = {
+      content: 'Lingxi AI 连接测试成功',
       title: '测试消息',
       color: 'success',
-      footer: `Abu AI · ${new Date().toLocaleString('zh-CN')}`,
+      footer: `Lingxi AI · ${new Date().toLocaleString('zh-CN')}`,
     };
 
     try {

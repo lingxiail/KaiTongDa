@@ -153,13 +153,13 @@ font-family: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-se
 
   <!-- 正文内容 -->
 
-  <div class="ft">Abu Infographic</div>
+  <div class="ft">Lingxi Infographic</div>
 </div>
 ```
 
 - `.ig` 容器：`max-width: 600px; margin: 0 auto;` — 控制最大宽度，居中
 - `.hd` 头部：居中标题 + 副标题，简洁干净，不要加背景色或装饰
-- `.ft` 页脚：固定文案 `Abu Infographic`，细字灰色，上方一条分割线
+- `.ft` 页脚：固定文案 `Lingxi Infographic`，细字灰色，上方一条分割线
 
 ---
 

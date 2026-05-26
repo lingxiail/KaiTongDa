@@ -6,7 +6,7 @@
  */
 
 import { BaseAdapter } from './base';
-import type { AdapterConfig, AbuMessage, MessageColor, DirectReplyContext } from './types';
+import type { AdapterConfig, LingxiMessage, MessageColor, DirectReplyContext } from './types';
 import { getTauriFetch } from '../../llm/tauriFetch';
 import type { PluginManifestFile } from '../pluginLoader';
 
@@ -40,7 +40,7 @@ export class GenericPluginAdapter extends BaseAdapter {
     return this._userConfig;
   }
 
-  formatOutbound(message: AbuMessage): unknown {
+  formatOutbound(message: LingxiMessage): unknown {
     // Default: plain text for short, attachment for long (same as DChat pattern)
     if (message.content.length <= 3000 && !message.title) {
       return { text: message.content };
@@ -73,7 +73,7 @@ export class GenericPluginAdapter extends BaseAdapter {
   async replyToChat(
     token: string,
     context: DirectReplyContext,
-    message: AbuMessage,
+    message: LingxiMessage,
   ): Promise<{ messageId?: string }> {
     const sendConfig = this.manifestConfig?.send;
     if (!sendConfig) {

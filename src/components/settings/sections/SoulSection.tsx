@@ -96,7 +96,7 @@ export default function SoulSection() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
-        <div className="w-5 h-5 border-2 border-[var(--abu-clay)] border-t-transparent rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-[var(--lingxi-clay)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -104,10 +104,10 @@ export default function SoulSection() {
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="text-[15px] font-semibold text-[var(--abu-text-primary)]">
+        <h3 className="text-[15px] font-semibold text-[var(--lingxi-text-primary)]">
           {t.soul.title}
         </h3>
-        <p className="text-[13px] text-[var(--abu-text-muted)] mt-1">
+        <p className="text-[13px] text-[var(--lingxi-text-muted)] mt-1">
           {t.soul.subtitle}
         </p>
       </div>
@@ -127,24 +127,24 @@ export default function SoulSection() {
           />
           <div className="absolute bottom-2 right-3 flex items-center gap-2 text-[11px]">
             {statusLabel && (
-              <span className="text-[var(--abu-text-placeholder)] transition-opacity duration-200">
+              <span className="text-[var(--lingxi-text-placeholder)] transition-opacity duration-200">
                 {statusLabel}
               </span>
             )}
-            <span className={content.length > 2000 ? 'text-red-500' : 'text-[var(--abu-text-placeholder)]'}>
+            <span className={content.length > 2000 ? 'text-red-500' : 'text-[var(--lingxi-text-placeholder)]'}>
               {content.length} / 2000
             </span>
           </div>
         </div>
 
         <div className="flex items-center justify-between">
-          <p className="text-[11px] text-[var(--abu-text-placeholder)]">
+          <p className="text-[11px] text-[var(--lingxi-text-placeholder)]">
             {t.soul.filePath}
           </p>
           {isModified && (
             <button
               onClick={() => setShowRestoreConfirm(true)}
-              className="text-[12px] text-[var(--abu-text-placeholder)] hover:text-[var(--abu-text-tertiary)] underline underline-offset-2 transition-colors"
+              className="text-[12px] text-[var(--lingxi-text-placeholder)] hover:text-[var(--lingxi-text-tertiary)] underline underline-offset-2 transition-colors"
             >
               {t.soul.restore}
             </button>

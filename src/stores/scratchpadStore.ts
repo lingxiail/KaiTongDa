@@ -139,7 +139,7 @@ export const useScratchpadStore = create<ScratchpadStore>()(
       },
     })),
     {
-      name: 'abu-scratchpad-store',
+      name: 'lingxi-scratchpad-store',
       version: 1,
       // Limit persisted entries to last 100
       partialize: (state) => {

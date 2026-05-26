@@ -6,7 +6,7 @@ import { joinPath, getParentDir, normalizeSeparators } from '../../utils/pathUti
 import { sanitizePath } from '../memdir/paths';
 
 /**
- * Normalize tool list: accept both YAML array (Abu format) and
+ * Normalize tool list: accept both YAML array (Lingxi format) and
  * space-delimited string (Agent Skills open standard format).
  *   "Bash(git:*) Read" → ["Bash(git:*)", "Read"]
  *   ["read_file", "write_file"] → ["read_file", "write_file"]
@@ -129,13 +129,13 @@ export class SkillLoader {
    * Scan order (first-win on name collision):
    *
    *   WITH workspacePath:
-   *     1. {workspace}/.abu/skills/              (project, git-shareable)
+   *     1. {workspace}/.lingxi/skills/              (project, git-shareable)
    *     2. {workspace}/.agents/skills/           (project-standard)
-   *     3. ~/.abu/projects/<key>/skills/         (workspace-auto, agent-written)
-   *     4. ~/.abu/projects/<key>/skills/drafts/ (draft, pending review)
+   *     3. ~/.lingxi/projects/<key>/skills/         (workspace-auto, agent-written)
+   *     4. ~/.lingxi/projects/<key>/skills/drafts/ (draft, pending review)
    *
    *   ALWAYS:
-   *     5. ~/.abu/skills/                        (user global)
+   *     5. ~/.lingxi/skills/                        (user global)
    *     6. ~/.agents/skills/                     (standard cross-client)
    *     7. <resource>/builtin-skills/            (bundled)
    *
@@ -180,10 +180,10 @@ export class SkillLoader {
     // Workspace-scoped dirs take priority so project-local skills override globals.
     if (workspacePath) {
       dirs.push(
-        { path: joinPath(workspacePath, '.abu/skills'), source: 'project' },
+        { path: joinPath(workspacePath, '.lingxi/skills'), source: 'project' },
         { path: joinPath(workspacePath, '.agents/skills'), source: 'project-standard' },
       );
-      // Agent auto-write + drafts land under ~/.abu/projects/<sanitized>/, aligned
+      // Agent auto-write + drafts land under ~/.lingxi/projects/<sanitized>/, aligned
       // with the memdir key-sanitization convention so memory + skills share the
       // same per-workspace namespace on disk.
       //
@@ -191,17 +191,17 @@ export class SkillLoader {
       // fs plugin glob scopes ($HOME/**) follow Unix glob rules where **
       // does not traverse dot-prefixed directories — a hidden drafts/ dir
       // would be read-blocked at the capability layer. The visible name lets
-      // $HOME/.abu/** cover it without per-path capability entries.
+      // $HOME/.lingxi/** cover it without per-path capability entries.
       const key = sanitizePath(normalizeSeparators(workspacePath));
       dirs.push(
-        { path: joinPath(home, '.abu/projects', key, 'skills'), source: 'workspace-auto' },
-        { path: joinPath(home, '.abu/projects', key, 'skills/drafts'), source: 'draft' },
+        { path: joinPath(home, '.lingxi/projects', key, 'skills'), source: 'workspace-auto' },
+        { path: joinPath(home, '.lingxi/projects', key, 'skills/drafts'), source: 'draft' },
       );
     }
 
     // Global + cross-client + bundled, always scanned.
     dirs.push(
-      { path: joinPath(home, '.abu/skills'), source: 'user' },
+      { path: joinPath(home, '.lingxi/skills'), source: 'user' },
       { path: joinPath(home, '.agents/skills'), source: 'standard' },
     );
     if (builtinDir) {

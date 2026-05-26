@@ -388,7 +388,7 @@ export const useScheduleStore = create<ScheduleStore>()(
       },
     })),
     {
-      name: 'abu-schedule',
+      name: 'lingxi-schedule',
       version: 3,
       migrate(persisted: unknown, version: number) {
         if (version < 2) {

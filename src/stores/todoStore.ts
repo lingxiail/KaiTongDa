@@ -110,7 +110,7 @@ export const useTodoStore = create<TodoStore>()(
       },
     }),
     {
-      name: 'abu-todos',
+      name: 'lingxi-todos',
       version: 1,
       partialize: (state) => ({ lists: state.lists }),
     },

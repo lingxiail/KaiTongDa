@@ -614,7 +614,7 @@ export interface TranslationDict {
     // Permissions check
     permAppData: string;
     permWorkspace: string;
-    permWorkspaceAbu: string;
+    permWorkspaceLingxi: string;
     permWorkspaceNoSelection: string;
     // MCP
     mcpNone: string;
@@ -702,7 +702,7 @@ export interface TranslationDict {
     noInstalledSkills: string;
     skillMarketplace: string;
     createSkill: string;
-    createWithAbu: string;
+    createWithLingxi: string;
     createManually: string;
     nameFormatHint: string;
     aiAssistedCreate: string;
@@ -765,7 +765,7 @@ export interface TranslationDict {
     installed: string;
     installAndConnect: string;
     popularMCPServices: string;
-    setupWithAbu: string;
+    setupWithLingxi: string;
     aiAssistedMCPSetup: string;
     // Source labels
     sourceBuiltin: string;
@@ -864,7 +864,7 @@ export interface TranslationDict {
     projectSkillsBadge: string;
     // UX categories (Task #25 rework) — what users see in Toolbox.
     categoryMine: string;              // "我的"
-    categoryAgentEvolved: string;      // "阿布沉淀"
+    categoryAgentEvolved: string;      // "灵犀沉淀"
     categoryAgentEvolvedBadge: string; // small badge e.g. "自进化"
     categoryAgentEvolvedEmpty: string; // placeholder when no drafts + no workspace-auto skills
     categoryBuiltin: string;           // "内置"
@@ -987,11 +987,11 @@ export interface TranslationDict {
     skillProposalCardOnboardGate: string;        // explanatory text
     skillProposalCardOnboardGateAction: string;  // button label
     // Interactive notice card · skill patched (Task #41)
-    skillPatchedCardLabel: string;      // "Abu 修正了技能" / "Abu patched skill"
+    skillPatchedCardLabel: string;      // "Lingxi 修正了技能" / "Lingxi patched skill"
     // Grouped patch fold-row in MessageGroup
-    skillPatchGroupLabel: string;       // "Abu 修改了技能" / "Abu modified skill"
+    skillPatchGroupLabel: string;       // "Lingxi 修改了技能" / "Lingxi modified skill"
     // Interactive notice card · skill deleted (Task #17 v2)
-    skillDeletedCardLabel: string;      // "Abu 删除了技能"
+    skillDeletedCardLabel: string;      // "Lingxi 删除了技能"
     skillDeletedCardRescuable: string;  // "可在 7 天内恢复"
     skillDeletedCardPermanent: string;  // "已永久删除"
     // Skill history modal (Task #24)
@@ -1058,7 +1058,7 @@ export interface TranslationDict {
       authorizeCapabilities: string[];
       authorizeWarning: string;
     };
-    abuCanDo: string;
+    lingxiCanDo: string;
     allowOnce: string;
     allowAlways: string;
     deny: string;
@@ -1236,8 +1236,8 @@ export interface TranslationDict {
     taskCompleted: string;
     taskError: string;
     onlyRunWhileAwake: string;
-    askAbuToCreate: string;
-    askAbuCreatePrompt: string;
+    askLingxiToCreate: string;
+    askLingxiCreatePrompt: string;
     // Output
     outputChannel: string;
     outputChannelNone: string;
@@ -1305,8 +1305,8 @@ export interface TranslationDict {
     noTriggers: string;
     noTriggersHint: string;
     noTriggersCTA: string;
-    askAbuToCreate: string;
-    askAbuCreatePrompt: string;
+    askLingxiToCreate: string;
+    askLingxiCreatePrompt: string;
     // Statistics
     statsSuccessRate: string;
     statsAvgNotAvailable: string;

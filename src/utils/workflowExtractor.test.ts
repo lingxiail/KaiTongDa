@@ -773,9 +773,9 @@ describe('workflowExtractor', () => {
     });
 
     it('extracts Chinese pattern: 已保存 (with backtick path that has spaces)', () => {
-      const text = '已保存 `~/Library/Application Support/com.abu.app/conversations/foo/outputs/file.pptx`';
+      const text = '已保存 `~/Library/Application Support/com.lingxi.app/conversations/foo/outputs/file.pptx`';
       expect(extractFilePathsFromText(text)).toEqual([
-        '~/Library/Application Support/com.abu.app/conversations/foo/outputs/file.pptx',
+        '~/Library/Application Support/com.lingxi.app/conversations/foo/outputs/file.pptx',
       ]);
     });
 

@@ -9,7 +9,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // ── Mocks (same as orchestrator.test.ts) ──
 vi.mock('@/core/agent/registry', () => ({
   agentRegistry: {
-    getAgent: vi.fn().mockReturnValue({ name: 'abu', systemPrompt: '你是阿布', description: '桌面助手' }),
+    getAgent: vi.fn().mockReturnValue({ name: 'lingxi', systemPrompt: '你是灵犀', description: '桌面助手' }),
     getAvailableAgents: vi.fn().mockReturnValue([]),
   },
 }));
@@ -87,7 +87,7 @@ beforeEach(() => {
 describe('System prompt section structure', () => {
   it('general mode section names match snapshot', async () => {
     const route = routeInput('你好');
-    const sections = await buildSystemPromptSections(route, '你是阿布', 'eval-conv-001');
+    const sections = await buildSystemPromptSections(route, '你是灵犀', 'eval-conv-001');
 
     const names = sections.map(s => s.name);
     expect(names).toMatchSnapshot();
@@ -95,7 +95,7 @@ describe('System prompt section structure', () => {
 
   it('general mode has persona and planning sections', async () => {
     const route = routeInput('你好');
-    const sections = await buildSystemPromptSections(route, '你是阿布', 'eval-conv-001');
+    const sections = await buildSystemPromptSections(route, '你是灵犀', 'eval-conv-001');
 
     const names = sections.map(s => s.name);
     expect(names).toContain('persona');
@@ -104,7 +104,7 @@ describe('System prompt section structure', () => {
 
   it('includes current-time as volatile section', async () => {
     const route = routeInput('你好');
-    const sections = await buildSystemPromptSections(route, '你是阿布', 'eval-conv-001');
+    const sections = await buildSystemPromptSections(route, '你是灵犀', 'eval-conv-001');
 
     const timeSection = sections.find(s => s.name === 'current-time');
     expect(timeSection).toBeDefined();
@@ -113,7 +113,7 @@ describe('System prompt section structure', () => {
 
   it('persona and planning are cacheable', async () => {
     const route = routeInput('你好');
-    const sections = await buildSystemPromptSections(route, '你是阿布', 'eval-conv-001');
+    const sections = await buildSystemPromptSections(route, '你是灵犀', 'eval-conv-001');
 
     const persona = sections.find(s => s.name === 'persona');
     const planning = sections.find(s => s.name === 'planning');
@@ -123,7 +123,7 @@ describe('System prompt section structure', () => {
 });
 
 describe('System prompt key content', () => {
-  const basePrompt = '你是阿布，专业桌面助手。';
+  const basePrompt = '你是灵犀，专业桌面助手。';
 
   it('contains tool selection principles', async () => {
     const route = routeInput('你好');
@@ -174,7 +174,7 @@ describe('Skill mode prompt structure', () => {
       cleanInput: 'test input',
     };
 
-    const sections = await buildSystemPromptSections(route, '你是阿布', 'test-conv');
+    const sections = await buildSystemPromptSections(route, '你是灵犀', 'test-conv');
     const fullText = sections.map(s => s.text).join('\n');
     expect(fullText).toContain('技能指令内容');
   });
@@ -194,7 +194,7 @@ describe('Skill mode prompt structure', () => {
       cleanInput: 'test input',
     };
 
-    const sections = await buildSystemPromptSections(route, '你是阿布', 'test-conv');
+    const sections = await buildSystemPromptSections(route, '你是灵犀', 'test-conv');
     const names = sections.map(s => s.name);
     expect(names).not.toContain('planning');
   });

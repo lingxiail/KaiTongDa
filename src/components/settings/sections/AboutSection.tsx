@@ -70,19 +70,19 @@ export default function AboutSection() {
     <div className="space-y-6">
       {/* Logo & name */}
       <div className="flex flex-col items-center text-center space-y-3">
-        <img src={abuAvatar} alt="阿布" className="w-20 h-20 rounded-2xl" />
+        <img src={abuAvatar} alt="灵犀" className="w-20 h-20 rounded-2xl" />
         <div>
-          <h4 className="text-2xl font-bold text-[var(--abu-text-primary)]">{t.common.appName}</h4>
-          <p className="text-sm text-[var(--abu-text-tertiary)]">{t.common.appSlogan}</p>
-          <p className="text-xs text-[var(--abu-text-muted)] mt-1">测试</p>
+          <h4 className="text-2xl font-bold text-[var(--lingxi-text-primary)]">{t.common.appName}</h4>
+          <p className="text-sm text-[var(--lingxi-text-tertiary)]">{t.common.appSlogan}</p>
+          <p className="text-xs text-[var(--lingxi-text-muted)] mt-1">测试</p>
         </div>
       </div>
 
       {/* Version info */}
       <div className="space-y-1">
-        <div className="flex justify-between items-center py-3 border-b border-[var(--abu-border)]">
-          <span className="text-sm text-[var(--abu-text-tertiary)]">{t.updates.currentVersion}</span>
-          <span className="text-sm font-semibold text-[var(--abu-text-primary)]">
+        <div className="flex justify-between items-center py-3 border-b border-[var(--lingxi-border)]">
+          <span className="text-sm text-[var(--lingxi-text-tertiary)]">{t.updates.currentVersion}</span>
+          <span className="text-sm font-semibold text-[var(--lingxi-text-primary)]">
             v{APP_VERSION}
           </span>
         </div>
@@ -90,20 +90,20 @@ export default function AboutSection() {
 
       {/* Update card */}
       {updateInfo ? (
-        <div className="rounded-xl border border-[var(--abu-clay-ring)] bg-[var(--abu-clay-5)] p-4 space-y-3">
+        <div className="rounded-xl border border-[var(--lingxi-clay-ring)] bg-[var(--lingxi-clay-5)] p-4 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold text-[var(--abu-clay)]">{t.updates.newVersionAvailable}</span>
-            <span className="text-sm font-mono font-semibold text-[var(--abu-text-primary)]">v{updateInfo.version}</span>
+            <span className="text-sm font-semibold text-[var(--lingxi-clay)]">{t.updates.newVersionAvailable}</span>
+            <span className="text-sm font-mono font-semibold text-[var(--lingxi-text-primary)]">v{updateInfo.version}</span>
           </div>
           {(updateInfo.releaseNotes || updateInfo.releaseUrl) && (
             <div className="space-y-1.5">
-              <span className="text-xs font-medium text-[var(--abu-text-tertiary)]">{t.updates.releaseNotes}</span>
+              <span className="text-xs font-medium text-[var(--lingxi-text-tertiary)]">{t.updates.releaseNotes}</span>
               {updateInfo.releaseNotes && updateInfo.releaseNotes.trim().length > 0 ? (
-                <div className="text-sm text-[var(--abu-text-secondary)] space-y-1.5
-                  [&_h3]:text-xs [&_h3]:font-semibold [&_h3]:text-[var(--abu-text-primary)] [&_h3]:mt-2
+                <div className="text-sm text-[var(--lingxi-text-secondary)] space-y-1.5
+                  [&_h3]:text-xs [&_h3]:font-semibold [&_h3]:text-[var(--lingxi-text-primary)] [&_h3]:mt-2
                   [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-0.5
                   [&_ol]:list-decimal [&_ol]:pl-5 [&_ol]:space-y-0.5
-                  [&_strong]:font-semibold [&_strong]:text-[var(--abu-text-primary)]
+                  [&_strong]:font-semibold [&_strong]:text-[var(--lingxi-text-primary)]
                   [&_p]:leading-relaxed">
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
@@ -115,7 +115,7 @@ export default function AboutSection() {
                             e.preventDefault();
                             if (href) void handleOpenLink(href);
                           }}
-                          className="text-[var(--abu-clay)] hover:underline cursor-pointer"
+                          className="text-[var(--lingxi-clay)] hover:underline cursor-pointer"
                         >
                           {children}
                         </a>
@@ -129,7 +129,7 @@ export default function AboutSection() {
               {updateInfo.releaseUrl && (
                 <button
                   onClick={() => void handleOpenLink(updateInfo.releaseUrl)}
-                  className="flex items-center gap-1.5 text-xs text-[var(--abu-clay)] hover:underline"
+                  className="flex items-center gap-1.5 text-xs text-[var(--lingxi-clay)] hover:underline"
                 >
                   <ExternalLink className="h-3 w-3" />
                   {t.updates.viewOnGitHub}
@@ -141,13 +141,13 @@ export default function AboutSection() {
           {/* Download progress bar */}
           {downloadProgress && (
             <div className="space-y-1.5">
-              <div className="flex justify-between text-xs text-[var(--abu-text-tertiary)]">
+              <div className="flex justify-between text-xs text-[var(--lingxi-text-tertiary)]">
                 <span>{t.updates.downloading}</span>
                 <span>{progressPercent}%</span>
               </div>
-              <div className="w-full h-2 rounded-full bg-[var(--abu-bg-active)] overflow-hidden">
+              <div className="w-full h-2 rounded-full bg-[var(--lingxi-bg-active)] overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-[var(--abu-clay)] transition-all duration-300"
+                  className="h-full rounded-full bg-[var(--lingxi-clay)] transition-all duration-300"
                   style={{ width: `${progressPercent}%` }}
                 />
               </div>
@@ -161,7 +161,7 @@ export default function AboutSection() {
               <span className="flex-1">{t.updates.downloadFailed}</span>
               <button
                 onClick={handleDownload}
-                className="text-xs font-medium text-[var(--abu-clay)] hover:underline"
+                className="text-xs font-medium text-[var(--lingxi-clay)] hover:underline"
               >
                 {t.updates.retry}
               </button>
@@ -180,7 +180,7 @@ export default function AboutSection() {
           ) : !downloadProgress && !downloadError && (
             <button
               onClick={handleDownload}
-              className="flex items-center gap-2 w-full justify-center py-2 px-4 rounded-lg bg-[var(--abu-clay)] text-white text-sm font-medium hover:bg-[var(--abu-clay-hover)] transition-colors"
+              className="flex items-center gap-2 w-full justify-center py-2 px-4 rounded-lg bg-[var(--lingxi-clay)] text-white text-sm font-medium hover:bg-[var(--lingxi-clay-hover)] transition-colors"
             >
               <Download className="h-4 w-4" />
               {t.updates.downloadUpdate}
@@ -195,7 +195,7 @@ export default function AboutSection() {
               ? 'text-green-600'
               : checkResult === 'error'
                 ? 'text-red-500'
-                : 'text-[var(--abu-text-tertiary)]'
+                : 'text-[var(--lingxi-text-tertiary)]'
           )}
         >
           {checkResult === 'error' ? (
@@ -208,7 +208,7 @@ export default function AboutSection() {
               <CheckCircle className={cn('h-4 w-4 text-green-500', checkResult === 'just-checked' && 'scale-110')} />
               <span>{t.updates.upToDate}</span>
               {checkResult === 'just-checked' && (
-                <span className="text-xs text-[var(--abu-text-muted)] ml-auto" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                <span className="text-xs text-[var(--lingxi-text-muted)] ml-auto" style={{ animation: 'fadeIn 0.3s ease-out' }}>
                   {t.updates.justChecked}
                 </span>
               )}
@@ -224,8 +224,8 @@ export default function AboutSection() {
         className={cn(
           'flex items-center gap-2 w-full justify-center py-2.5 px-4 rounded-lg border text-sm font-medium transition-all duration-200',
           updateChecking || downloadProgress
-            ? 'border-[var(--abu-border)] text-[var(--abu-text-muted)] cursor-not-allowed'
-            : 'border-[var(--abu-border)] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)] hover:border-[var(--abu-border-hover)] active:scale-[0.98]'
+            ? 'border-[var(--lingxi-border)] text-[var(--lingxi-text-muted)] cursor-not-allowed'
+            : 'border-[var(--lingxi-border)] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)] hover:border-[var(--lingxi-border-hover)] active:scale-[0.98]'
         )}
       >
         <RefreshCw className={cn('h-4 w-4 transition-transform', updateChecking && 'animate-spin')} />
@@ -234,7 +234,7 @@ export default function AboutSection() {
 
       {/* Footer */}
       <div className="text-center space-y-2 pt-4">
-        <p className="text-xs text-[var(--abu-text-muted)]">
+        <p className="text-xs text-[var(--lingxi-text-muted)]">
           © 2026 {t.common.appName}. All rights reserved.
         </p>
       </div>

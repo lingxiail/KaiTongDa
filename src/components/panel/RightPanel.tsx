@@ -160,7 +160,7 @@ export default function RightPanel() {
   // When expanded, render the full panel
   return (
     <div
-      className="shrink-0 bg-[var(--abu-bg-subtle)] h-full flex overflow-hidden relative"
+      className="shrink-0 bg-[var(--lingxi-bg-subtle)] h-full flex overflow-hidden relative"
       style={{ width: currentWidth, minWidth: currentWidth, maxWidth: currentWidth, transition: isDragging ? 'none' : 'width 200ms, min-width 200ms, max-width 200ms' }}
     >
       {/* Full-screen overlay during drag — blocks iframe from stealing mouse events */}
@@ -172,12 +172,12 @@ export default function RightPanel() {
         onMouseDown={handleDragStart}
         className={cn(
           'absolute left-0 top-0 bottom-0 w-[5px] cursor-col-resize z-20 select-none',
-          'hover:bg-[var(--abu-clay-20)] transition-colors',
-          isDragging && 'bg-[var(--abu-clay-40)]'
+          'hover:bg-[var(--lingxi-clay-20)] transition-colors',
+          isDragging && 'bg-[var(--lingxi-clay-40)]'
         )}
       />
       {/* Panel content */}
-      <div className="flex-1 flex flex-col overflow-hidden border-l border-[var(--abu-border)]">
+      <div className="flex-1 flex flex-col overflow-hidden border-l border-[var(--lingxi-border)]">
       {showPreview ? (
         // Preview mode - full panel is preview
         <PreviewPanel />
@@ -191,7 +191,7 @@ export default function RightPanel() {
               <TaskProgressPanel />
               {/* Workspace with files inside */}
               <WorkspaceSection />
-              <div className="border-t border-[var(--abu-border)]" />
+              <div className="border-t border-[var(--lingxi-border)]" />
               <ContextSection />
             </div>
           </ScrollArea>

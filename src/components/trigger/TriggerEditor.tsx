@@ -308,13 +308,13 @@ export default function TriggerEditor() {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onMouseDown={(e) => { if (e.target === e.currentTarget) closeEditor(); }}>
       <div className="bg-white rounded-2xl shadow-xl w-[480px] max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--abu-bg-active)] shrink-0">
-          <h2 className="text-[16px] font-semibold text-[var(--abu-text-primary)]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--lingxi-bg-active)] shrink-0">
+          <h2 className="text-[16px] font-semibold text-[var(--lingxi-text-primary)]">
             {editingTriggerId ? t.trigger.editTrigger : t.trigger.newTrigger}
           </h2>
           <button
             onClick={closeEditor}
-            className="p-1.5 rounded-lg text-[var(--abu-text-muted)] hover:text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)] transition-colors"
+            className="p-1.5 rounded-lg text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)] transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
@@ -324,7 +324,7 @@ export default function TriggerEditor() {
         <div className="px-6 py-4 space-y-4 overflow-auto flex-1">
           {/* Name */}
           <div>
-            <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               {t.trigger.triggerName}
             </label>
             <input
@@ -333,8 +333,8 @@ export default function TriggerEditor() {
               onChange={(e) => setName(e.target.value)}
               placeholder={t.trigger.triggerNamePlaceholder}
               className={cn(
-                'w-full h-10 px-3 bg-[var(--abu-bg-base)] border rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]',
-                isDuplicateName ? 'border-red-400' : 'border-[var(--abu-border)]'
+                'w-full h-10 px-3 bg-[var(--lingxi-bg-base)] border rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]',
+                isDuplicateName ? 'border-red-400' : 'border-[var(--lingxi-border)]'
               )}
             />
             {isDuplicateName && (
@@ -344,7 +344,7 @@ export default function TriggerEditor() {
 
           {/* Description */}
           <div>
-            <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               {t.trigger.description}
             </label>
             <textarea
@@ -352,13 +352,13 @@ export default function TriggerEditor() {
               onChange={(e) => setDescription(e.target.value)}
               placeholder={t.trigger.descriptionPlaceholder}
               rows={2}
-              className="w-full px-3 py-2 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)] resize-none"
+              className="w-full px-3 py-2 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)] resize-none"
             />
           </div>
 
           {/* Source type */}
           <div>
-            <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               {t.trigger.sourceType}
             </label>
             <div className="flex flex-wrap gap-1.5">
@@ -369,8 +369,8 @@ export default function TriggerEditor() {
                   className={cn(
                     'px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors',
                     sourceType === st
-                      ? 'bg-[var(--abu-clay)] text-white'
-                      : 'bg-[var(--abu-bg-muted)] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)]'
+                      ? 'bg-[var(--lingxi-clay)] text-white'
+                      : 'bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)]'
                   )}
                 >
                   {st === 'http' ? t.trigger.sourceHttp : st === 'file' ? t.trigger.sourceFile : st === 'cron' ? t.trigger.sourceCron : t.trigger.imSource}
@@ -383,7 +383,7 @@ export default function TriggerEditor() {
           {sourceType === 'file' && (
             <>
               <div>
-                <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+                <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                   {t.trigger.filePath}
                 </label>
                 <input
@@ -391,11 +391,11 @@ export default function TriggerEditor() {
                   value={fileWatchPath}
                   onChange={(e) => setFileWatchPath(e.target.value)}
                   placeholder={t.trigger.filePathPlaceholder}
-                  className="w-full h-10 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                  className="w-full h-10 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
                 />
               </div>
               <div>
-                <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+                <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                   {t.trigger.fileEvents}
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -410,8 +410,8 @@ export default function TriggerEditor() {
                       className={cn(
                         'px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors',
                         fileEvents.includes(evt)
-                          ? 'bg-[var(--abu-clay)] text-white'
-                          : 'bg-[var(--abu-bg-muted)] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)]'
+                          ? 'bg-[var(--lingxi-clay)] text-white'
+                          : 'bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)]'
                       )}
                     >
                       {evt === 'create' ? t.trigger.fileEventCreate : evt === 'modify' ? t.trigger.fileEventModify : t.trigger.fileEventDelete}
@@ -420,7 +420,7 @@ export default function TriggerEditor() {
                 </div>
               </div>
               <div>
-                <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+                <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                   {t.trigger.filePattern}
                 </label>
                 <input
@@ -428,7 +428,7 @@ export default function TriggerEditor() {
                   value={filePattern}
                   onChange={(e) => setFilePattern(e.target.value)}
                   placeholder={t.trigger.filePatternPlaceholder}
-                  className="w-full h-10 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                  className="w-full h-10 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
                 />
               </div>
             </>
@@ -437,7 +437,7 @@ export default function TriggerEditor() {
           {/* Cron source fields */}
           {sourceType === 'cron' && (
             <div>
-              <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+              <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                 {t.trigger.cronInterval}
               </label>
               <div className="flex items-center gap-2">
@@ -447,9 +447,9 @@ export default function TriggerEditor() {
                   onChange={(e) => setCronInterval(Number(e.target.value) || 60)}
                   min={10}
                   placeholder={t.trigger.cronIntervalPlaceholder}
-                  className="w-28 h-10 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                  className="w-28 h-10 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
                 />
-                <span className="text-[12px] text-[var(--abu-text-tertiary)]">{t.trigger.seconds}</span>
+                <span className="text-[12px] text-[var(--lingxi-text-tertiary)]">{t.trigger.seconds}</span>
               </div>
             </div>
           )}
@@ -459,7 +459,7 @@ export default function TriggerEditor() {
             <>
               {/* IM Channel select */}
               <div>
-                <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+                <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                   {t.trigger.imSelectChannel}
                 </label>
                 {channelOptions.length > 0 ? (
@@ -470,7 +470,7 @@ export default function TriggerEditor() {
                     options={channelOptions}
                   />
                 ) : (
-                  <p className="text-[12px] text-[var(--abu-text-muted)] bg-[var(--abu-bg-muted)] rounded-lg px-3 py-2">
+                  <p className="text-[12px] text-[var(--lingxi-text-muted)] bg-[var(--lingxi-bg-muted)] rounded-lg px-3 py-2">
                     {t.trigger.imNoChannels}
                   </p>
                 )}
@@ -478,14 +478,14 @@ export default function TriggerEditor() {
 
               {/* Listen scope */}
               <div>
-                <label className="block text-[12px] text-[var(--abu-text-tertiary)] mb-1">{t.trigger.imListenScope}</label>
+                <label className="block text-[12px] text-[var(--lingxi-text-tertiary)] mb-1">{t.trigger.imListenScope}</label>
                 <div className="space-y-1">
                   {([
                     ['mention_only', t.trigger.imScopeMentionOnly],
                     ['direct_only', t.trigger.imScopeDirectOnly],
                     ['all', t.trigger.imScopeAll],
                   ] as [IMListenScope, string][]).map(([scope, label]) => (
-                    <label key={scope} className="flex items-center gap-2 text-[12px] text-[var(--abu-text-secondary)]">
+                    <label key={scope} className="flex items-center gap-2 text-[12px] text-[var(--lingxi-text-secondary)]">
                       <input
                         type="radio"
                         name="imListenScope"
@@ -500,42 +500,42 @@ export default function TriggerEditor() {
 
               {/* Chat ID filter (optional) */}
               <div>
-                <label className="block text-[12px] text-[var(--abu-text-tertiary)] mb-1">{t.trigger.imChatId}</label>
+                <label className="block text-[12px] text-[var(--lingxi-text-tertiary)] mb-1">{t.trigger.imChatId}</label>
                 <input
                   type="text"
                   value={imChatId}
                   onChange={(e) => setImChatId(e.target.value)}
                   placeholder={t.trigger.imChatIdPlaceholder}
-                  className="w-full h-9 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                  className="w-full h-9 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
                 />
               </div>
 
               {/* Sender match (optional) */}
               <div>
-                <label className="block text-[12px] text-[var(--abu-text-tertiary)] mb-1">{t.trigger.senderMatch}</label>
+                <label className="block text-[12px] text-[var(--lingxi-text-tertiary)] mb-1">{t.trigger.senderMatch}</label>
                 <input
                   type="text"
                   value={imSenderMatch}
                   onChange={(e) => setImSenderMatch(e.target.value)}
                   placeholder={t.trigger.senderMatchPlaceholder}
-                  className="w-full h-9 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                  className="w-full h-9 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
                 />
               </div>
 
               {/* Webhook callback URL (read-only) */}
               {selectedIMChannel && (
                 <div>
-                  <label className="block text-[12px] text-[var(--abu-text-tertiary)] mb-1">{t.trigger.imWebhookUrl}</label>
+                  <label className="block text-[12px] text-[var(--lingxi-text-tertiary)] mb-1">{t.trigger.imWebhookUrl}</label>
                   <div className="flex gap-2 items-center">
                     <input
                       type="text"
                       value={`http://127.0.0.1:${triggerEngine.getServerPort() ?? 18080}/im/${selectedIMChannel.platform}/webhook`}
                       readOnly
-                      className="flex-1 h-9 px-3 bg-[var(--abu-bg-muted)] border border-[var(--abu-border)] rounded-lg text-xs text-[var(--abu-text-tertiary)] font-mono select-all"
+                      className="flex-1 h-9 px-3 bg-[var(--lingxi-bg-muted)] border border-[var(--lingxi-border)] rounded-lg text-xs text-[var(--lingxi-text-tertiary)] font-mono select-all"
                       onClick={(e) => (e.target as HTMLInputElement).select()}
                     />
                   </div>
-                  <p className="text-[10px] text-[var(--abu-text-muted)] mt-1">{t.trigger.imWebhookUrlHint}</p>
+                  <p className="text-[10px] text-[var(--lingxi-text-muted)] mt-1">{t.trigger.imWebhookUrlHint}</p>
                 </div>
               )}
             </>
@@ -543,7 +543,7 @@ export default function TriggerEditor() {
 
           {/* Prompt */}
           <div>
-            <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               {t.trigger.triggerPrompt}
             </label>
             <textarea
@@ -551,14 +551,14 @@ export default function TriggerEditor() {
               onChange={(e) => setPrompt(e.target.value)}
               placeholder={t.trigger.triggerPromptPlaceholder}
               rows={4}
-              className="w-full px-3 py-2 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)] resize-none"
+              className="w-full px-3 py-2 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)] resize-none"
             />
-            <p className="text-[11px] text-[var(--abu-text-muted)] mt-1">{t.trigger.promptHint}</p>
+            <p className="text-[11px] text-[var(--lingxi-text-muted)] mt-1">{t.trigger.promptHint}</p>
           </div>
 
           {/* Filter type */}
           <div>
-            <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               {t.trigger.filterType}
             </label>
             <div className="flex flex-wrap gap-1.5">
@@ -569,8 +569,8 @@ export default function TriggerEditor() {
                   className={cn(
                     'px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors',
                     filterType === ft
-                      ? 'bg-[var(--abu-clay)] text-white'
-                      : 'bg-[var(--abu-bg-muted)] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)]'
+                      ? 'bg-[var(--lingxi-clay)] text-white'
+                      : 'bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)]'
                   )}
                 >
                   {filterLabels[ft]}
@@ -582,7 +582,7 @@ export default function TriggerEditor() {
           {/* Keywords input */}
           {filterType === 'keyword' && (
             <div>
-              <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+              <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                 {t.trigger.keywords}
               </label>
               <input
@@ -590,7 +590,7 @@ export default function TriggerEditor() {
                 value={keywords}
                 onChange={(e) => setKeywords(e.target.value)}
                 placeholder={t.trigger.keywordsPlaceholder}
-                className="w-full h-10 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                className="w-full h-10 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
               />
             </div>
           )}
@@ -598,7 +598,7 @@ export default function TriggerEditor() {
           {/* Regex input */}
           {filterType === 'regex' && (
             <div>
-              <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+              <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                 {t.trigger.regexPattern}
               </label>
               <input
@@ -606,7 +606,7 @@ export default function TriggerEditor() {
                 value={regexPattern}
                 onChange={(e) => setRegexPattern(e.target.value)}
                 placeholder={t.trigger.regexPlaceholder}
-                className="w-full h-10 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)] font-mono"
+                className="w-full h-10 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)] font-mono"
               />
             </div>
           )}
@@ -614,7 +614,7 @@ export default function TriggerEditor() {
           {/* Filter field */}
           {filterType !== 'always' && (
             <div>
-              <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+              <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                 {t.trigger.filterField}
               </label>
               <input
@@ -622,14 +622,14 @@ export default function TriggerEditor() {
                 value={filterField}
                 onChange={(e) => setFilterField(e.target.value)}
                 placeholder={t.trigger.filterFieldPlaceholder}
-                className="w-full h-10 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                className="w-full h-10 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
               />
             </div>
           )}
 
           {/* Debounce */}
           <div>
-            <label className="flex items-center gap-2 text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="flex items-center gap-2 text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               <input
                 type="checkbox"
                 checked={debounceEnabled}
@@ -645,16 +645,16 @@ export default function TriggerEditor() {
                   value={debounceSeconds}
                   onChange={(e) => setDebounceSeconds(Number(e.target.value) || 0)}
                   min={0}
-                  className="w-24 h-9 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                  className="w-24 h-9 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
                 />
-                <span className="text-[12px] text-[var(--abu-text-tertiary)]">{t.trigger.seconds}</span>
+                <span className="text-[12px] text-[var(--lingxi-text-tertiary)]">{t.trigger.seconds}</span>
               </div>
             )}
           </div>
 
           {/* Quiet hours */}
           <div>
-            <label className="flex items-center gap-2 text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="flex items-center gap-2 text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               <input
                 type="checkbox"
                 checked={quietHoursEnabled}
@@ -666,34 +666,34 @@ export default function TriggerEditor() {
             {quietHoursEnabled && (
               <div className="flex items-center gap-2 mt-1.5">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[12px] text-[var(--abu-text-tertiary)]">{t.trigger.quietHoursStart}</span>
+                  <span className="text-[12px] text-[var(--lingxi-text-tertiary)]">{t.trigger.quietHoursStart}</span>
                   <input
                     type="time"
                     value={quietHoursStart}
                     onChange={(e) => setQuietHoursStart(e.target.value)}
-                    className="h-9 px-2 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                    className="h-9 px-2 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
                   />
                 </div>
-                <span className="text-[12px] text-[var(--abu-text-tertiary)]">~</span>
+                <span className="text-[12px] text-[var(--lingxi-text-tertiary)]">~</span>
                 <div className="flex items-center gap-1.5">
-                  <span className="text-[12px] text-[var(--abu-text-tertiary)]">{t.trigger.quietHoursEnd}</span>
+                  <span className="text-[12px] text-[var(--lingxi-text-tertiary)]">{t.trigger.quietHoursEnd}</span>
                   <input
                     type="time"
                     value={quietHoursEnd}
                     onChange={(e) => setQuietHoursEnd(e.target.value)}
-                    className="h-9 px-2 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                    className="h-9 px-2 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
                   />
                 </div>
               </div>
             )}
             {quietHoursEnabled && (
-              <p className="text-[11px] text-[var(--abu-text-muted)] mt-1">{t.trigger.quietHoursHint}</p>
+              <p className="text-[11px] text-[var(--lingxi-text-muted)] mt-1">{t.trigger.quietHoursHint}</p>
             )}
           </div>
 
           {/* Output config */}
-          <div className="border-t border-[var(--abu-border)] pt-4">
-            <label className="flex items-center gap-2 text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+          <div className="border-t border-[var(--lingxi-border)] pt-4">
+            <label className="flex items-center gap-2 text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               <input
                 type="checkbox"
                 checked={outputEnabled}
@@ -713,8 +713,8 @@ export default function TriggerEditor() {
                       className={cn(
                         'px-2.5 py-1 rounded-lg text-[11px] font-medium transition-colors',
                         outputTarget === 'webhook'
-                          ? 'bg-[var(--abu-clay)] text-white'
-                          : 'bg-[var(--abu-bg-muted)] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)]'
+                          ? 'bg-[var(--lingxi-clay)] text-white'
+                          : 'bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)]'
                       )}
                     >
                       {t.trigger.outputTargetWebhook}
@@ -724,8 +724,8 @@ export default function TriggerEditor() {
                       className={cn(
                         'px-2.5 py-1 rounded-lg text-[11px] font-medium transition-colors',
                         outputTarget === 'im_channel'
-                          ? 'bg-[var(--abu-clay)] text-white'
-                          : 'bg-[var(--abu-bg-muted)] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)]'
+                          ? 'bg-[var(--lingxi-clay)] text-white'
+                          : 'bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)]'
                       )}
                     >
                       {t.trigger.outputTargetIMChannel}
@@ -737,7 +737,7 @@ export default function TriggerEditor() {
                 {outputTarget === 'im_channel' && (
                   <>
                     <div>
-                      <label className="block text-[12px] text-[var(--abu-text-tertiary)] mb-1">
+                      <label className="block text-[12px] text-[var(--lingxi-text-tertiary)] mb-1">
                         {t.trigger.outputSelectChannel}
                       </label>
                       {channelOptions.length > 0 ? (
@@ -748,29 +748,29 @@ export default function TriggerEditor() {
                           options={channelOptions}
                         />
                       ) : (
-                        <p className="text-[12px] text-[var(--abu-text-muted)] bg-[var(--abu-bg-muted)] rounded-lg px-3 py-2">
+                        <p className="text-[12px] text-[var(--lingxi-text-muted)] bg-[var(--lingxi-bg-muted)] rounded-lg px-3 py-2">
                           {t.trigger.imNoChannels}
                         </p>
                       )}
                     </div>
                     <div>
-                      <label className="block text-[12px] text-[var(--abu-text-tertiary)] mb-1">{t.trigger.outputToGroup}</label>
+                      <label className="block text-[12px] text-[var(--lingxi-text-tertiary)] mb-1">{t.trigger.outputToGroup}</label>
                       <input
                         type="text"
                         value={outputChatIds}
                         onChange={(e) => setOutputChatIds(e.target.value)}
                         placeholder={t.trigger.outputChatIdPlaceholder}
-                        className="w-full h-9 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                        className="w-full h-9 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
                       />
                     </div>
                     <div>
-                      <label className="block text-[12px] text-[var(--abu-text-tertiary)] mb-1">{t.trigger.outputToDM}</label>
+                      <label className="block text-[12px] text-[var(--lingxi-text-tertiary)] mb-1">{t.trigger.outputToDM}</label>
                       <input
                         type="text"
                         value={outputUserIds}
                         onChange={(e) => setOutputUserIds(e.target.value)}
                         placeholder={t.trigger.outputUserIdPlaceholder}
-                        className="w-full h-9 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                        className="w-full h-9 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
                       />
                     </div>
                   </>
@@ -780,7 +780,7 @@ export default function TriggerEditor() {
                 {outputTarget === 'webhook' && (
                 <>
                 <div>
-                  <label className="block text-[12px] text-[var(--abu-text-tertiary)] mb-1">
+                  <label className="block text-[12px] text-[var(--lingxi-text-tertiary)] mb-1">
                     {t.trigger.outputPlatform}
                   </label>
                   <div className="flex flex-wrap gap-1.5">
@@ -791,8 +791,8 @@ export default function TriggerEditor() {
                           className={cn(
                             'px-2.5 py-1 rounded-lg text-[11px] font-medium transition-colors',
                             outputPlatform === opt.value
-                              ? 'bg-[var(--abu-clay)] text-white'
-                              : 'bg-[var(--abu-bg-muted)] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)]'
+                              ? 'bg-[var(--lingxi-clay)] text-white'
+                              : 'bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)]'
                           )}
                         >
                           {opt.label}
@@ -803,7 +803,7 @@ export default function TriggerEditor() {
 
                 {/* Webhook URL */}
                 <div>
-                  <label className="block text-[12px] text-[var(--abu-text-tertiary)] mb-1">
+                  <label className="block text-[12px] text-[var(--lingxi-text-tertiary)] mb-1">
                     {t.trigger.webhookUrl}
                   </label>
                   <div className="flex gap-2">
@@ -812,7 +812,7 @@ export default function TriggerEditor() {
                       value={outputWebhookUrl}
                       onChange={(e) => setOutputWebhookUrl(e.target.value)}
                       placeholder={t.trigger.webhookUrlPlaceholder}
-                      className="flex-1 h-9 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                      className="flex-1 h-9 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
                     />
                     <button
                       onClick={async () => {
@@ -838,8 +838,8 @@ export default function TriggerEditor() {
                       className={cn(
                         'px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors shrink-0',
                         outputWebhookUrl.trim()
-                          ? 'bg-[var(--abu-bg-muted)] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)]'
-                          : 'bg-[var(--abu-bg-muted)] text-[var(--abu-text-placeholder)] cursor-not-allowed'
+                          ? 'bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)]'
+                          : 'bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-placeholder)] cursor-not-allowed'
                       )}
                     >
                       {t.trigger.testPush}
@@ -856,7 +856,7 @@ export default function TriggerEditor() {
                 {/* Custom Headers (only for 'custom' platform) */}
                 {outputPlatform === 'custom' && (
                   <div>
-                    <label className="block text-[12px] text-[var(--abu-text-tertiary)] mb-1">
+                    <label className="block text-[12px] text-[var(--lingxi-text-tertiary)] mb-1">
                       {t.trigger.customHeaders}
                     </label>
                     <textarea
@@ -864,7 +864,7 @@ export default function TriggerEditor() {
                       onChange={(e) => setOutputCustomHeaders(e.target.value)}
                       placeholder={t.trigger.customHeadersPlaceholder}
                       rows={2}
-                      className="w-full px-3 py-2 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-xs text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)] resize-none font-mono"
+                      className="w-full px-3 py-2 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-xs text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)] resize-none font-mono"
                     />
                   </div>
                 )}
@@ -873,7 +873,7 @@ export default function TriggerEditor() {
 
                 {/* Extract mode */}
                 <div>
-                  <label className="block text-[12px] text-[var(--abu-text-tertiary)] mb-1">
+                  <label className="block text-[12px] text-[var(--lingxi-text-tertiary)] mb-1">
                     {t.trigger.extractMode}
                   </label>
                   <div className="space-y-1">
@@ -882,7 +882,7 @@ export default function TriggerEditor() {
                       ['full', t.trigger.extractFull],
                       ['custom_template', t.trigger.extractTemplate],
                     ] as [OutputExtractMode, string][]).map(([mode, label]) => (
-                      <label key={mode} className="flex items-center gap-2 text-[12px] text-[var(--abu-text-secondary)]">
+                      <label key={mode} className="flex items-center gap-2 text-[12px] text-[var(--lingxi-text-secondary)]">
                         <input
                           type="radio"
                           name="extractMode"
@@ -903,9 +903,9 @@ export default function TriggerEditor() {
                       onChange={(e) => setOutputCustomTemplate(e.target.value)}
                       placeholder={t.trigger.templatePlaceholder}
                       rows={3}
-                      className="w-full px-3 py-2 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-xs text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)] resize-none font-mono"
+                      className="w-full px-3 py-2 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-xs text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)] resize-none font-mono"
                     />
-                    <p className="text-[10px] text-[var(--abu-text-muted)] mt-1">{t.trigger.templateVariables}</p>
+                    <p className="text-[10px] text-[var(--lingxi-text-muted)] mt-1">{t.trigger.templateVariables}</p>
                   </div>
                 )}
               </div>
@@ -915,7 +915,7 @@ export default function TriggerEditor() {
           {/* Skill binding */}
           {skills.length > 0 && (
             <div>
-              <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+              <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                 {t.trigger.bindSkill}
               </label>
               <Select
@@ -935,7 +935,7 @@ export default function TriggerEditor() {
           {/* Project selector */}
           {activeProjects.length > 0 && (
             <div>
-              <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+              <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                 {t.project.projectLabel}
               </label>
               <Select
@@ -960,7 +960,7 @@ export default function TriggerEditor() {
 
           {/* Workspace path */}
           <div>
-            <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               {t.trigger.workspacePath}
             </label>
             <input
@@ -970,7 +970,7 @@ export default function TriggerEditor() {
               placeholder={t.trigger.workspacePathPlaceholder}
               disabled={!!projectId}
               className={cn(
-                'w-full h-10 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]',
+                'w-full h-10 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]',
                 projectId && 'opacity-60 cursor-not-allowed'
               )}
             />
@@ -978,10 +978,10 @@ export default function TriggerEditor() {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[var(--abu-bg-active)] shrink-0">
+        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[var(--lingxi-bg-active)] shrink-0">
           <button
             onClick={closeEditor}
-            className="px-4 py-2 rounded-lg text-[13px] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+            className="px-4 py-2 rounded-lg text-[13px] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
           >
             {t.common.cancel}
           </button>
@@ -991,8 +991,8 @@ export default function TriggerEditor() {
             className={cn(
               'px-4 py-2 rounded-lg text-[13px] font-medium transition-colors',
               name.trim() && prompt.trim() && !(sourceType === 'file' && !fileWatchPath.trim()) && !(sourceType === 'im' && !imChannelId) && !isDuplicateName
-                ? 'bg-[var(--abu-clay)] text-white hover:bg-[var(--abu-clay-hover)]'
-                : 'bg-[var(--abu-border)] text-[var(--abu-text-tertiary)] cursor-not-allowed'
+                ? 'bg-[var(--lingxi-clay)] text-white hover:bg-[var(--lingxi-clay-hover)]'
+                : 'bg-[var(--lingxi-border)] text-[var(--lingxi-text-tertiary)] cursor-not-allowed'
             )}
           >
             {t.common.save}

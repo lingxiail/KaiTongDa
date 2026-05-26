@@ -9,7 +9,7 @@
  *
  * Each draft directory holds:
  *   - SKILL.md                (the skill content itself)
- *   - .abu-draft-meta.json    (sidecar with action/triggerReason/ttl; stripped on accept)
+ *   - .lingxi-draft-meta.json    (sidecar with action/triggerReason/ttl; stripped on accept)
  *   - scripts/ / references/  (optional supporting files written by the agent)
  *
  * The sidecar is intentionally a separate file rather than frontmatter keys
@@ -37,7 +37,7 @@ import type { ProactivityLevel } from '../agent/prompts/skillsGuidance';
 
 // ── Constants ───────────────────────────────────────────────────────────
 
-const SIDECAR_FILENAME = '.abu-draft-meta.json';
+const SIDECAR_FILENAME = '.lingxi-draft-meta.json';
 const TRASH_DIRNAME = '.trash';
 const TRASH_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -98,7 +98,7 @@ interface DraftSidecar {
 async function getProjectSkillsDir(workspacePath: string): Promise<string> {
   const home = await homeDir();
   const key = sanitizePath(normalizeSeparators(workspacePath));
-  return joinPath(home, '.abu/projects', key, 'skills');
+  return joinPath(home, '.lingxi/projects', key, 'skills');
 }
 
 async function getDraftsRoot(workspacePath: string): Promise<string> {

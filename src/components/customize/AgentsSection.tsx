@@ -14,22 +14,22 @@ import MarkdownRenderer from '@/components/chat/MarkdownRenderer';
 import abuAvatar from '@/assets/abu-avatar.png';
 
 function isSystemAgent(agent: SubagentDefinition): boolean {
-  // Only 'abu' is a system agent — all others (including marketplace-installed) are user agents
-  return agent.name === 'abu';
+  // Only 'lingxi' is a system agent — all others (including marketplace-installed) are user agents
+  return agent.name === 'lingxi';
 }
 
 /** Render agent avatar: use real image for abu, emoji for others */
 function AgentAvatar({ agent, size = 'md' }: { agent: SubagentDefinition; size?: 'sm' | 'md' }) {
   const cls = size === 'sm' ? 'h-5 w-5' : 'h-6 w-6';
-  if (agent.name === 'abu') {
-    return <img src={abuAvatar} alt="Abu" className={`${cls} rounded-full object-cover`} />;
+  if (agent.name === 'lingxi') {
+    return <img src={abuAvatar} alt="Lingxi" className={`${cls} rounded-full object-cover`} />;
   }
   return <span className={size === 'sm' ? 'text-base' : 'text-xl'}>{agent.avatar || '🤖'}</span>;
 }
 
 /** Display name: capitalize first letter for abu */
 function displayName(agent: SubagentDefinition): string {
-  if (agent.name === 'abu') return 'Abu';
+  if (agent.name === 'lingxi') return 'Lingxi';
   return agent.name;
 }
 
@@ -95,7 +95,7 @@ export default function AgentsSection({ manualCreateTrigger, onAICreate, onManua
     );
   }, [installedAgents, toolboxSearchQuery]);
 
-  // All visible agents are user agents (system agents like 'abu' are filtered out above)
+  // All visible agents are user agents (system agents like 'lingxi' are filtered out above)
   const userAgents = filteredAgents;
   const systemAgents: SubagentDefinition[] = [];
 
@@ -143,13 +143,13 @@ export default function AgentsSection({ manualCreateTrigger, onAICreate, onManua
       <div key={agent.name} className="mb-0.5">
         <div
           className={`flex items-center gap-3 mx-2 pl-7 pr-3 py-2.5 rounded-lg cursor-pointer transition-colors ${
-            isSelected ? 'bg-[var(--abu-bg-active)]' : 'hover:bg-[var(--abu-bg-active)]/60'
+            isSelected ? 'bg-[var(--lingxi-bg-active)]' : 'hover:bg-[var(--lingxi-bg-active)]/60'
           }`}
           onClick={() => setSelectedAgent(agent.name)}
         >
           <AgentAvatar agent={agent} size="sm" />
           <span className={`text-sm flex-1 truncate ${
-            !isEnabled && agent.name !== 'abu' ? 'text-[var(--abu-text-placeholder)]' : isSelected ? 'text-[var(--abu-text-primary)] font-medium' : 'text-[var(--abu-text-tertiary)]'
+            !isEnabled && agent.name !== 'lingxi' ? 'text-[var(--lingxi-text-placeholder)]' : isSelected ? 'text-[var(--lingxi-text-primary)] font-medium' : 'text-[var(--lingxi-text-tertiary)]'
           }`}>
             {displayName(agent)}
           </span>
@@ -172,12 +172,12 @@ export default function AgentsSection({ manualCreateTrigger, onAICreate, onManua
   return (
     <div className="flex h-full overflow-hidden">
       {/* Left: Agent list */}
-      <div className="w-[340px] shrink-0 border-r border-[var(--abu-border)] flex flex-col overflow-hidden bg-[var(--abu-bg-base)]">
+      <div className="w-[340px] shrink-0 border-r border-[var(--lingxi-border)] flex flex-col overflow-hidden bg-[var(--lingxi-bg-base)]">
         {/* Header: Title + Search + Create */}
-        <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--abu-border)]">
+        <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--lingxi-border)]">
           {showSearch ? (
             <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--abu-text-tertiary)]" />
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--lingxi-text-tertiary)]" />
               <input
                 autoFocus
                 type="text"
@@ -186,58 +186,58 @@ export default function AgentsSection({ manualCreateTrigger, onAICreate, onManua
                 onChange={(e) => setToolboxSearchQuery(e.target.value)}
                 onBlur={() => { if (!toolboxSearchQuery) setShowSearch(false); }}
                 onKeyDown={(e) => { if (e.key === 'Escape') { setToolboxSearchQuery(''); setShowSearch(false); } }}
-                className="w-full pl-7 pr-7 py-1 text-sm border border-[var(--abu-border)] rounded-md bg-[var(--abu-bg-base)] focus:outline-none focus:ring-1 focus:ring-[var(--abu-clay-ring)] text-[var(--abu-text-primary)]"
+                className="w-full pl-7 pr-7 py-1 text-sm border border-[var(--lingxi-border)] rounded-md bg-[var(--lingxi-bg-base)] focus:outline-none focus:ring-1 focus:ring-[var(--lingxi-clay-ring)] text-[var(--lingxi-text-primary)]"
               />
               <button
                 onClick={() => { setToolboxSearchQuery(''); setShowSearch(false); }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)]"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)]"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
           ) : (
             <div className="flex items-center justify-between">
-              <span className="text-base font-semibold text-[var(--abu-text-primary)]">{t.toolbox.agents}</span>
+              <span className="text-base font-semibold text-[var(--lingxi-text-primary)]">{t.toolbox.agents}</span>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setShowSearch(true)}
-                  className="p-1 text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] transition-colors"
+                  className="p-1 text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] transition-colors"
                 >
                   <Search className="h-3.5 w-3.5" />
                 </button>
                 <div className="relative">
                   <button
                     onClick={(e) => { e.stopPropagation(); setShowCreateMenu(!showCreateMenu); }}
-                    className="p-1 text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] transition-colors"
+                    className="p-1 text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] transition-colors"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
                   {showCreateMenu && (
-                    <div className="absolute z-50 top-full right-0 mt-1 w-44 bg-white rounded-lg shadow-lg border border-[var(--abu-border)] py-1">
+                    <div className="absolute z-50 top-full right-0 mt-1 w-44 bg-white rounded-lg shadow-lg border border-[var(--lingxi-border)] py-1">
                       {onAICreate && (
                         <button
                           onClick={() => { setShowCreateMenu(false); onAICreate(); }}
-                          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-active)] transition-colors"
+                          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-active)] transition-colors"
                         >
-                          <Wand2 className="h-3.5 w-3.5 text-[var(--abu-clay)]" />
-                          <span>{t.toolbox.createWithAbu}</span>
+                          <Wand2 className="h-3.5 w-3.5 text-[var(--lingxi-clay)]" />
+                          <span>{t.toolbox.createWithLingxi}</span>
                         </button>
                       )}
                       {onManualCreate && (
                         <button
                           onClick={() => { setShowCreateMenu(false); onManualCreate(); }}
-                          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-active)] transition-colors"
+                          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-active)] transition-colors"
                         >
-                          <PenLine className="h-3.5 w-3.5 text-[var(--abu-text-muted)]" />
+                          <PenLine className="h-3.5 w-3.5 text-[var(--lingxi-text-muted)]" />
                           <span>{t.toolbox.createManually}</span>
                         </button>
                       )}
                       {onUploadFile && (
                         <button
                           onClick={() => { setShowCreateMenu(false); onUploadFile(); }}
-                          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-active)] transition-colors"
+                          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-active)] transition-colors"
                         >
-                          <Upload className="h-3.5 w-3.5 text-[var(--abu-text-muted)]" />
+                          <Upload className="h-3.5 w-3.5 text-[var(--lingxi-text-muted)]" />
                           <span>{t.toolbox.uploadFile}</span>
                         </button>
                       )}
@@ -250,14 +250,14 @@ export default function AgentsSection({ manualCreateTrigger, onAICreate, onManua
         </div>
         <div className="flex-1 overflow-y-auto overlay-scroll py-2">
           {filteredAgents.length === 0 ? (
-            <div className="text-xs text-[var(--abu-text-muted)] py-8 text-center">{t.toolbox.noAgentsFound}</div>
+            <div className="text-xs text-[var(--lingxi-text-muted)] py-8 text-center">{t.toolbox.noAgentsFound}</div>
           ) : (
             <>
               {/* My agents (user-created) */}
               {userAgents.length > 0 && (
                 <div>
                   <div
-                    className="flex items-center gap-1.5 px-5 py-2.5 cursor-pointer text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]"
+                    className="flex items-center gap-1.5 px-5 py-2.5 cursor-pointer text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]"
                     onClick={() => toggleCategory('my')}
                   >
                     {collapsedCategories.has('my')
@@ -273,7 +273,7 @@ export default function AgentsSection({ manualCreateTrigger, onAICreate, onManua
               {systemAgents.length > 0 && (
                 <div>
                   <div
-                    className="flex items-center gap-1.5 px-5 py-2.5 cursor-pointer text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]"
+                    className="flex items-center gap-1.5 px-5 py-2.5 cursor-pointer text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]"
                     onClick={() => toggleCategory('system')}
                   >
                     {collapsedCategories.has('system')
@@ -291,17 +291,17 @@ export default function AgentsSection({ manualCreateTrigger, onAICreate, onManua
       </div>
 
       {/* Right: Agent detail */}
-      <div className="flex-1 overflow-y-auto overlay-scroll bg-[var(--abu-bg-base)]">
+      <div className="flex-1 overflow-y-auto overlay-scroll bg-[var(--lingxi-bg-base)]">
         {selected ? (
           <div className="px-6 py-6">
             {/* Row 1: Name + Toggle + Menu */}
             <div className="flex items-center justify-between gap-3 mb-4">
               <div className="flex items-center gap-3 min-w-0">
                 <span className="shrink-0"><AgentAvatar agent={selected} /></span>
-                <h2 className="text-xl font-semibold text-[var(--abu-text-primary)] truncate" title={displayName(selected)}>{displayName(selected)}</h2>
+                <h2 className="text-xl font-semibold text-[var(--lingxi-text-primary)] truncate" title={displayName(selected)}>{displayName(selected)}</h2>
               </div>
               <div className="flex items-center gap-2 shrink-0">
-                {selected.name !== 'abu' && (
+                {selected.name !== 'lingxi' && (
                   <>
                     <Toggle
                       checked={!disabledSet.has(selected.name)}
@@ -312,16 +312,16 @@ export default function AgentsSection({ manualCreateTrigger, onAICreate, onManua
                       <div className="relative">
                         <button
                           onClick={(e) => { e.stopPropagation(); setMenuAgent(menuAgent === selected.name ? null : selected.name); }}
-                          className="p-1.5 rounded-lg text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+                          className="p-1.5 rounded-lg text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
                         >
                           <MoreHorizontal className="h-4 w-4" />
                         </button>
                         {menuAgent === selected.name && (
-                          <div className="absolute right-0 top-8 z-10 bg-white border border-[var(--abu-border)] rounded-lg shadow-lg py-1 min-w-[140px]">
+                          <div className="absolute right-0 top-8 z-10 bg-white border border-[var(--lingxi-border)] rounded-lg shadow-lg py-1 min-w-[140px]">
                             {/* Try in chat - only when enabled */}
                             {!disabledSet.has(selected.name) && (
                               <button
-                                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+                                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
                                 onClick={() => {
                                   setMenuAgent(null);
                                   startNewConversation();
@@ -337,7 +337,7 @@ export default function AgentsSection({ manualCreateTrigger, onAICreate, onManua
                             {!isSystemAgent(selected) && (
                               <>
                                 <button
-                                  className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+                                  className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
                                   onClick={() => { setEditorAgent(selected); setMenuAgent(null); }}
                                 >
                                   <Pencil className="h-3 w-3" />
@@ -363,48 +363,48 @@ export default function AgentsSection({ manualCreateTrigger, onAICreate, onManua
 
             {/* Row 2: Added by */}
             <div className="mb-5">
-              <div className="text-xs text-[var(--abu-text-muted)] mb-0.5">{t.toolbox.skillAddedBy}</div>
-              <div className="text-sm font-medium text-[var(--abu-text-primary)]">{isSystemAgent(selected) ? 'System' : 'User'}</div>
+              <div className="text-xs text-[var(--lingxi-text-muted)] mb-0.5">{t.toolbox.skillAddedBy}</div>
+              <div className="text-sm font-medium text-[var(--lingxi-text-primary)]">{isSystemAgent(selected) ? 'System' : 'User'}</div>
             </div>
 
             {/* Description */}
             <div className="mb-7">
-              <span className="text-xs text-[var(--abu-text-muted)]">Description</span>
-              <p className="text-sm text-[var(--abu-text-primary)] leading-relaxed mt-1.5">{selected.description}</p>
+              <span className="text-xs text-[var(--lingxi-text-muted)]">Description</span>
+              <p className="text-sm text-[var(--lingxi-text-primary)] leading-relaxed mt-1.5">{selected.description}</p>
             </div>
 
             {/* System Prompt content area (hidden for abu — internal prompt) */}
-            {selected.systemPrompt && selected.name !== 'abu' && (
-              <div className="border border-[var(--abu-border)] rounded-lg overflow-hidden">
+            {selected.systemPrompt && selected.name !== 'lingxi' && (
+              <div className="border border-[var(--lingxi-border)] rounded-lg overflow-hidden">
                 {/* Toggle bar */}
-                <div className="flex items-center justify-end gap-1.5 px-4 py-2.5 bg-[var(--abu-bg-base)] border-b border-[var(--abu-border)]">
+                <div className="flex items-center justify-end gap-1.5 px-4 py-2.5 bg-[var(--lingxi-bg-base)] border-b border-[var(--lingxi-border)]">
                   <button
                     onClick={() => setContentViewMode('preview')}
-                    className={`p-1.5 rounded transition-colors ${contentViewMode === 'preview' ? 'text-[var(--abu-text-primary)] bg-[var(--abu-bg-hover)]' : 'text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]'}`}
+                    className={`p-1.5 rounded transition-colors ${contentViewMode === 'preview' ? 'text-[var(--lingxi-text-primary)] bg-[var(--lingxi-bg-hover)]' : 'text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]'}`}
                     title="Preview"
                   >
                     <Eye className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => setContentViewMode('source')}
-                    className={`p-1.5 rounded transition-colors ${contentViewMode === 'source' ? 'text-[var(--abu-text-primary)] bg-[var(--abu-bg-hover)]' : 'text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]'}`}
+                    className={`p-1.5 rounded transition-colors ${contentViewMode === 'source' ? 'text-[var(--lingxi-text-primary)] bg-[var(--lingxi-bg-hover)]' : 'text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]'}`}
                     title="Source"
                   >
                     <Code className="h-4 w-4" />
                   </button>
                 </div>
-                <div className="px-6 py-5 bg-[var(--abu-bg-base)]">
+                <div className="px-6 py-5 bg-[var(--lingxi-bg-base)]">
                   {contentViewMode === 'preview' ? (
                     <MarkdownRenderer content={selected.systemPrompt} />
                   ) : (
-                    <pre className="text-xs text-[var(--abu-text-primary)] whitespace-pre-wrap break-words font-mono leading-relaxed">{selected.systemPrompt}</pre>
+                    <pre className="text-xs text-[var(--lingxi-text-primary)] whitespace-pre-wrap break-words font-mono leading-relaxed">{selected.systemPrompt}</pre>
                   )}
                 </div>
               </div>
             )}
           </div>
         ) : (
-          <div className="flex items-center justify-center h-full text-sm text-[var(--abu-text-muted)]">
+          <div className="flex items-center justify-center h-full text-sm text-[var(--lingxi-text-muted)]">
             {t.toolbox.noAgentsFound}
           </div>
         )}

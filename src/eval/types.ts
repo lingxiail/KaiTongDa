@@ -1,7 +1,7 @@
 /**
  * Agent Eval Framework — Type Definitions
  *
- * Defines the data structures for Abu's multi-layer evaluation system:
+ * Defines the data structures for Lingxi's multi-layer evaluation system:
  * - L2: Tool selection evaluation (single-turn LLM, no tool execution)
  * - L3: End-to-end task completion (multi-turn with sandbox execution)
  * - L4: Output quality judging (LLM-as-Judge)

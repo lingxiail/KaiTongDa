@@ -42,7 +42,7 @@ export interface LLMCallResult {
 /**
  * Make a single-turn LLM call using the user's configured model.
  *
- * This is Abu's equivalent of `claude -p` — a headless, stateless LLM invocation
+ * This is Lingxi's equivalent of `claude -p` — a headless, stateless LLM invocation
  * that any tool or script can use without going through the agent loop.
  */
 export async function llmCall(options: LLMCallOptions): Promise<LLMCallResult> {

@@ -2,7 +2,7 @@
  * Install an agent from a local folder.
  *
  * Validates that the folder contains an AGENT.md with a valid `name` frontmatter field,
- * then recursively copies the entire directory to ~/.abu/agents/{name}/.
+ * then recursively copies the entire directory to ~/.lingxi/agents/{name}/.
  */
 
 import { readTextFile, readDir, readFile, writeFile, mkdir, exists } from '@tauri-apps/plugin-fs';
@@ -15,7 +15,7 @@ export type InstallResult =
   | { ok: false; code: 'NO_AGENT_MD' | 'NO_NAME' | 'ALREADY_EXISTS' | 'COPY_FAILED'; message: string };
 
 /**
- * Install an agent by copying a folder to ~/.abu/agents/{name}/.
+ * Install an agent by copying a folder to ~/.lingxi/agents/{name}/.
  *
  * @param folderPath - Absolute path to the source folder (must contain AGENT.md)
  * @param options    - overwrite: replace existing agent directory
@@ -39,7 +39,7 @@ export async function installAgentFromFolder(
 
   // 3. Determine target directory
   const home = await homeDir();
-  const targetDir = joinPath(home, '.abu', 'agents', name);
+  const targetDir = joinPath(home, '.lingxi', 'agents', name);
 
   // 4. Conflict check
   if (!options?.overwrite && (await exists(targetDir))) {

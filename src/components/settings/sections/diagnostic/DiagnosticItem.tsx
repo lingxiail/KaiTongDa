@@ -19,8 +19,8 @@ const STATUS_COLOR = {
   passed: 'text-emerald-500',
   failed: 'text-red-500',
   warning: 'text-amber-500',
-  skipped: 'text-[var(--abu-text-muted)]',
-  checking: 'text-[var(--abu-clay)]',
+  skipped: 'text-[var(--lingxi-text-muted)]',
+  checking: 'text-[var(--lingxi-clay)]',
 } as const;
 
 function ItemActions({ result }: { result: CheckResult }) {
@@ -53,7 +53,7 @@ function ItemActions({ result }: { result: CheckResult }) {
       {result.suggestedAction && (
         <button
           onClick={() => onAction(result.suggestedAction!)}
-          className="text-[11px] px-2 py-1 rounded-md text-[var(--abu-clay)] hover:bg-[var(--abu-clay-bg)] transition-colors flex items-center gap-1"
+          className="text-[11px] px-2 py-1 rounded-md text-[var(--lingxi-clay)] hover:bg-[var(--lingxi-clay-bg)] transition-colors flex items-center gap-1"
           title={result.suggestedAction.label}
         >
           <ExternalLink className="h-3 w-3" />
@@ -63,14 +63,14 @@ function ItemActions({ result }: { result: CheckResult }) {
       <button
         onClick={() => runItem(result.id)}
         disabled={reRunning}
-        className="p-1 rounded-md text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] transition-colors disabled:opacity-50"
+        className="p-1 rounded-md text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] transition-colors disabled:opacity-50"
         title={t.diagnostic.actionRecheck}
       >
         <RefreshCw className={cn('h-3 w-3', reRunning && 'animate-spin')} />
       </button>
       <button
         onClick={onCopyError}
-        className="p-1 rounded-md text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] transition-colors"
+        className="p-1 rounded-md text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] transition-colors"
         title={t.diagnostic.actionCopyError}
       >
         {copied ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
@@ -91,16 +91,16 @@ export default function DiagnosticItem({ result }: { result: CheckResult }) {
   );
 
   return (
-    <li className="px-4 py-2.5 flex items-start gap-3 hover:bg-[var(--abu-bg-hover)] transition-colors group">
+    <li className="px-4 py-2.5 flex items-start gap-3 hover:bg-[var(--lingxi-bg-hover)] transition-colors group">
       <Icon
         className={cn('h-4 w-4 shrink-0 mt-0.5', STATUS_COLOR[status], status === 'checking' && 'animate-spin')}
         aria-label={status}
       />
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-2 flex-wrap">
-          <span className="text-[13px] text-[var(--abu-text-primary)]">{result.name}</span>
+          <span className="text-[13px] text-[var(--lingxi-text-primary)]">{result.name}</span>
           {result.metric && (
-            <span className="text-[11px] text-[var(--abu-text-muted)] tabular-nums">{result.metric}</span>
+            <span className="text-[11px] text-[var(--lingxi-text-muted)] tabular-nums">{result.metric}</span>
           )}
           {/* Inline friendly error — same row as title to mirror the passed-state
               "name + metric" rhythm. Color shift (primary → red/amber) carries
@@ -120,7 +120,7 @@ export default function DiagnosticItem({ result }: { result: CheckResult }) {
             <button
               type="button"
               onClick={() => setDetailExpanded((v) => !v)}
-              className="mt-1 inline-flex items-center gap-1 text-[11px] text-[var(--abu-text-muted)] hover:text-[var(--abu-text-tertiary)] transition-colors"
+              className="mt-1 inline-flex items-center gap-1 text-[11px] text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-tertiary)] transition-colors"
             >
               {detailExpanded
                 ? <ChevronDown className="h-3 w-3" />
@@ -129,7 +129,7 @@ export default function DiagnosticItem({ result }: { result: CheckResult }) {
               {detailExpanded ? t.diagnostic.detailHide : t.diagnostic.detailShow}
             </button>
             {detailExpanded && (
-              <pre className="mt-1 px-2 py-1.5 rounded text-[11px] font-mono text-[var(--abu-text-tertiary)] bg-[var(--abu-bg-muted)] whitespace-pre-wrap break-all max-h-48 overflow-auto">
+              <pre className="mt-1 px-2 py-1.5 rounded text-[11px] font-mono text-[var(--lingxi-text-tertiary)] bg-[var(--lingxi-bg-muted)] whitespace-pre-wrap break-all max-h-48 overflow-auto">
                 {result.errorDetail}
               </pre>
             )}

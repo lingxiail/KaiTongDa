@@ -45,22 +45,22 @@ export default function PromoteToProjectHint({ workspacePath }: PromoteToProject
 
   return (
     <>
-      <div className="mt-2 mx-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--abu-clay-ring)] bg-[var(--abu-clay-bg)] text-[12px]">
-        <Lightbulb className="h-3.5 w-3.5 shrink-0 text-[var(--abu-clay)]" />
-        <span className="flex-1 truncate text-[var(--abu-text-secondary)]">
+      <div className="mt-2 mx-1 flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--lingxi-clay-ring)] bg-[var(--lingxi-clay-bg)] text-[12px]">
+        <Lightbulb className="h-3.5 w-3.5 shrink-0 text-[var(--lingxi-clay)]" />
+        <span className="flex-1 truncate text-[var(--lingxi-text-secondary)]">
           {format(t.project.hintPromote, { name: folderName })}
         </span>
         <button
           type="button"
           onClick={() => setDialogOpen(true)}
-          className="text-[var(--abu-clay)] hover:text-[var(--abu-clay-hover)] font-semibold px-1.5 py-0.5 rounded hover:bg-white/50 transition-colors"
+          className="text-[var(--lingxi-clay)] hover:text-[var(--lingxi-clay-hover)] font-semibold px-1.5 py-0.5 rounded hover:bg-white/50 transition-colors"
         >
           {t.project.hintPromoteAction}
         </button>
         <button
           type="button"
           onClick={() => dismiss(workspacePath)}
-          className="text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] px-1.5 py-0.5 rounded hover:bg-white/50 transition-colors"
+          className="text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] px-1.5 py-0.5 rounded hover:bg-white/50 transition-colors"
         >
           {t.project.hintPromoteDismiss}
         </button>

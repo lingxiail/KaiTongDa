@@ -1,4 +1,4 @@
-# ABU 官网部署指南
+# 灵犀官网部署指南
 
 ## 目录结构
 
@@ -44,8 +44,8 @@ website/
 
 ## 访问地址
 
-- 仓库：https://github.com/PM-Shawn/Abu-Cowork
-- 官网：部署完成后通过 `https://pm-shawn.github.io/Abu-Cowork/` 访问
+- 仓库：https://github.com/PM-Shawn/Lingxi-Cowork
+- 官网：部署完成后通过 `https://pm-shawn.github.io/Lingxi-Cowork/` 访问
 
 ## 本地预览
 

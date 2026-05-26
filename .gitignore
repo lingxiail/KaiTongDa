@@ -28,12 +28,12 @@ _archive/
 # Claude Code agent workspace
 .agent/
 
-# Other agent tools (local artifacts, not Abu code)
+# Other agent tools (local artifacts, not Lingxi code)
 .agents/
 AGENTS.md
 
 # Local test / E2E notes
-.abu/
+.lingxi/
 
 # Temporary research/reference docs in src-tauri
 src-tauri/*.md

@@ -460,13 +460,13 @@ If you're in Cowork, the main things to know are:
 
 ---
 
-## Abu Desktop Instructions
+## Lingxi Desktop Instructions
 
-You are running inside **Abu (阿布)**, a desktop AI assistant built with Tauri. The core skill creation workflow is the same, but there are critical differences in how you save, test, and optimize skills. **Read this section carefully — ignoring it will produce broken skills.**
+You are running inside **Lingxi (灵犀)**, a desktop AI assistant built with Tauri. The core skill creation workflow is the same, but there are critical differences in how you save, test, and optimize skills. **Read this section carefully — ignoring it will produce broken skills.**
 
 ### SKILL.md Format — YAML Frontmatter is MANDATORY
 
-Every SKILL.md **must** start with YAML frontmatter wrapped in `---` fences. Without it, the skill loader cannot parse the file and the skill will not appear in Abu's skill list.
+Every SKILL.md **must** start with YAML frontmatter wrapped in `---` fences. Without it, the skill loader cannot parse the file and the skill will not appear in Lingxi's skill list.
 
 ```markdown
 ---
@@ -547,7 +547,7 @@ When creating a skill that references a specific library, framework, or technolo
 
 ### Testing Skill Triggering — Use `test_skill_trigger`
 
-Abu has a built-in `test_skill_trigger` tool that replaces `claude -p` based eval. Use it to test whether your skill's description triggers correctly:
+Lingxi has a built-in `test_skill_trigger` tool that replaces `claude -p` based eval. Use it to test whether your skill's description triggers correctly:
 
 ```json
 {
@@ -579,11 +579,11 @@ If trigger test results are poor, use `improve_skill_description` to generate a 
 
 This calls the LLM to produce an improved description based on which queries failed. Update the SKILL.md frontmatter with the improved description, then re-test.
 
-### Eval Pipeline — Adapted for Abu
+### Eval Pipeline — Adapted for Lingxi
 
-Abu has subagents (`delegate_to_agent`) so the eval pipeline works, but with these differences:
+Lingxi has subagents (`delegate_to_agent`) so the eval pipeline works, but with these differences:
 
-- **No `claude -p`**: Use `test_skill_trigger` and `improve_skill_description` tools instead of Python scripts. Do not run `run_eval.py` or `improve_description.py` — they require `claude` CLI which Abu doesn't have.
+- **No `claude -p`**: Use `test_skill_trigger` and `improve_skill_description` tools instead of Python scripts. Do not run `run_eval.py` or `improve_description.py` — they require `claude` CLI which Lingxi doesn't have.
 - **No browser viewer**: Skip `generate_review.py`. Instead, present eval results directly in the conversation. Show each test case's output and ask the user for feedback inline.
 - **Subagent types**: Use `delegate_to_agent` with `type: "executor"` for test runs (has all tools). Use `type: "writer"` for baseline runs.
 - **Description optimization loop**: Call `test_skill_trigger` → check results → call `improve_skill_description` → update SKILL.md → re-test. Repeat 2-3 times or until >90% pass rate.

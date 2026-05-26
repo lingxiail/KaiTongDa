@@ -64,11 +64,11 @@ export default function ExportPanel({ onExportSuccess }: Props) {
   };
 
   return (
-    <section className="border-t border-[var(--abu-border)] pt-6">
-      <h3 className="text-[14px] font-medium text-[var(--abu-text-primary)] mb-1">
+    <section className="border-t border-[var(--lingxi-border)] pt-6">
+      <h3 className="text-[14px] font-medium text-[var(--lingxi-text-primary)] mb-1">
         {t.diagnostic.exportTitle}
       </h3>
-      <p className="text-[12px] text-[var(--abu-text-tertiary)] mb-4">
+      <p className="text-[12px] text-[var(--lingxi-text-tertiary)] mb-4">
         {t.diagnostic.exportDesc}
       </p>
 
@@ -76,13 +76,13 @@ export default function ExportPanel({ onExportSuccess }: Props) {
       <button
         type="button"
         onClick={() => setIncludedExpanded((v) => !v)}
-        className="w-full flex items-center gap-2 py-1.5 text-[12px] text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] transition-colors"
+        className="w-full flex items-center gap-2 py-1.5 text-[12px] text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] transition-colors"
       >
         {includedExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
         <span>{t.diagnostic.exportIncluded}</span>
       </button>
       {includedExpanded && (
-        <div className="mb-2 pl-5 py-2 text-[11px] text-[var(--abu-text-tertiary)] bg-[var(--abu-bg-muted)] rounded-md">
+        <div className="mb-2 pl-5 py-2 text-[11px] text-[var(--lingxi-text-tertiary)] bg-[var(--lingxi-bg-muted)] rounded-md">
           <div className="mb-1 font-medium">{t.diagnostic.exportIncludedListTitle}</div>
           <ul className="font-mono space-y-0.5">
             {BUNDLE_CONTENTS.map((f) => <li key={f}>· {f}</li>)}
@@ -94,20 +94,20 @@ export default function ExportPanel({ onExportSuccess }: Props) {
       <button
         type="button"
         onClick={() => setPrivacyExpanded((v) => !v)}
-        className="w-full flex items-center gap-2 py-1.5 text-[12px] text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] transition-colors"
+        className="w-full flex items-center gap-2 py-1.5 text-[12px] text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] transition-colors"
       >
         {privacyExpanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
         <span>{t.diagnostic.exportPrivacy}</span>
       </button>
       {privacyExpanded && (
-        <div className="mb-2 pl-5 py-2 text-[11px] text-[var(--abu-text-tertiary)] bg-[var(--abu-bg-muted)] rounded-md leading-relaxed">
+        <div className="mb-2 pl-5 py-2 text-[11px] text-[var(--lingxi-text-tertiary)] bg-[var(--lingxi-bg-muted)] rounded-md leading-relaxed">
           {t.diagnostic.exportPrivacyText}
         </div>
       )}
 
       {/* Raw text toggle */}
       <div className="mt-3 flex items-center justify-between py-2">
-        <label htmlFor="diag-include-raw" className="text-[12px] text-[var(--abu-text-secondary)] flex-1">
+        <label htmlFor="diag-include-raw" className="text-[12px] text-[var(--lingxi-text-secondary)] flex-1">
           {t.diagnostic.exportIncludeRaw}
         </label>
         <Toggle
@@ -124,7 +124,7 @@ export default function ExportPanel({ onExportSuccess }: Props) {
         disabled={exportInProgress}
         className={cn(
           'mt-4 w-full py-2.5 rounded-lg text-[14px] font-medium transition-colors flex items-center justify-center gap-2',
-          'bg-[var(--abu-clay)] text-white hover:bg-[var(--abu-clay-hover)] disabled:opacity-50 disabled:cursor-not-allowed'
+          'bg-[var(--lingxi-clay)] text-white hover:bg-[var(--lingxi-clay-hover)] disabled:opacity-50 disabled:cursor-not-allowed'
         )}
       >
         {exportInProgress ? (

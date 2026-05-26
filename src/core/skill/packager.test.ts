@@ -163,10 +163,10 @@ describe('unpackSkill', () => {
       'scripts/run.py': 'print("hello")',
     });
 
-    const result = await unpackSkill(zip, '/home/.abu/skills');
+    const result = await unpackSkill(zip, '/home/.lingxi/skills');
 
     expect(result.name).toBe('test-skill');
-    expect(result.targetDir).toBe('/home/.abu/skills/test-skill');
+    expect(result.targetDir).toBe('/home/.lingxi/skills/test-skill');
     expect(result.files).toContain('SKILL.md');
     expect(result.files).toContain('scripts/run.py');
 
@@ -182,7 +182,7 @@ describe('unpackSkill', () => {
       'my-skill/assets/logo.png': 'PNG_DATA',
     });
 
-    const result = await unpackSkill(zip, '/home/.abu/skills');
+    const result = await unpackSkill(zip, '/home/.lingxi/skills');
 
     expect(result.name).toBe('test-skill');
     expect(result.files).toContain('SKILL.md');
@@ -194,14 +194,14 @@ describe('unpackSkill', () => {
 
     const zip = makeZip({ 'SKILL.md': VALID_SKILL_MD });
 
-    await expect(unpackSkill(zip, '/home/.abu/skills')).rejects.toThrow(ConflictError);
+    await expect(unpackSkill(zip, '/home/.lingxi/skills')).rejects.toThrow(ConflictError);
   });
 
   it('overwrites when overwrite option is set', async () => {
     mockExists.mockResolvedValue(true);
 
     const zip = makeZip({ 'SKILL.md': VALID_SKILL_MD });
-    const result = await unpackSkill(zip, '/home/.abu/skills', { overwrite: true });
+    const result = await unpackSkill(zip, '/home/.lingxi/skills', { overwrite: true });
 
     expect(result.name).toBe('test-skill');
     expect(mockWriteFile).toHaveBeenCalled();
@@ -219,7 +219,7 @@ describe('unpackSkill', () => {
       'node_modules/pkg/index.js': 'module.exports = {}',
     });
 
-    const result = await unpackSkill(zip, '/home/.abu/skills');
+    const result = await unpackSkill(zip, '/home/.lingxi/skills');
 
     expect(result.files).toContain('SKILL.md');
     expect(result.files).toContain('scripts/run.py');
@@ -234,7 +234,7 @@ describe('unpackSkill', () => {
 
 describe('packSkill', () => {
   it('skips .DS_Store, .gitignore, and other dotfiles', async () => {
-    const root = '/home/.abu/skills/test-skill';
+    const root = '/home/.lingxi/skills/test-skill';
     installFakeFs({
       [root]: [file('SKILL.md'), file('.DS_Store'), file('.gitignore'), dir('scripts')],
       [`${root}/scripts`]: [file('run.py')],
@@ -254,7 +254,7 @@ describe('packSkill', () => {
   });
 
   it('skips .git/ and node_modules/ directory trees (never recurses into them)', async () => {
-    const root = '/home/.abu/skills/test-skill';
+    const root = '/home/.lingxi/skills/test-skill';
     installFakeFs({
       [root]: [file('SKILL.md'), dir('.git'), dir('node_modules')],
       [`${root}/SKILL.md`]: VALID_SKILL_MD,
@@ -269,7 +269,7 @@ describe('packSkill', () => {
   });
 
   it('keeps Thumbs.db out of the archive', async () => {
-    const root = '/home/.abu/skills/test-skill';
+    const root = '/home/.lingxi/skills/test-skill';
     installFakeFs({
       [root]: [file('SKILL.md'), file('Thumbs.db')],
       [`${root}/SKILL.md`]: VALID_SKILL_MD,

@@ -110,14 +110,14 @@ export default function PptxPreview({ filePath }: { filePath: string }) {
 
     return (
       <div className="flex flex-col items-center justify-center h-full p-6 text-center gap-3">
-        <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-[var(--abu-bg-hover)]">
-          <Presentation className="w-7 h-7 text-[var(--abu-text-tertiary)]" />
+        <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-[var(--lingxi-bg-hover)]">
+          <Presentation className="w-7 h-7 text-[var(--lingxi-text-tertiary)]" />
         </div>
         <div className="flex flex-col gap-1 max-w-[280px]">
-          <p className="text-[13px] font-medium text-[var(--abu-text-primary)] truncate">
+          <p className="text-[13px] font-medium text-[var(--lingxi-text-primary)] truncate">
             {getBaseName(filePath)}
           </p>
-          <p className="text-[12px] text-[var(--abu-text-tertiary)]">
+          <p className="text-[12px] text-[var(--lingxi-text-tertiary)]">
             {t.panel.pptxPreviewUnavailable}
           </p>
         </div>
@@ -136,11 +136,11 @@ export default function PptxPreview({ filePath }: { filePath: string }) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[var(--abu-bg-hover)]">
+    <div className="flex flex-col h-full bg-[var(--lingxi-bg-hover)]">
       {loading && (
         <div className="flex items-center justify-center h-full">
-          <Loader2 className="w-5 h-5 text-[var(--abu-clay)] animate-spin" />
-          <span className="ml-2 text-[13px] text-[var(--abu-text-tertiary)]">{t.panel.loadingDocument}</span>
+          <Loader2 className="w-5 h-5 text-[var(--lingxi-clay)] animate-spin" />
+          <span className="ml-2 text-[13px] text-[var(--lingxi-text-tertiary)]">{t.panel.loadingDocument}</span>
         </div>
       )}
       <ScrollArea className={`flex-1 min-h-0 ${loading ? 'hidden' : ''}`}>

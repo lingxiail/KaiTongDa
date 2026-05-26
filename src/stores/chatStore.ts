@@ -40,7 +40,7 @@ function sanitizeImportedMessage(msg: Message): Message {
 function buildImportedFromShareBundle(bundle: ShareBundle): { conv: Conversation; meta: ConversationMeta } {
   const newId = generateId();
   const importedFrom = {
-    schemaVersion: bundle.schema.abuShareVersion,
+    schemaVersion: bundle.schema.lingxiShareVersion,
     importedAt: Date.now(),
   };
   const conv: Conversation = {
@@ -718,7 +718,7 @@ export const useChatStore = create<ChatStore>()(
         // We *want* this to be ephemeral. Reasons (see proposalSignal.ts
         // module docstring):
         //   1. Avoid stale signals firing days later after the user
-        //      already moved on ("why is Abu suddenly asking about a
+        //      already moved on ("why is Lingxi suddenly asking about a
         //      task I did last Tuesday?").
         //   2. Avoid signals computed under one proactivity preset
         //      firing under a different preset (user dialed from
@@ -1063,7 +1063,7 @@ export const useChatStore = create<ChatStore>()(
       //
       // Accepts two payload shapes, auto-dispatched by inspecting the parsed
       // structure:
-      //   1. Share bundle (`schema.abuShareVersion === 1`) — built by
+      //   1. Share bundle (`schema.lingxiShareVersion === 1`) — built by
       //      `exportConversationForShare`. Produces a read-only conversation
       //      with external references stripped and an `importedFrom` stamp.
       //   2. Raw conversation JSON (legacy, used by the undo-delete flow via
@@ -1076,7 +1076,7 @@ export const useChatStore = create<ChatStore>()(
           if (
             parsed &&
             typeof parsed === 'object' &&
-            (parsed as { schema?: { abuShareVersion?: unknown } }).schema?.abuShareVersion === 1
+            (parsed as { schema?: { lingxiShareVersion?: unknown } }).schema?.lingxiShareVersion === 1
           ) {
             const bundle = parsed as ShareBundle;
             if (!Array.isArray(bundle.messages) || !bundle.conversation) return null;
@@ -1275,7 +1275,7 @@ export const useChatStore = create<ChatStore>()(
       },
     })),
     {
-      name: 'abu-chat',
+      name: 'lingxi-chat',
       version: 5,
       migrate: (persisted, version) => {
         const state = persisted as Record<string, unknown>;

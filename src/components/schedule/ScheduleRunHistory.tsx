@@ -30,7 +30,7 @@ export default function ScheduleRunHistory({ runs }: Props) {
 
   if (runs.length === 0) {
     return (
-      <div className="px-4 py-3 text-[12px] text-[var(--abu-text-tertiary)]">
+      <div className="px-4 py-3 text-[12px] text-[var(--lingxi-text-tertiary)]">
         {t.schedule.noRuns}
       </div>
     );
@@ -41,7 +41,7 @@ export default function ScheduleRunHistory({ runs }: Props) {
       {runs.map((run) => (
         <div
           key={run.id}
-          className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[var(--abu-bg-muted)] transition-colors"
+          className="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-[var(--lingxi-bg-muted)] transition-colors"
         >
           {/* Status dot */}
           <span
@@ -56,7 +56,7 @@ export default function ScheduleRunHistory({ runs }: Props) {
           {/* Start / End times + status */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-[var(--abu-text-secondary)]">
+              <span className="text-[11px] text-[var(--lingxi-text-secondary)]">
                 {t.schedule.startedAtLabel} {formatDateTime(run.startedAt)}
               </span>
               <span
@@ -73,7 +73,7 @@ export default function ScheduleRunHistory({ runs }: Props) {
               </span>
             </div>
             {run.completedAt && (
-              <div className="text-[11px] text-[var(--abu-text-tertiary)]">
+              <div className="text-[11px] text-[var(--lingxi-text-tertiary)]">
                 {t.schedule.completedAtLabel} {formatDateTime(run.completedAt)}
               </div>
             )}
@@ -83,7 +83,7 @@ export default function ScheduleRunHistory({ runs }: Props) {
           {conversationIndex[run.conversationId] && (
             <button
               onClick={() => handleViewConversation(run.conversationId)}
-              className="text-[var(--abu-text-tertiary)] hover:text-[var(--abu-clay)] p-0.5 shrink-0"
+              className="text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-clay)] p-0.5 shrink-0"
               title={t.schedule.viewConversation}
             >
               <ExternalLink className="h-3 w-3" />

@@ -65,7 +65,7 @@ export default function ShareExportDialog({ convId, defaultFilename, onClose }: 
     try {
       const filePath = await saveDialog({
         defaultPath: defaultFilename,
-        filters: [{ name: 'Abu Conversation', extensions: ['json'] }],
+        filters: [{ name: 'Lingxi Conversation', extensions: ['json'] }],
       });
       if (filePath) {
         await writeTextFile(filePath, serializeShareBundle(state.bundle));
@@ -87,18 +87,18 @@ export default function ShareExportDialog({ convId, defaultFilename, onClose }: 
     >
       <div className="bg-white rounded-2xl shadow-xl w-[760px] max-h-[85vh] flex flex-col animate-in zoom-in-95 duration-150">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-[var(--abu-border)]">
+        <div className="flex items-center justify-between px-6 pt-5 pb-3 border-b border-[var(--lingxi-border)]">
           <div>
-            <h3 className="text-[16px] font-semibold text-[var(--abu-text-primary)]">
+            <h3 className="text-[16px] font-semibold text-[var(--lingxi-text-primary)]">
               {t.share.exportDialogTitle}
             </h3>
-            <p className="text-[12px] text-[var(--abu-text-tertiary)] mt-0.5">
+            <p className="text-[12px] text-[var(--lingxi-text-tertiary)] mt-0.5">
               {t.share.tierStandard} — {t.share.tierNote}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-md hover:bg-[var(--abu-bg-hover)] text-[var(--abu-text-tertiary)]"
+            className="p-1 rounded-md hover:bg-[var(--lingxi-bg-hover)] text-[var(--lingxi-text-tertiary)]"
             aria-label="close"
           >
             <X className="h-4 w-4" />
@@ -108,7 +108,7 @@ export default function ShareExportDialog({ convId, defaultFilename, onClose }: 
         {/* Body */}
         <div className="flex-1 overflow-y-auto px-6 py-4">
           {state.phase === 'loading' && (
-            <div className="text-[13px] text-[var(--abu-text-tertiary)] py-8 text-center">
+            <div className="text-[13px] text-[var(--lingxi-text-tertiary)] py-8 text-center">
               {t.share.loading}
             </div>
           )}
@@ -121,8 +121,8 @@ export default function ShareExportDialog({ convId, defaultFilename, onClose }: 
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between px-6 py-3 border-t border-[var(--abu-border)]">
-          <div className="text-[12px] text-[var(--abu-text-tertiary)]">
+        <div className="flex items-center justify-between px-6 py-3 border-t border-[var(--lingxi-border)]">
+          <div className="text-[12px] text-[var(--lingxi-text-tertiary)]">
             {state.phase === 'ready' && (
               <StatsLine bundle={state.bundle} />
             )}
@@ -130,14 +130,14 @@ export default function ShareExportDialog({ convId, defaultFilename, onClose }: 
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              className="px-3 py-1.5 rounded-md text-[13px] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)]"
+              className="px-3 py-1.5 rounded-md text-[13px] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)]"
             >
               {t.share.cancel}
             </button>
             <button
               onClick={handleExport}
               disabled={state.phase !== 'ready' || exporting}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--abu-clay)] text-white text-[13px] hover:bg-[var(--abu-clay-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[var(--lingxi-clay)] text-white text-[13px] hover:bg-[var(--lingxi-clay-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Download className="h-3.5 w-3.5" />
               {t.share.exportBtn}
@@ -159,22 +159,22 @@ function BundlePreview({ bundle }: { bundle: ShareBundle }) {
     <div className="flex flex-col gap-4">
       {/* Visibility summary */}
       <section className="grid grid-cols-2 gap-3">
-        <div className="rounded-lg border border-[var(--abu-border)] p-3">
-          <div className="flex items-center gap-1.5 mb-2 text-[13px] font-medium text-[var(--abu-text-primary)]">
+        <div className="rounded-lg border border-[var(--lingxi-border)] p-3">
+          <div className="flex items-center gap-1.5 mb-2 text-[13px] font-medium text-[var(--lingxi-text-primary)]">
             <Eye className="h-3.5 w-3.5 text-emerald-600" />
             {t.share.visibleToOthers}
           </div>
-          <ul className="space-y-1 text-[12px] text-[var(--abu-text-secondary)]">
+          <ul className="space-y-1 text-[12px] text-[var(--lingxi-text-secondary)]">
             <li>✅ {t.share.itemMessages}</li>
             <li>✅ {t.share.itemToolCalls}</li>
           </ul>
         </div>
-        <div className="rounded-lg border border-[var(--abu-border)] p-3">
-          <div className="flex items-center gap-1.5 mb-2 text-[13px] font-medium text-[var(--abu-text-primary)]">
-            <EyeOff className="h-3.5 w-3.5 text-[var(--abu-text-tertiary)]" />
+        <div className="rounded-lg border border-[var(--lingxi-border)] p-3">
+          <div className="flex items-center gap-1.5 mb-2 text-[13px] font-medium text-[var(--lingxi-text-primary)]">
+            <EyeOff className="h-3.5 w-3.5 text-[var(--lingxi-text-tertiary)]" />
             {t.share.hiddenFromOthers}
           </div>
-          <ul className="space-y-1 text-[12px] text-[var(--abu-text-secondary)]">
+          <ul className="space-y-1 text-[12px] text-[var(--lingxi-text-secondary)]">
             <li>❌ {t.share.itemUserFiles}</li>
             <li>❌ {t.share.itemCredentials}</li>
             <li>❌ {t.share.itemAiGenerated}</li>
@@ -183,20 +183,20 @@ function BundlePreview({ bundle }: { bundle: ShareBundle }) {
       </section>
 
       {/* Redaction summary */}
-      <section className="rounded-lg border border-[var(--abu-border)] p-3">
-        <div className="flex items-center gap-1.5 mb-2 text-[13px] font-medium text-[var(--abu-text-primary)]">
+      <section className="rounded-lg border border-[var(--lingxi-border)] p-3">
+        <div className="flex items-center gap-1.5 mb-2 text-[13px] font-medium text-[var(--lingxi-text-primary)]">
           <ShieldAlert className="h-3.5 w-3.5 text-amber-600" />
           {t.share.redactionTitle}
           {bundle.stats.redactionCount > 0 && (
-            <span className="text-[12px] text-[var(--abu-text-tertiary)] ml-1">
+            <span className="text-[12px] text-[var(--lingxi-text-tertiary)] ml-1">
               · {format(t.share.redactionCount, { count: bundle.stats.redactionCount })}
             </span>
           )}
         </div>
         {bundle.stats.redactionCount === 0 ? (
-          <p className="text-[12px] text-[var(--abu-text-tertiary)]">{t.share.noRedaction}</p>
+          <p className="text-[12px] text-[var(--lingxi-text-tertiary)]">{t.share.noRedaction}</p>
         ) : (
-          <ul className="space-y-0.5 text-[12px] text-[var(--abu-text-secondary)] font-mono">
+          <ul className="space-y-0.5 text-[12px] text-[var(--lingxi-text-secondary)] font-mono">
             {summarizeRedactionKinds(bundle).map((line) => (
               <li key={line}>• {line}</li>
             ))}
@@ -205,22 +205,22 @@ function BundlePreview({ bundle }: { bundle: ShareBundle }) {
       </section>
 
       {/* Message preview — mirrors ChatView's bubble layout (user right, assistant
-          left with Abu avatar) so the recipient sees the same visual they would
+          left with Lingxi avatar) so the recipient sees the same visual they would
           in a live conversation. */}
-      <section className="rounded-lg border border-[var(--abu-border)] p-3">
-        <div className="flex items-center gap-1.5 mb-3 text-[13px] font-medium text-[var(--abu-text-primary)]">
-          <MessageSquare className="h-3.5 w-3.5 text-[var(--abu-clay)]" />
+      <section className="rounded-lg border border-[var(--lingxi-border)] p-3">
+        <div className="flex items-center gap-1.5 mb-3 text-[13px] font-medium text-[var(--lingxi-text-primary)]">
+          <MessageSquare className="h-3.5 w-3.5 text-[var(--lingxi-clay)]" />
           {t.share.previewTitle}
         </div>
         {bundle.messages.length === 0 ? (
-          <p className="text-[12px] text-[var(--abu-text-tertiary)]">{t.share.previewEmpty}</p>
+          <p className="text-[12px] text-[var(--lingxi-text-tertiary)]">{t.share.previewEmpty}</p>
         ) : (
-          <div className="flex flex-col gap-4 max-h-[420px] overflow-y-auto px-3 py-3 bg-[var(--abu-bg-base)] rounded-md">
+          <div className="flex flex-col gap-4 max-h-[420px] overflow-y-auto px-3 py-3 bg-[var(--lingxi-bg-base)] rounded-md">
             {bundle.messages.slice(0, 50).map((msg) => (
               <SharePreviewMessage key={msg.id} message={msg} />
             ))}
             {bundle.messages.length > 50 && (
-              <p className="text-[11px] text-[var(--abu-text-muted)] text-center pt-1">
+              <p className="text-[11px] text-[var(--lingxi-text-muted)] text-center pt-1">
                 … {bundle.messages.length - 50} more
               </p>
             )}
@@ -254,7 +254,7 @@ function SharePreviewMessage({ message }: { message: Message }) {
             <AttachmentSummary imageCount={imageCount} otherCount={otherCount} align="right" />
           )}
           {truncated && (
-            <div className="px-4 py-2.5 rounded-2xl rounded-br-sm bg-[var(--abu-bg-active)] text-[var(--abu-text-primary)]">
+            <div className="px-4 py-2.5 rounded-2xl rounded-br-sm bg-[var(--lingxi-bg-active)] text-[var(--lingxi-text-primary)]">
               <div className="text-[14.5px] leading-relaxed break-words">
                 <MarkdownRenderer content={truncated} variant="user" />
               </div>
@@ -265,7 +265,7 @@ function SharePreviewMessage({ message }: { message: Message }) {
     );
   }
 
-  // Assistant / system — left-aligned with Abu avatar.
+  // Assistant / system — left-aligned with Lingxi avatar.
   return (
     <div className="flex gap-3 w-full">
       <img src={abuAvatar} alt="" className="h-7 w-7 rounded-full shrink-0 mt-1 object-cover" />
@@ -274,7 +274,7 @@ function SharePreviewMessage({ message }: { message: Message }) {
           <ToolCallPreviewCard key={tc.id ?? `${tc.name}-${i}`} toolCall={tc} />
         ))}
         {truncated && (
-          <div className="text-[14.5px] leading-relaxed text-[var(--abu-text-primary)] break-words">
+          <div className="text-[14.5px] leading-relaxed text-[var(--lingxi-text-primary)] break-words">
             <MarkdownRenderer content={truncated} variant="assistant" />
           </div>
         )}
@@ -297,7 +297,7 @@ function AttachmentSummary({
 }) {
   return (
     <div
-      className={`flex gap-2 text-[11px] text-[var(--abu-text-tertiary)] ${align === 'right' ? 'justify-end' : 'justify-start'}`}
+      className={`flex gap-2 text-[11px] text-[var(--lingxi-text-tertiary)] ${align === 'right' ? 'justify-end' : 'justify-start'}`}
     >
       {imageCount > 0 && <span>🖼️ × {imageCount}</span>}
       {otherCount > 0 && <span>📄 × {otherCount}</span>}
@@ -317,16 +317,16 @@ function ToolCallPreviewCard({ toolCall }: { toolCall: ToolCall }) {
       : null;
 
   return (
-    <div className="rounded-lg border border-[var(--abu-border)] bg-[var(--abu-bg-subtle)] px-3 py-2 text-[13px]">
-      <div className="flex items-center gap-1.5 font-medium text-[var(--abu-text-secondary)]">
-        <Wrench className="h-3.5 w-3.5 text-[var(--abu-clay)]" />
+    <div className="rounded-lg border border-[var(--lingxi-border)] bg-[var(--lingxi-bg-subtle)] px-3 py-2 text-[13px]">
+      <div className="flex items-center gap-1.5 font-medium text-[var(--lingxi-text-secondary)]">
+        <Wrench className="h-3.5 w-3.5 text-[var(--lingxi-clay)]" />
         <span>{t.task.calledTool}</span>
-        <code className="font-mono text-[12px] px-1.5 py-0.5 rounded bg-white text-[var(--abu-text-primary)]">
+        <code className="font-mono text-[12px] px-1.5 py-0.5 rounded bg-white text-[var(--lingxi-text-primary)]">
           {toolCall.name}
         </code>
       </div>
       {resultSnippet && (
-        <div className="mt-1.5 pl-5 text-[12px] text-[var(--abu-text-tertiary)] font-mono whitespace-pre-wrap break-words max-h-24 overflow-hidden">
+        <div className="mt-1.5 pl-5 text-[12px] text-[var(--lingxi-text-tertiary)] font-mono whitespace-pre-wrap break-words max-h-24 overflow-hidden">
           {resultSnippet}
         </div>
       )}

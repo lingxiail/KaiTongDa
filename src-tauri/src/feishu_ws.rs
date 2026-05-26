@@ -1,6 +1,6 @@
 //! Feishu WebSocket long connection client.
 //!
-//! Establishes an outbound WSS connection to Feishu's servers so that Abu
+//! Establishes an outbound WSS connection to Feishu's servers so that Lingxi
 //! can receive IM events without requiring a public IP or ngrok tunnel.
 //!
 //! Protocol:

@@ -2,7 +2,7 @@
  * Memory age helpers — recency signal that replaces accessCount.
  *
  * Aligned with Claude Code's memoryAge.ts but tuned for desktop/office users:
- * Abu users' memories (preferences, project facts) age slower than CC's
+ * Lingxi users' memories (preferences, project facts) age slower than CC's
  * code-related memories, so the staleness threshold is 60 days here vs CC's 1 day.
  */
 

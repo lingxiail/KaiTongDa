@@ -65,12 +65,12 @@ export default function DiagnosticSection() {
     <div className="space-y-6 max-w-3xl">
       {/* Section header */}
       <div className="flex items-start gap-3">
-        <div className="h-10 w-10 rounded-xl bg-[var(--abu-clay-bg)] flex items-center justify-center shrink-0">
-          <Activity className="h-5 w-5 text-[var(--abu-clay)]" />
+        <div className="h-10 w-10 rounded-xl bg-[var(--lingxi-clay-bg)] flex items-center justify-center shrink-0">
+          <Activity className="h-5 w-5 text-[var(--lingxi-clay)]" />
         </div>
         <div className="flex-1 min-w-0 pt-0.5">
-          <h2 className="text-[16px] font-semibold text-[var(--abu-text-primary)]">{t.diagnostic.title}</h2>
-          <p className="text-[12px] text-[var(--abu-text-tertiary)] mt-0.5 leading-relaxed">
+          <h2 className="text-[16px] font-semibold text-[var(--lingxi-text-primary)]">{t.diagnostic.title}</h2>
+          <p className="text-[12px] text-[var(--lingxi-text-tertiary)] mt-0.5 leading-relaxed">
             {t.diagnostic.desc}
           </p>
         </div>

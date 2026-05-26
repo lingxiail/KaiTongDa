@@ -2,7 +2,7 @@
  * Trigger System Types
  *
  * Triggers are event-driven automation tasks.
- * When an external event occurs, Abu automatically executes the configured action.
+ * When an external event occurs, Lingxi automatically executes the configured action.
  */
 
 import type { IMReplyContext } from './im';

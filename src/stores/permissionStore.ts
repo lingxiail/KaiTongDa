@@ -174,7 +174,7 @@ export const usePermissionStore = create<PermissionStore>()(
       },
     })),
     {
-      name: 'abu-permissions',
+      name: 'lingxi-permissions',
       version: 1,
       // Only persist the persistedGrants, not sessionGrants or pendingRequest
       partialize: (state) => ({

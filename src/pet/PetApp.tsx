@@ -35,7 +35,7 @@ export default function PetApp() {
     >
       <img
         src={abuAvatar}
-        alt="Abu"
+        alt="Lingxi"
         draggable={false}
         style={{
           width: '100%',

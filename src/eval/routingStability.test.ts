@@ -37,7 +37,7 @@ import { routeInput } from '@/core/agent/orchestrator';
 import routingCases from './datasets/routing-cases.json';
 
 // ── Default mock values ──
-const DEFAULT_ABU = { name: 'abu', systemPrompt: '', description: '' };
+const DEFAULT_ABU = { name: 'lingxi', systemPrompt: '', description: '' };
 const DEFAULT_SETTINGS = { disabledSkills: [], disabledAgents: [] };
 
 beforeEach(() => {
@@ -70,7 +70,7 @@ describe('routeInput — general routing', () => {
     for (const { input, expectedType } of routingCases) {
       if (expectedType !== 'general') continue;
       const result = routeInput(input);
-      expect(result.name).toBe('abu');
+      expect(result.name).toBe('lingxi');
     }
   });
 });

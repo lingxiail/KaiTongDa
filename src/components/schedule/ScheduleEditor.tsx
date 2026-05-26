@@ -157,13 +157,13 @@ export default function ScheduleEditor() {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onMouseDown={(e) => { if (e.target === e.currentTarget) closeEditor(); }}>
       <div className="bg-white rounded-2xl shadow-xl w-[480px] max-h-[85vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--abu-bg-active)] shrink-0">
-          <h2 className="text-[16px] font-semibold text-[var(--abu-text-primary)]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--lingxi-bg-active)] shrink-0">
+          <h2 className="text-[16px] font-semibold text-[var(--lingxi-text-primary)]">
             {editingTaskId ? t.schedule.editTask : t.schedule.newTask}
           </h2>
           <button
             onClick={closeEditor}
-            className="p-1.5 rounded-lg text-[var(--abu-text-muted)] hover:text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)] transition-colors"
+            className="p-1.5 rounded-lg text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)] transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
@@ -173,7 +173,7 @@ export default function ScheduleEditor() {
         <div className="px-6 py-4 space-y-4 overflow-auto flex-1">
           {/* Task name */}
           <div>
-            <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               {t.schedule.taskName}
             </label>
             <input
@@ -181,13 +181,13 @@ export default function ScheduleEditor() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t.schedule.taskNamePlaceholder}
-              className="w-full h-10 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+              className="w-full h-10 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
             />
           </div>
 
           {/* Task description */}
           <div>
-            <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               {t.schedule.description}
             </label>
             <textarea
@@ -195,13 +195,13 @@ export default function ScheduleEditor() {
               onChange={(e) => setDescription(e.target.value)}
               placeholder={t.schedule.descriptionPlaceholder}
               rows={2}
-              className="w-full px-3 py-2 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)] resize-none"
+              className="w-full px-3 py-2 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)] resize-none"
             />
           </div>
 
           {/* Task prompt */}
           <div>
-            <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               {t.schedule.taskPrompt}
             </label>
             <textarea
@@ -209,13 +209,13 @@ export default function ScheduleEditor() {
               onChange={(e) => setPrompt(e.target.value)}
               placeholder={t.schedule.taskPromptPlaceholder}
               rows={4}
-              className="w-full px-3 py-2 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)] resize-none"
+              className="w-full px-3 py-2 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)] resize-none"
             />
           </div>
 
           {/* Frequency selector */}
           <div>
-            <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               {t.schedule.frequency}
             </label>
             <div className="flex flex-wrap gap-1.5">
@@ -226,8 +226,8 @@ export default function ScheduleEditor() {
                   className={cn(
                     'px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors',
                     frequency === freq
-                      ? 'bg-[var(--abu-clay)] text-white'
-                      : 'bg-[var(--abu-bg-muted)] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)]'
+                      ? 'bg-[var(--lingxi-clay)] text-white'
+                      : 'bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)]'
                   )}
                 >
                   {frequencyLabels[freq]}
@@ -239,7 +239,7 @@ export default function ScheduleEditor() {
           {/* Time selector */}
           {showTimeSelector && (
             <div>
-              <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+              <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                 {frequency === 'hourly' ? t.schedule.minuteOfHour : t.schedule.executionTime}
               </label>
               <div className="flex items-center gap-2">
@@ -254,7 +254,7 @@ export default function ScheduleEditor() {
                       }))}
                       className="w-20"
                     />
-                    <span className="text-[var(--abu-text-tertiary)]">:</span>
+                    <span className="text-[var(--lingxi-text-tertiary)]">:</span>
                   </>
                 )}
                 <Select
@@ -273,7 +273,7 @@ export default function ScheduleEditor() {
           {/* Day of week selector */}
           {showDaySelector && (
             <div>
-              <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+              <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                 {t.schedule.dayOfWeek}
               </label>
               <div className="flex flex-wrap gap-1.5">
@@ -284,8 +284,8 @@ export default function ScheduleEditor() {
                     className={cn(
                       'px-3 py-1.5 rounded-lg text-[12px] font-medium transition-colors',
                       dayOfWeek === idx
-                        ? 'bg-[var(--abu-clay)] text-white'
-                        : 'bg-[var(--abu-bg-muted)] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)]'
+                        ? 'bg-[var(--lingxi-clay)] text-white'
+                        : 'bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)]'
                     )}
                   >
                     {label}
@@ -298,7 +298,7 @@ export default function ScheduleEditor() {
           {/* Skill binding */}
           {skills.length > 0 && (
             <div>
-              <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+              <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                 {t.schedule.bindSkill}
               </label>
               <Select
@@ -318,7 +318,7 @@ export default function ScheduleEditor() {
           {/* Project selector */}
           {activeProjects.length > 0 && (
             <div>
-              <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+              <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
                 {t.project.projectLabel}
               </label>
               <Select
@@ -344,7 +344,7 @@ export default function ScheduleEditor() {
 
           {/* Workspace path */}
           <div>
-            <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               {t.schedule.workspacePath}
             </label>
             <input
@@ -354,7 +354,7 @@ export default function ScheduleEditor() {
               placeholder={t.schedule.workspacePathPlaceholder}
               disabled={!!projectId}
               className={cn(
-                'w-full h-10 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]',
+                'w-full h-10 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]',
                 projectId && 'opacity-60 cursor-not-allowed'
               )}
             />
@@ -362,7 +362,7 @@ export default function ScheduleEditor() {
 
           {/* Output to IM channel */}
           <div>
-            <label className="block text-[13px] font-medium text-[var(--abu-text-primary)] mb-1.5">
+            <label className="block text-[13px] font-medium text-[var(--lingxi-text-primary)] mb-1.5">
               {t.schedule.outputChannel}
             </label>
             <Select
@@ -377,27 +377,27 @@ export default function ScheduleEditor() {
                 })),
               ]}
             />
-            <p className="text-[11px] text-[var(--abu-text-muted)] mt-1">{t.schedule.outputChannelHint}</p>
+            <p className="text-[11px] text-[var(--lingxi-text-muted)] mt-1">{t.schedule.outputChannelHint}</p>
             {outputChannelId && (
               <div className="space-y-2 mt-2">
                 <div>
-                  <label className="block text-[12px] text-[var(--abu-text-tertiary)] mb-1">{t.schedule.outputToGroup}</label>
+                  <label className="block text-[12px] text-[var(--lingxi-text-tertiary)] mb-1">{t.schedule.outputToGroup}</label>
                   <input
                     type="text"
                     value={outputChatIds}
                     onChange={(e) => setOutputChatIds(e.target.value)}
                     placeholder={t.schedule.outputChatIdPlaceholder}
-                    className="w-full h-9 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                    className="w-full h-9 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[12px] text-[var(--abu-text-tertiary)] mb-1">{t.schedule.outputToDM}</label>
+                  <label className="block text-[12px] text-[var(--lingxi-text-tertiary)] mb-1">{t.schedule.outputToDM}</label>
                   <input
                     type="text"
                     value={outputUserIds}
                     onChange={(e) => setOutputUserIds(e.target.value)}
                     placeholder={t.schedule.outputUserIdPlaceholder}
-                    className="w-full h-9 px-3 bg-[var(--abu-bg-base)] border border-[var(--abu-border)] rounded-lg text-sm text-[var(--abu-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--abu-clay-ring)] focus:border-[var(--abu-clay)]"
+                    className="w-full h-9 px-3 bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)] rounded-lg text-sm text-[var(--lingxi-text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--lingxi-clay-ring)] focus:border-[var(--lingxi-clay)]"
                   />
                 </div>
               </div>
@@ -406,10 +406,10 @@ export default function ScheduleEditor() {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[var(--abu-bg-active)] shrink-0">
+        <div className="flex items-center justify-end gap-2 px-6 py-4 border-t border-[var(--lingxi-bg-active)] shrink-0">
           <button
             onClick={closeEditor}
-            className="px-4 py-2 rounded-lg text-[13px] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+            className="px-4 py-2 rounded-lg text-[13px] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
           >
             {t.common.cancel}
           </button>
@@ -419,8 +419,8 @@ export default function ScheduleEditor() {
             className={cn(
               'px-4 py-2 rounded-lg text-[13px] font-medium transition-colors',
               name.trim() && prompt.trim()
-                ? 'bg-[var(--abu-clay)] text-white hover:bg-[var(--abu-clay-hover)]'
-                : 'bg-[var(--abu-border)] text-[var(--abu-text-tertiary)] cursor-not-allowed'
+                ? 'bg-[var(--lingxi-clay)] text-white hover:bg-[var(--lingxi-clay-hover)]'
+                : 'bg-[var(--lingxi-border)] text-[var(--lingxi-text-tertiary)] cursor-not-allowed'
             )}
           >
             {t.common.save}

@@ -2,7 +2,7 @@
  * Skill modification history — append-only log per skill.
  *
  * Goal: let users see what an AI agent changed in a skill and revert
- * with one click. Non-technical users (Abu's main audience) can't fall
+ * with one click. Non-technical users (Lingxi's main audience) can't fall
  * back to git — this module provides the product-level audit trail.
  *
  * Storage model

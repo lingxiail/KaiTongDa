@@ -51,7 +51,7 @@ export default function TriggerCard({ trigger }: Props) {
   return (
     <div
       onClick={handleCardClick}
-      className="bg-[var(--abu-bg-muted)] rounded-xl border border-[var(--abu-border)] px-4 py-3 cursor-pointer hover:border-[var(--abu-border-hover)] transition-all group"
+      className="bg-[var(--lingxi-bg-muted)] rounded-xl border border-[var(--lingxi-border)] px-4 py-3 cursor-pointer hover:border-[var(--lingxi-border-hover)] transition-all group"
     >
       <div className="flex items-center gap-3">
         {/* Left: status dot + info */}
@@ -63,17 +63,17 @@ export default function TriggerCard({ trigger }: Props) {
                 isPaused ? 'bg-neutral-300' : 'bg-green-500'
               )}
             />
-            <span className="text-[14px] font-medium text-[var(--abu-text-primary)] truncate">
+            <span className="text-[14px] font-medium text-[var(--lingxi-text-primary)] truncate">
               {trigger.name}
             </span>
           </div>
-          <div className="flex items-center gap-3 text-[12px] text-[var(--abu-text-tertiary)] pl-4">
+          <div className="flex items-center gap-3 text-[12px] text-[var(--lingxi-text-tertiary)] pl-4">
             <span className="flex items-center gap-1">
               <Zap className="h-3 w-3" />
               {getFilterDescription(trigger, t.trigger)}
             </span>
             {trigger.output?.enabled && (
-              <span className="flex items-center gap-0.5 text-[var(--abu-clay)]">
+              <span className="flex items-center gap-0.5 text-[var(--lingxi-clay)]">
                 <Send className="h-3 w-3" />
                 {t.trigger.outputEnabled}
               </span>

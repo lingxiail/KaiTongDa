@@ -62,10 +62,10 @@ vi.mock('../core/agent/orchestrator', () => ({
   routeInput: vi.fn().mockImplementation((input: string) => ({
     type: 'general',
     cleanInput: input,
-    name: 'abu',
+    name: 'lingxi',
   })),
   buildSystemPromptSections: vi.fn().mockResolvedValue([
-    { name: 'base', text: 'You are Abu', cacheable: true },
+    { name: 'base', text: 'You are Lingxi', cacheable: true },
   ]),
 }));
 

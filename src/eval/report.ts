@@ -117,7 +117,7 @@ export function saveReport(report: EvalReport): string {
 export function printReport(report: EvalReport): void {
   const line = '─'.repeat(60);
   console.log(`\n${line}`);
-  console.log(`  Abu Agent Eval Report`);
+  console.log(`  Lingxi Agent Eval Report`);
   console.log(`  Dataset: ${report.metadata.dataset} (${report.metadata.totalCases} cases)`);
   console.log(`  Time: ${report.metadata.timestamp}`);
   console.log(line);

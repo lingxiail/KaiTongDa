@@ -133,7 +133,7 @@ describe('parseInboundMessage', () => {
     it('parses text message', () => {
       const msg = parseInboundMessage('wecom', {
         MsgType: 'text',
-        Content: '@Abu 检查服务状态',
+        Content: '@Lingxi 检查服务状态',
         From: { UserId: 'wx_user1', Name: '王五' },
         ChatId: 'chat_group1',
       });

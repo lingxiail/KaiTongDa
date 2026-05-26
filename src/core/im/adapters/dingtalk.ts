@@ -5,7 +5,7 @@
  */
 
 import { BaseAdapter } from './base';
-import type { AdapterConfig, AbuMessage } from './types';
+import type { AdapterConfig, LingxiMessage } from './types';
 
 export class DingtalkAdapter extends BaseAdapter {
   readonly config: AdapterConfig = {
@@ -17,8 +17,8 @@ export class DingtalkAdapter extends BaseAdapter {
     supportsCard: false,
   };
 
-  formatOutbound(message: AbuMessage): unknown {
-    const title = message.title ?? 'Abu AI';
+  formatOutbound(message: LingxiMessage): unknown {
+    const title = message.title ?? 'Lingxi AI';
     let text = message.title ? `### ${message.title}\n\n` : '';
     text += message.content;
     if (message.footer) text += `\n\n---\n${message.footer}`;

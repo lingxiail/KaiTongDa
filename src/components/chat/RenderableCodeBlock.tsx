@@ -300,7 +300,7 @@ export default function RenderableCodeBlock({
     <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-white to-transparent flex items-end justify-center pb-2">
       <button
         onClick={() => setExpanded(true)}
-        className="flex items-center gap-1 px-3 py-1 rounded-full bg-black/5 hover:bg-black/10 text-xs text-[var(--abu-text-muted)] transition-colors"
+        className="flex items-center gap-1 px-3 py-1 rounded-full bg-black/5 hover:bg-black/10 text-xs text-[var(--lingxi-text-muted)] transition-colors"
       >
         <ChevronDown className="h-3.5 w-3.5" />
         {config.i18n.expand}
@@ -311,7 +311,7 @@ export default function RenderableCodeBlock({
   const collapseButton = overflows && expanded && (
     <button
       onClick={() => setExpanded(false)}
-      className="flex items-center gap-0.5 text-xs text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] transition-colors"
+      className="flex items-center gap-0.5 text-xs text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] transition-colors"
     >
       <ChevronUp className="h-3.5 w-3.5" />
       {config.i18n.collapse}
@@ -320,27 +320,27 @@ export default function RenderableCodeBlock({
 
   const loadingOverlay = isLoading && (seamless ? (
     // Skeleton placeholder for seamless mode — pulse animation instead of blank white
-    <div className="rounded-lg bg-[var(--abu-bg-muted)] p-5 space-y-3 animate-pulse">
-      <div className="h-5 w-2/5 rounded bg-[var(--abu-bg-pressed)]" />
-      <div className="h-3 w-4/5 rounded bg-[var(--abu-bg-pressed)]" />
-      <div className="h-3 w-3/5 rounded bg-[var(--abu-bg-pressed)]" />
+    <div className="rounded-lg bg-[var(--lingxi-bg-muted)] p-5 space-y-3 animate-pulse">
+      <div className="h-5 w-2/5 rounded bg-[var(--lingxi-bg-pressed)]" />
+      <div className="h-3 w-4/5 rounded bg-[var(--lingxi-bg-pressed)]" />
+      <div className="h-3 w-3/5 rounded bg-[var(--lingxi-bg-pressed)]" />
       <div className="flex gap-3 mt-4">
-        <div className="h-16 flex-1 rounded bg-[var(--abu-bg-pressed)]" />
-        <div className="h-16 flex-1 rounded bg-[var(--abu-bg-pressed)]" />
-        <div className="h-16 flex-1 rounded bg-[var(--abu-bg-pressed)]" />
+        <div className="h-16 flex-1 rounded bg-[var(--lingxi-bg-pressed)]" />
+        <div className="h-16 flex-1 rounded bg-[var(--lingxi-bg-pressed)]" />
+        <div className="h-16 flex-1 rounded bg-[var(--lingxi-bg-pressed)]" />
       </div>
     </div>
   ) : (
-    <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-[var(--abu-bg-muted)] text-sm text-[var(--abu-text-muted)]">
+    <div className="absolute inset-0 z-10 flex items-center justify-center rounded-lg bg-[var(--lingxi-bg-muted)] text-sm text-[var(--lingxi-text-muted)]">
       {config.i18n.loading}
     </div>
   ));
 
   // --- Right-top hover toolbar (visualization mode) ---
-  const btnClass = 'p-1.5 rounded-lg hover:bg-black/5 transition-colors text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]';
+  const btnClass = 'p-1.5 rounded-lg hover:bg-black/5 transition-colors text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]';
   const vizToolbar = !isLoading && !showSource && (
     <div className="absolute top-2 right-2 z-10 opacity-0 group-hover/widget:opacity-100 transition-opacity">
-      <div className="flex items-center gap-0.5 bg-white/90 rounded-lg shadow-sm border border-[var(--abu-bg-pressed)] p-0.5 relative">
+      <div className="flex items-center gap-0.5 bg-white/90 rounded-lg shadow-sm border border-[var(--lingxi-bg-pressed)] p-0.5 relative">
         <button onClick={handleCopy} className={btnClass} title={copied ? '✓' : 'Copy'}>
           {copied ? <Check className="h-3.5 w-3.5 text-green-600" /> : <Copy className="h-3.5 w-3.5" />}
         </button>
@@ -364,8 +364,8 @@ export default function RenderableCodeBlock({
     <div className="absolute top-2 right-2 z-10">
       <button
         onClick={() => setShowSource(false)}
-        className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/90 shadow-sm border border-[var(--abu-bg-pressed)]
-          text-xs text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+        className="flex items-center gap-1 px-2 py-1 rounded-lg bg-white/90 shadow-sm border border-[var(--lingxi-bg-pressed)]
+          text-xs text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
       >
         <Eye className="h-3 w-3" />
         {config.i18n.viewPreview ?? t.chat.htmlWidgetViewPreview}
@@ -386,9 +386,9 @@ export default function RenderableCodeBlock({
         <button
           onClick={() => setFullscreen(false)}
           className="absolute -top-3 -right-3 z-10 p-1.5 rounded-full bg-white shadow-md
-            hover:bg-[var(--abu-bg-muted)] transition-colors"
+            hover:bg-[var(--lingxi-bg-muted)] transition-colors"
         >
-          <X className="h-4 w-4 text-[var(--abu-text-muted)]" />
+          <X className="h-4 w-4 text-[var(--lingxi-text-muted)]" />
         </button>
         <iframe
           srcDoc={config.buildFullscreenHtml(code)}
@@ -460,7 +460,7 @@ export default function RenderableCodeBlock({
   return (
     <div className="my-3 group/widget">
       {errorFallback}
-      <div className={cn('rounded-lg overflow-hidden border border-[var(--abu-bg-pressed)]', isError && !showSource && 'hidden')}>
+      <div className={cn('rounded-lg overflow-hidden border border-[var(--lingxi-bg-pressed)]', isError && !showSource && 'hidden')}>
         <div className="relative bg-white">
           {/* Source code view with "back to visual" button */}
           {showSource && (
@@ -480,7 +480,7 @@ export default function RenderableCodeBlock({
         </div>
         {/* Collapse button */}
         {collapseButton && !showSource && (
-          <div className="flex justify-center py-1 border-t border-[var(--abu-bg-pressed)]">{collapseButton}</div>
+          <div className="flex justify-center py-1 border-t border-[var(--lingxi-bg-pressed)]">{collapseButton}</div>
         )}
       </div>
       {fullscreenOverlay}

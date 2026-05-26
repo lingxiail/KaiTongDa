@@ -330,7 +330,7 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
     if (suggestionType === 'agent') {
       const query = trimmed.slice(1).split(/\s+/)[0].toLowerCase();
       return agents
-        .filter((a) => a.name !== 'abu' && !disabledAgentSet.has(a.name))
+        .filter((a) => a.name !== 'lingxi' && !disabledAgentSet.has(a.name))
         .filter((a) => {
           if (!query) return true;
           return a.name.toLowerCase().includes(query) ||
@@ -564,28 +564,28 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
       <div className="relative">
         {/* Suggestions Popup (Skills / Agents) */}
         {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-xl border border-[var(--abu-border)] shadow-lg overflow-x-hidden overflow-y-auto max-h-[320px] z-20">
+          <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-xl border border-[var(--lingxi-border)] shadow-lg overflow-x-hidden overflow-y-auto max-h-[320px] z-20">
             {suggestions.map((item, idx) => (
               <button
                 key={item.name}
                 onClick={() => applySuggestion(item)}
                 className={cn(
                   'btn-ghost w-full flex flex-col gap-0.5 px-4 py-2.5 text-sm text-left',
-                  idx === selectedIndex ? 'bg-[var(--abu-bg-hover)]' : 'hover:bg-[var(--abu-bg-muted)]'
+                  idx === selectedIndex ? 'bg-[var(--lingxi-bg-hover)]' : 'hover:bg-[var(--lingxi-bg-muted)]'
                 )}
               >
                 <div className="flex items-center gap-3">
                   <span className={cn(
                     'w-5 text-center font-mono text-[12px] shrink-0',
-                    suggestionType === 'agent' ? 'text-blue-500' : 'text-[var(--abu-text-tertiary)]'
+                    suggestionType === 'agent' ? 'text-blue-500' : 'text-[var(--lingxi-text-tertiary)]'
                   )}>
                     {suggestionType === 'agent' ? '@' : '/'}
                   </span>
-                  <span className="font-medium text-[var(--abu-text-primary)] text-[13px]">{item.name}</span>
-                  <span className="text-[12px] text-[var(--abu-text-tertiary)] truncate">{item.description}</span>
+                  <span className="font-medium text-[var(--lingxi-text-primary)] text-[13px]">{item.name}</span>
+                  <span className="text-[12px] text-[var(--lingxi-text-tertiary)] truncate">{item.description}</span>
                 </div>
                 {item.trigger && (
-                  <div className="pl-8 text-[11px] text-[var(--abu-text-muted)] truncate">
+                  <div className="pl-8 text-[11px] text-[var(--lingxi-text-muted)] truncate">
                     TRIGGER: {item.trigger}
                   </div>
                 )}
@@ -599,14 +599,14 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
           className={cn(
             'relative bg-white rounded-2xl border transition-all',
             !isWelcome && isDragging
-              ? 'border-[var(--abu-clay)] ring-2 ring-[var(--abu-clay-ring)]'
-              : 'border-[var(--abu-border-subtle)] focus-within:border-[var(--abu-border-hover)]'
+              ? 'border-[var(--lingxi-clay)] ring-2 ring-[var(--lingxi-clay-ring)]'
+              : 'border-[var(--lingxi-border-subtle)] focus-within:border-[var(--lingxi-border-hover)]'
           )}
         >
           {/* Chat-only: Drag overlay */}
           {!isWelcome && isDragging && (
             <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-orange-50/90 z-10">
-              <span className="text-sm text-[var(--abu-clay)] font-medium">{t.chat.dropFilesHere}</span>
+              <span className="text-sm text-[var(--lingxi-clay)] font-medium">{t.chat.dropFilesHere}</span>
             </div>
           )}
 
@@ -618,11 +618,11 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                   <img
                     src={`data:${img.mediaType};base64,${img.data}`}
                     alt=""
-                    className="w-12 h-12 rounded-lg object-cover border border-[var(--abu-border-subtle)]"
+                    className="w-12 h-12 rounded-lg object-cover border border-[var(--lingxi-border-subtle)]"
                   />
                   <button
                     onClick={() => removeImage(img.id)}
-                    className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[var(--abu-text-primary)] text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity"
+                    className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[var(--lingxi-text-primary)] text-white flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-opacity"
                     title={t.chat.removeImage}
                   >
                     <X className="h-2.5 w-2.5" />
@@ -632,13 +632,13 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
               {files.map((f) => (
                 <div
                   key={f.id}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--abu-bg-muted)] border border-[var(--abu-border-subtle)] shrink-0 group/file"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--lingxi-bg-muted)] border border-[var(--lingxi-border-subtle)] shrink-0 group/file"
                 >
-                  <FileText className="h-3.5 w-3.5 text-[var(--abu-text-tertiary)] shrink-0" />
-                  <span className="text-[12px] text-[var(--abu-text-primary)] max-w-[160px] truncate">{f.name}</span>
+                  <FileText className="h-3.5 w-3.5 text-[var(--lingxi-text-tertiary)] shrink-0" />
+                  <span className="text-[12px] text-[var(--lingxi-text-primary)] max-w-[160px] truncate">{f.name}</span>
                   <button
                     onClick={() => removeFile(f.id)}
-                    className="p-0.5 rounded hover:bg-[var(--abu-bg-hover)] text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] transition-colors"
+                    className="p-0.5 rounded hover:bg-[var(--lingxi-bg-hover)] text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] transition-colors"
                   >
                     <X className="h-3 w-3" />
                   </button>
@@ -692,7 +692,7 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
               disabled={disabled}
               rows={isWelcome ? 2 : 1}
               className={cn(
-                'flex-1 bg-transparent resize-none outline-none text-[var(--abu-text-primary)] leading-relaxed',
+                'flex-1 bg-transparent resize-none outline-none text-[var(--lingxi-text-primary)] leading-relaxed',
                 isWelcome
                   ? 'min-h-[52px] max-h-[180px] text-[15px]'
                   : 'min-h-[24px] max-h-[160px] py-0.5 text-[14.5px] disabled:opacity-40'
@@ -708,7 +708,7 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
               <div className="relative" ref={modelPickerRef}>
                 <button
                   onClick={() => setShowModelPicker(!showModelPicker)}
-                  className="btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors"
+                  className="btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--lingxi-text-tertiary)] font-medium hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-md transition-colors"
                 >
                   {modelDisplay}
                   {modelCaps.length > 0 && (
@@ -737,7 +737,7 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                     }
                   }}
                   className={cn(
-                    'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors',
+                    'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--lingxi-text-tertiary)] font-medium hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-md transition-colors',
                     selectedSkill && 'text-purple-600'
                   )}
                   title="选择技能"
@@ -759,7 +759,7 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                     }
                   }}
                   className={cn(
-                    'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors',
+                    'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--lingxi-text-tertiary)] font-medium hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-md transition-colors',
                     selectedAgent && 'text-blue-600'
                   )}
                   title="选择代理"
@@ -779,7 +779,7 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                 size="icon"
                 onClick={handleAttach}
                 aria-label={t.chat.addAttachment}
-                className="btn-ghost h-7 w-7 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-lg"
+                className="btn-ghost h-7 w-7 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-lg"
               >
                 <Plus className="h-4 w-4" />
               </Button>
@@ -791,8 +791,8 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                 className={cn(
                   'btn-claude-primary flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-[13px] font-medium',
                   hasContent
-                    ? 'bg-[var(--abu-text-primary)] text-[var(--abu-bg-base)] shadow-sm'
-                    : 'bg-[var(--abu-bg-hover)] text-[var(--abu-text-muted)] cursor-not-allowed'
+                    ? 'bg-[var(--lingxi-text-primary)] text-[var(--lingxi-bg-base)] shadow-sm'
+                    : 'bg-[var(--lingxi-bg-hover)] text-[var(--lingxi-text-muted)] cursor-not-allowed'
                 )}
               >
                 <span>{t.chat.start}</span>
@@ -808,7 +808,7 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                 <div className="relative" ref={modelPickerRef}>
                   <button
                     onClick={() => setShowModelPicker(!showModelPicker)}
-                    className="btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors"
+                    className="btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--lingxi-text-tertiary)] font-medium hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-md transition-colors"
                   >
                     {modelDisplay}
                     {modelCaps.length > 0 && (
@@ -837,7 +837,7 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                       }
                     }}
                     className={cn(
-                      'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors',
+                      'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--lingxi-text-tertiary)] font-medium hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-md transition-colors',
                       selectedSkill && 'text-purple-600'
                     )}
                     title="选择技能"
@@ -859,7 +859,7 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                       }
                     }}
                     className={cn(
-                      'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--abu-text-tertiary)] font-medium hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-colors',
+                      'btn-ghost flex items-center gap-1 px-2 py-1 text-[12px] text-[var(--lingxi-text-tertiary)] font-medium hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-md transition-colors',
                       selectedAgent && 'text-blue-600'
                     )}
                     title="选择代理"
@@ -873,7 +873,7 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                   size="icon"
                   onClick={handleAttach}
                   aria-label={t.chat.addAttachment}
-                  className="btn-ghost h-7 w-7 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-lg"
+                  className="btn-ghost h-7 w-7 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-lg"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
@@ -885,7 +885,7 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                   size="icon"
                   onClick={handleStop}
                   aria-label={t.chat.stop}
-                  className="h-7 w-7 rounded-lg bg-[var(--abu-text-primary)] hover:bg-[var(--abu-text-secondary)] text-[var(--abu-bg-base)] shadow-sm transition-colors"
+                  className="h-7 w-7 rounded-lg bg-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-text-secondary)] text-[var(--lingxi-bg-base)] shadow-sm transition-colors"
                   title={t.chat.stop}
                 >
                   <Square className="h-3 w-3" fill="currentColor" />
@@ -898,8 +898,8 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
                   className={cn(
                     'h-7 w-7 rounded-lg transition-colors',
                     hasContent && !disabled
-                      ? 'bg-[var(--abu-text-primary)] hover:bg-[var(--abu-text-primary)] text-[var(--abu-bg-base)] shadow-sm'
-                      : 'bg-[var(--abu-bg-hover)] text-[var(--abu-text-muted)] cursor-not-allowed hover:bg-[var(--abu-bg-hover)]'
+                      ? 'bg-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-text-primary)] text-[var(--lingxi-bg-base)] shadow-sm'
+                      : 'bg-[var(--lingxi-bg-hover)] text-[var(--lingxi-text-muted)] cursor-not-allowed hover:bg-[var(--lingxi-bg-hover)]'
                   )}
                 >
                   <ArrowUp className="h-3.5 w-3.5" strokeWidth={2.5} />

@@ -5,7 +5,7 @@
  */
 
 import { BaseAdapter } from './base';
-import type { AdapterConfig, AbuMessage, DirectReplyContext } from './types';
+import type { AdapterConfig, LingxiMessage, DirectReplyContext } from './types';
 import { getTauriFetch } from '../../llm/tauriFetch';
 
 export class WecomAdapter extends BaseAdapter {
@@ -18,7 +18,7 @@ export class WecomAdapter extends BaseAdapter {
     supportsCard: false,
   };
 
-  formatOutbound(message: AbuMessage): unknown {
+  formatOutbound(message: LingxiMessage): unknown {
     let content = '';
     if (message.title) content += `### ${message.title}\n\n`;
     content += message.content;
@@ -86,7 +86,7 @@ export class WecomAdapter extends BaseAdapter {
   async replyToChat(
     token: string,
     context: DirectReplyContext,
-    message: AbuMessage,
+    message: LingxiMessage,
   ): Promise<{ messageId?: string }> {
     const payload = this.formatOutbound(message) as { msgtype: string; markdown: { content: string } };
 

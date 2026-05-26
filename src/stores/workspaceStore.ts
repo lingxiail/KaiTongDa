@@ -60,7 +60,7 @@ export const useWorkspaceStore = create<WorkspaceStore>()(
       },
     }),
     {
-      name: 'abu-workspace',
+      name: 'lingxi-workspace',
       version: 1,
       // Only persist recentPaths — currentPath is now derived from active conversation
       partialize: (state) => ({

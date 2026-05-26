@@ -252,7 +252,7 @@ export async function executeToolBatch(params: ToolBatchParams): Promise<ToolBat
   if (hasComputerTool) {
     // Sequential execution for computer use batches.
     // Window hide is only needed when batch contains actions that physically interact
-    // with the screen (click, type, etc.) — Abu's window may block the target.
+    // with the screen (click, type, etc.) — Lingxi's window may block the target.
     // Pure screenshot batches use capture_screen_excluding and don't need window hide.
     const ACTION_TYPES = new Set(['click', 'move', 'scroll', 'drag', 'type', 'key']);
     const hasInteractiveAction = collectedToolCalls.some(tc =>
@@ -263,11 +263,11 @@ export async function executeToolBatch(params: ToolBatchParams): Promise<ToolBat
     // Subsequent batches in the same agent loop skip hide/show to avoid flickering.
     if (hasInteractiveAction && !isSessionWindowHidden()) {
       try { await invoke('show_screen_border'); } catch { /* ignore */ }
-      // Remember the foreground app before hiding Abu
+      // Remember the foreground app before hiding Lingxi
       let targetAppName: string | null = null;
       try {
         const activeWin = await invoke<{ app_name: string }>('get_active_window');
-        if (activeWin.app_name && activeWin.app_name !== 'Abu' && activeWin.app_name !== 'Abu Dev') {
+        if (activeWin.app_name && activeWin.app_name !== 'Lingxi' && activeWin.app_name !== 'Lingxi Dev') {
           targetAppName = activeWin.app_name;
         }
       } catch { /* ignore */ }
@@ -276,7 +276,7 @@ export async function executeToolBatch(params: ToolBatchParams): Promise<ToolBat
       await new Promise(r => setTimeout(r, 200));
       setSessionWindowHidden(true);
 
-      // Re-activate the target app after Abu is hidden
+      // Re-activate the target app after Lingxi is hidden
       if (targetAppName) {
         try { await invoke('activate_app', { appName: targetAppName }); } catch { /* ignore */ }
         await new Promise(r => setTimeout(r, 100));

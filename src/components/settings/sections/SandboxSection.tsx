@@ -66,7 +66,7 @@ export default function SandboxSection() {
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-[var(--abu-text-tertiary)]">
+      <p className="text-sm text-[var(--lingxi-text-tertiary)]">
         {t.settings.sandboxDescription}
       </p>
 
@@ -82,14 +82,14 @@ export default function SandboxSection() {
               'w-full flex items-center justify-between p-4 rounded-xl border transition-all text-left cursor-pointer select-none',
               sandboxEnabled
                 ? 'border-emerald-500/50 bg-emerald-50'
-                : 'border-[var(--abu-border)] bg-[var(--abu-bg-muted)]'
+                : 'border-[var(--lingxi-border)] bg-[var(--lingxi-bg-muted)]'
             )}
           >
             <div className="flex items-center gap-3">
-              <Shield className={cn('h-5 w-5', sandboxEnabled ? 'text-emerald-600' : 'text-[var(--abu-text-muted)]')} />
+              <Shield className={cn('h-5 w-5', sandboxEnabled ? 'text-emerald-600' : 'text-[var(--lingxi-text-muted)]')} />
               <div>
                 <div className="flex items-center gap-1.5">
-                  <p className={cn('text-sm font-medium', sandboxEnabled ? 'text-emerald-700' : 'text-[var(--abu-text-tertiary)]')}>
+                  <p className={cn('text-sm font-medium', sandboxEnabled ? 'text-emerald-700' : 'text-[var(--lingxi-text-tertiary)]')}>
                     {t.settings.sandboxProtection}
                   </p>
                   <div
@@ -97,21 +97,21 @@ export default function SandboxSection() {
                     onMouseEnter={() => setShowDetails(true)}
                     onMouseLeave={() => setShowDetails(false)}
                   >
-                    <Info className={cn('h-3.5 w-3.5 cursor-help', sandboxEnabled ? 'text-emerald-400' : 'text-[var(--abu-text-placeholder)]')} />
+                    <Info className={cn('h-3.5 w-3.5 cursor-help', sandboxEnabled ? 'text-emerald-400' : 'text-[var(--lingxi-text-placeholder)]')} />
                     {showDetails && (
-                      <div className="absolute left-1/2 -translate-x-1/2 top-6 z-50 w-72 p-3 rounded-lg border border-[var(--abu-border)] bg-[var(--abu-bg-muted)] shadow-lg text-left pointer-events-none">
-                        <p className="text-[11px] text-[var(--abu-text-tertiary)] leading-relaxed">
+                      <div className="absolute left-1/2 -translate-x-1/2 top-6 z-50 w-72 p-3 rounded-lg border border-[var(--lingxi-border)] bg-[var(--lingxi-bg-muted)] shadow-lg text-left pointer-events-none">
+                        <p className="text-[11px] text-[var(--lingxi-text-tertiary)] leading-relaxed">
                           {t.settings.sandboxProtectedPaths}
                         </p>
-                        <div className="border-t border-[var(--abu-border)] my-1.5" />
-                        <p className="text-[11px] text-[var(--abu-text-muted)] leading-relaxed">
+                        <div className="border-t border-[var(--lingxi-border)] my-1.5" />
+                        <p className="text-[11px] text-[var(--lingxi-text-muted)] leading-relaxed">
                           {t.settings.sandboxWritablePaths}
                         </p>
                       </div>
                     )}
                   </div>
                 </div>
-                <p className="text-xs text-[var(--abu-text-muted)] mt-0.5">
+                <p className="text-xs text-[var(--lingxi-text-muted)] mt-0.5">
                   {t.settings.sandboxProtectionDescription}
                 </p>
               </div>
@@ -135,16 +135,16 @@ export default function SandboxSection() {
                   'w-full flex items-center justify-between p-4 rounded-xl border transition-all text-left cursor-pointer select-none',
                   networkIsolationEnabled
                     ? 'border-blue-500/50 bg-blue-50'
-                    : 'border-[var(--abu-border)] bg-[var(--abu-bg-muted)]'
+                    : 'border-[var(--lingxi-border)] bg-[var(--lingxi-bg-muted)]'
                 )}
               >
                 <div className="flex items-center gap-3">
-                  <Globe className={cn('h-5 w-5', networkIsolationEnabled ? 'text-blue-600' : 'text-[var(--abu-text-muted)]')} />
+                  <Globe className={cn('h-5 w-5', networkIsolationEnabled ? 'text-blue-600' : 'text-[var(--lingxi-text-muted)]')} />
                   <div>
-                    <p className={cn('text-sm font-medium', networkIsolationEnabled ? 'text-blue-700' : 'text-[var(--abu-text-tertiary)]')}>
+                    <p className={cn('text-sm font-medium', networkIsolationEnabled ? 'text-blue-700' : 'text-[var(--lingxi-text-tertiary)]')}>
                       {t.settings.networkIsolation}
                     </p>
-                    <p className="text-xs text-[var(--abu-text-muted)] mt-0.5">
+                    <p className="text-xs text-[var(--lingxi-text-muted)] mt-0.5">
                       {t.settings.networkIsolationDescription}
                     </p>
                   </div>
@@ -158,10 +158,10 @@ export default function SandboxSection() {
 
               {/* Network whitelist config */}
               {networkIsolationEnabled && (
-                <div className="space-y-3 p-4 rounded-xl border border-[var(--abu-border)] bg-[var(--abu-bg-muted)]">
+                <div className="space-y-3 p-4 rounded-xl border border-[var(--lingxi-border)] bg-[var(--lingxi-bg-muted)]">
                   {/* Private networks toggle */}
                   <label className="flex items-center justify-between cursor-pointer">
-                    <span className="text-xs text-[var(--abu-text-tertiary)]">
+                    <span className="text-xs text-[var(--lingxi-text-tertiary)]">
                       {t.settings.allowPrivateNetworks}
                     </span>
                     <Toggle
@@ -171,16 +171,16 @@ export default function SandboxSection() {
                     />
                   </label>
 
-                  <div className="border-t border-[var(--abu-border)]" />
+                  <div className="border-t border-[var(--lingxi-border)]" />
 
                   {/* Whitelist entries */}
                   <div>
-                    <p className="text-xs text-[var(--abu-text-tertiary)] mb-2">{t.settings.networkWhitelist}</p>
+                    <p className="text-xs text-[var(--lingxi-text-tertiary)] mb-2">{t.settings.networkWhitelist}</p>
 
                     {/* Default entries (read-only) */}
                     <div className="space-y-1 mb-2">
-                      <p className="text-[10px] text-[var(--abu-text-muted)] uppercase tracking-wider">{t.settings.networkPreset}</p>
-                      <p className="text-xs text-[var(--abu-text-muted)] leading-relaxed">
+                      <p className="text-[10px] text-[var(--lingxi-text-muted)] uppercase tracking-wider">{t.settings.networkPreset}</p>
+                      <p className="text-xs text-[var(--lingxi-text-muted)] leading-relaxed">
                         npm · PyPI · GitHub · GitLab · Anthropic · OpenAI · DeepSeek
                       </p>
                     </div>
@@ -188,10 +188,10 @@ export default function SandboxSection() {
                     {/* User entries */}
                     {networkWhitelist.length > 0 && (
                       <div className="space-y-1 mb-2">
-                        <p className="text-[10px] text-[var(--abu-text-tertiary)] uppercase tracking-wider">{t.settings.networkCustom}</p>
+                        <p className="text-[10px] text-[var(--lingxi-text-tertiary)] uppercase tracking-wider">{t.settings.networkCustom}</p>
                         {networkWhitelist.map(domain => (
-                          <div key={domain} className="flex items-center justify-between py-1 px-2 rounded bg-[var(--abu-bg-muted)] group">
-                            <span className="text-xs text-[var(--abu-text-primary)] font-mono">{domain}</span>
+                          <div key={domain} className="flex items-center justify-between py-1 px-2 rounded bg-[var(--lingxi-bg-muted)] group">
+                            <span className="text-xs text-[var(--lingxi-text-primary)] font-mono">{domain}</span>
                             <button
                               onClick={() => handleRemoveDomain(domain)}
                               className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 rounded hover:bg-red-100"
@@ -211,7 +211,7 @@ export default function SandboxSection() {
                         onChange={e => setNewDomain(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleAddDomain()}
                         placeholder="*.company.com / 10.0.0.0/8"
-                        className="flex-1 text-xs px-3 py-1.5 rounded-lg border border-[var(--abu-border)] bg-[var(--abu-bg-base)] text-[var(--abu-text-primary)] placeholder:text-[var(--abu-text-placeholder)] focus:outline-none focus:border-blue-400"
+                        className="flex-1 text-xs px-3 py-1.5 rounded-lg border border-[var(--lingxi-border)] bg-[var(--lingxi-bg-base)] text-[var(--lingxi-text-primary)] placeholder:text-[var(--lingxi-text-placeholder)] focus:outline-none focus:border-blue-400"
                       />
                       <button
                         onClick={handleAddDomain}
@@ -261,11 +261,11 @@ export default function SandboxSection() {
         </div>
       )}
       {/* Permission Mode */}
-      <div className="mt-6 pt-6 border-t border-[var(--abu-border)]">
-        <h4 className="text-sm font-medium text-[var(--abu-text-primary)] mb-1">
+      <div className="mt-6 pt-6 border-t border-[var(--lingxi-border)]">
+        <h4 className="text-sm font-medium text-[var(--lingxi-text-primary)] mb-1">
           {t.settings.permissionMode}
         </h4>
-        <p className="text-xs text-[var(--abu-text-tertiary)] mb-3">
+        <p className="text-xs text-[var(--lingxi-text-tertiary)] mb-3">
           {t.settings.permissionModeDesc}
         </p>
         <PermissionModeSelector />
@@ -275,14 +275,14 @@ export default function SandboxSection() {
           (exfiltration, injection, destructive commands) not file-path
           access. Default ON; turning off skips the 120-pattern scan for
           agent-initiated writes (memory + skill drafts). */}
-      <div className="mt-6 pt-6 border-t border-[var(--abu-border)]">
+      <div className="mt-6 pt-6 border-t border-[var(--lingxi-border)]">
         <ContentGuardToggle />
       </div>
 
       {/* Authorized Writable Paths */}
       {sandboxEnabled && (
-        <div className="mt-6 pt-6 border-t border-[var(--abu-border)]">
-          <h4 className="text-sm font-medium text-[var(--abu-text-primary)] mb-1">
+        <div className="mt-6 pt-6 border-t border-[var(--lingxi-border)]">
+          <h4 className="text-sm font-medium text-[var(--lingxi-text-primary)] mb-1">
             {t.sandbox.authorizedPaths}
           </h4>
           <AuthorizedPathsList />
@@ -323,7 +323,7 @@ function ContentGuardToggle() {
             <p className={cn('text-sm font-medium', enabled ? 'text-emerald-700' : 'text-amber-700')}>
               {t.settings.contentGuardTitle}
             </p>
-            <p className="text-xs text-[var(--abu-text-muted)] mt-0.5">
+            <p className="text-xs text-[var(--lingxi-text-muted)] mt-0.5">
               {t.settings.contentGuardDesc}
             </p>
           </div>
@@ -370,7 +370,7 @@ function AuthorizedPathsList() {
 
   if (paths.length === 0) {
     return (
-      <p className="text-xs text-[var(--abu-text-tertiary)] mt-1">
+      <p className="text-xs text-[var(--lingxi-text-tertiary)] mt-1">
         {t.sandbox.authorizedPathsEmpty}
       </p>
     );
@@ -381,10 +381,10 @@ function AuthorizedPathsList() {
       {paths.map((path) => (
         <div
           key={path}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--abu-border)] bg-[var(--abu-bg-secondary)]"
+          className="flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--lingxi-border)] bg-[var(--lingxi-bg-secondary)]"
         >
-          <FolderOpen className="h-3.5 w-3.5 text-[var(--abu-text-muted)] shrink-0" />
-          <span className="flex-1 text-xs text-[var(--abu-text-secondary)] truncate" title={path}>
+          <FolderOpen className="h-3.5 w-3.5 text-[var(--lingxi-text-muted)] shrink-0" />
+          <span className="flex-1 text-xs text-[var(--lingxi-text-secondary)] truncate" title={path}>
             {path}
           </span>
           <button
@@ -392,7 +392,7 @@ function AuthorizedPathsList() {
               revokeWorkspace(path);
               notifyPathsChanged();
             }}
-            className="p-1 rounded hover:bg-red-100 text-[var(--abu-text-muted)] hover:text-red-500 transition-colors shrink-0"
+            className="p-1 rounded hover:bg-red-100 text-[var(--lingxi-text-muted)] hover:text-red-500 transition-colors shrink-0"
             title={t.sandbox.revoke}
           >
             <Trash2 className="h-3 w-3" />
@@ -423,18 +423,18 @@ function PermissionModeSelector() {
           className={cn(
             'flex flex-col items-center gap-1.5 p-3 rounded-lg border transition-all text-center',
             permissionMode === value
-              ? 'border-[var(--abu-clay)] bg-[var(--abu-clay-bg)]'
-              : 'border-[var(--abu-border-subtle)] hover:border-[var(--abu-border)]',
+              ? 'border-[var(--lingxi-clay)] bg-[var(--lingxi-clay-bg)]'
+              : 'border-[var(--lingxi-border-subtle)] hover:border-[var(--lingxi-border)]',
           )}
         >
-          <Icon className={cn('h-5 w-5', permissionMode === value ? color : 'text-[var(--abu-text-muted)]')} />
+          <Icon className={cn('h-5 w-5', permissionMode === value ? color : 'text-[var(--lingxi-text-muted)]')} />
           <span className={cn(
             'text-xs font-medium',
-            permissionMode === value ? 'text-[var(--abu-text-primary)]' : 'text-[var(--abu-text-secondary)]',
+            permissionMode === value ? 'text-[var(--lingxi-text-primary)]' : 'text-[var(--lingxi-text-secondary)]',
           )}>
             {labels[value].name}
           </span>
-          <span className="text-[10px] text-[var(--abu-text-tertiary)] leading-tight">
+          <span className="text-[10px] text-[var(--lingxi-text-tertiary)] leading-tight">
             {labels[value].desc}
           </span>
         </button>

@@ -404,10 +404,8 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
       });
     }
 
-    // Auto-select first model if this is the first visible enabled provider.
-    // Qiniu is hidden from this branded build, so it should not block selecting
-    // the custom deployment the user just added.
-    const hasOtherEnabled = providers.some(p => p.id !== 'qiniu' && p.enabled && p.id !== providerId);
+    // Auto-select first model if this is the first enabled provider.
+    const hasOtherEnabled = providers.some(p => p.enabled && p.id !== providerId);
     if (!hasOtherEnabled && modelInfos.length > 0) {
       selectModel(providerId, modelInfos[0].id);
     }
@@ -461,8 +459,8 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--abu-border)]">
-          <h2 className="text-lg font-semibold text-[var(--abu-text-primary)]">
+        <div className="shrink-0 flex items-center justify-between px-6 py-4 border-b border-[var(--lingxi-border)]">
+          <h2 className="text-lg font-semibold text-[var(--lingxi-text-primary)]">
             {t.settings.addService}
           </h2>
           <Button variant="ghost" size="icon-sm" onClick={handleClose}>
@@ -474,7 +472,7 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
         <div className="shrink-0 px-6 pt-5 pb-3 space-y-5">
           {/* 1. Service Name */}
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-[var(--abu-text-primary)]">
+            <label className="text-sm font-medium text-[var(--lingxi-text-primary)]">
               {t.settings.serviceName}
             </label>
             <Input
@@ -486,7 +484,7 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
 
           {/* 2. Provider Dropdown */}
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-[var(--abu-text-primary)]">
+            <label className="text-sm font-medium text-[var(--lingxi-text-primary)]">
               {t.settings.selectProviderType}
             </label>
             <div className="relative" ref={dropdownRef}>
@@ -495,23 +493,23 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className={cn(
                   'w-full h-9 px-3 flex items-center justify-between',
-                  'bg-[var(--abu-bg-muted)] border border-[var(--abu-border)] rounded-lg',
-                  'text-sm text-[var(--abu-text-primary)]',
-                  'hover:border-[var(--abu-clay)] transition-colors',
+                  'bg-[var(--lingxi-bg-muted)] border border-[var(--lingxi-border)] rounded-lg',
+                  'text-sm text-[var(--lingxi-text-primary)]',
+                  'hover:border-[var(--lingxi-clay)] transition-colors',
                 )}
               >
-                <span className={selectedOption ? '' : 'text-[var(--abu-text-placeholder)]'}>
+                <span className={selectedOption ? '' : 'text-[var(--lingxi-text-placeholder)]'}>
                   {selectedOption ? selectedOption.label : t.settings.selectProviderType}
                 </span>
-                <ChevronDown className={cn('h-4 w-4 text-[var(--abu-text-secondary)] transition-transform', dropdownOpen && 'rotate-180')} />
+                <ChevronDown className={cn('h-4 w-4 text-[var(--lingxi-text-secondary)] transition-transform', dropdownOpen && 'rotate-180')} />
               </button>
 
               {dropdownOpen && (
-                <div className="absolute z-20 mt-1 w-full rounded-lg border border-[var(--abu-border)] bg-white shadow-lg overflow-hidden">
+                <div className="absolute z-20 mt-1 w-full rounded-lg border border-[var(--lingxi-border)] bg-white shadow-lg overflow-hidden">
                   {/* Search */}
-                  <div className="p-2 border-b border-[var(--abu-border)]">
+                  <div className="p-2 border-b border-[var(--lingxi-border)]">
                     <div className="relative">
-                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--abu-text-placeholder)]" />
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--lingxi-text-placeholder)]" />
                       <Input
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
@@ -526,7 +524,7 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
                   <div className="max-h-60 overflow-y-auto py-1">
                     {filteredGroups.map((group) => (
                       <div key={group.key}>
-                        <div className="px-3 py-1.5 text-xs font-medium text-[var(--abu-text-tertiary)] uppercase tracking-wider">
+                        <div className="px-3 py-1.5 text-xs font-medium text-[var(--lingxi-text-tertiary)] uppercase tracking-wider">
                           {group.label}
                         </div>
                         {group.options.map((option) => {
@@ -539,14 +537,14 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
                               onClick={() => handleSelectProvider(option)}
                               className={cn(
                                 'w-full px-3 py-2 flex items-center justify-between text-sm',
-                                'hover:bg-[var(--abu-bg-hover)] transition-colors',
+                                'hover:bg-[var(--lingxi-bg-hover)] transition-colors',
                                 added && 'opacity-50 cursor-not-allowed',
-                                selectedId === option.id && 'bg-[var(--abu-bg-hover)]',
+                                selectedId === option.id && 'bg-[var(--lingxi-bg-hover)]',
                               )}
                             >
-                              <span className="text-[var(--abu-text-primary)]">{option.label}</span>
+                              <span className="text-[var(--lingxi-text-primary)]">{option.label}</span>
                               {added && (
-                                <span className="text-xs text-[var(--abu-text-tertiary)]">
+                                <span className="text-xs text-[var(--lingxi-text-tertiary)]">
                                   {t.settings.alreadyAdded}
                                 </span>
                               )}
@@ -566,12 +564,12 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
         <div className="flex-1 overflow-y-auto px-6 pb-5 space-y-5">
           {/* 3. Usage Guide Card */}
           {guide && (
-            <p className="text-xs text-[var(--abu-text-muted)]">
+            <p className="text-xs text-[var(--lingxi-text-muted)]">
               {guide.hint}
               <button
                 type="button"
                 onClick={() => open(guide.url)}
-                className="inline-flex items-center gap-1 ml-1.5 text-[var(--abu-clay)] hover:underline"
+                className="inline-flex items-center gap-1 ml-1.5 text-[var(--lingxi-clay)] hover:underline"
               >
                 {guide.urlLabel}
                 <ExternalLink className="h-3 w-3" />
@@ -583,10 +581,10 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
           {selectedId && !isOllama && (
             <div className="space-y-1.5">
               <div className="flex items-center gap-2">
-                <label className="text-sm font-medium text-[var(--abu-text-primary)]">
+                <label className="text-sm font-medium text-[var(--lingxi-text-primary)]">
                   {t.settings.apiKey}
                 </label>
-                <span className="text-xs text-[var(--abu-text-tertiary)]">
+                <span className="text-xs text-[var(--lingxi-text-tertiary)]">
                   {isCustom ? t.settings.apiKeyOptional : t.settings.apiKeyRequired}
                 </span>
               </div>
@@ -601,7 +599,7 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
                 <button
                   type="button"
                   onClick={() => setShowApiKey(!showApiKey)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-secondary)]"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-secondary)]"
                 >
                   {showApiKey
                     ? <EyeOff className="h-4 w-4" />
@@ -614,7 +612,7 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
                   type="button"
                   onClick={handleValidate}
                   disabled={validating || !apiKey.trim() || !baseUrl.trim()}
-                  className="text-xs text-[var(--abu-clay)] hover:underline disabled:opacity-40 disabled:no-underline flex items-center gap-1"
+                  className="text-xs text-[var(--lingxi-clay)] hover:underline disabled:opacity-40 disabled:no-underline flex items-center gap-1"
                 >
                   {validating && <Loader2 className="h-3 w-3 animate-spin" />}
                   {validating ? t.settings.validating : t.settings.validateConnection}
@@ -631,7 +629,7 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
           {/* 5. API Address */}
           {selectedId && (
             <div className="space-y-1.5">
-              <label className="text-sm font-medium text-[var(--abu-text-primary)]">
+              <label className="text-sm font-medium text-[var(--lingxi-text-primary)]">
                 {isOllama ? t.settings.ollamaUrlLabel : t.settings.apiUrl}
               </label>
               <Input
@@ -640,7 +638,7 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
                 placeholder={isOllama ? 'http://localhost:11434' : 'https://...'}
                 onBlur={isOllama ? handleCheckOllama : undefined}
               />
-              <p className="text-xs text-[var(--abu-text-tertiary)]">
+              <p className="text-xs text-[var(--lingxi-text-tertiary)]">
                 {isOllama ? t.settings.ollamaUrlHint : t.settings.apiUrlNoChange}
               </p>
 
@@ -648,7 +646,7 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
                   (stray whitespace, wrong path, missing /v1) before hitting the
                   validate button. Hidden for Ollama which has its own status UI. */}
               {!isOllama && baseUrl.trim() && selectedOption && (
-                <p className="text-[11px] font-mono text-[var(--abu-text-muted)] break-all">
+                <p className="text-[11px] font-mono text-[var(--lingxi-text-muted)] break-all">
                   ↳ {t.settings.apiUrlPreview}: POST {buildFullChatUrl(baseUrl, selectedOption.format)}
                 </p>
               )}
@@ -671,7 +669,7 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
           {selectedId && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-[var(--abu-text-primary)]">
+                <label className="text-sm font-medium text-[var(--lingxi-text-primary)]">
                   {t.settings.models}
                 </label>
                 {/* Fetch/refresh models button */}
@@ -680,7 +678,7 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
                     type="button"
                     onClick={handleFetchModels}
                     disabled={fetchModelsStatus === 'fetching' || !baseUrl.trim()}
-                    className="flex items-center gap-1 text-xs text-[var(--abu-clay)] hover:underline disabled:opacity-40 disabled:no-underline"
+                    className="flex items-center gap-1 text-xs text-[var(--lingxi-clay)] hover:underline disabled:opacity-40 disabled:no-underline"
                   >
                     {fetchModelsStatus === 'fetching'
                       ? <Loader2 className="h-3 w-3 animate-spin" />
@@ -693,7 +691,7 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
                     type="button"
                     onClick={handleCheckOllama}
                     disabled={ollamaStatus === 'checking'}
-                    className="flex items-center gap-1 text-xs text-[var(--abu-clay)] hover:underline disabled:opacity-40 disabled:no-underline"
+                    className="flex items-center gap-1 text-xs text-[var(--lingxi-clay)] hover:underline disabled:opacity-40 disabled:no-underline"
                   >
                     {ollamaStatus === 'checking'
                       ? <Loader2 className="h-3 w-3 animate-spin" />
@@ -726,22 +724,22 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
                   ...extraIds.map((id) => ({ id, label: id })),
                 ];
                 return (
-                  <div className="space-y-1 max-h-48 overflow-y-auto rounded-lg border border-[var(--abu-border)] p-2">
+                  <div className="space-y-1 max-h-48 overflow-y-auto rounded-lg border border-[var(--lingxi-border)] p-2">
                     {displayList.map((model) => (
                       <label
                         key={model.id}
-                        className="flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-[var(--abu-bg-hover)] cursor-pointer"
+                        className="flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-[var(--lingxi-bg-hover)] cursor-pointer"
                         onClick={() => handleToggleModel(model.id)}
                       >
                         <div className={cn(
                           'flex items-center justify-center h-4 w-4 rounded border transition-colors shrink-0',
                           selectedModels.has(model.id)
-                            ? 'bg-[var(--abu-clay)] border-[var(--abu-clay)]'
-                            : 'border-[var(--abu-border)]',
+                            ? 'bg-[var(--lingxi-clay)] border-[var(--lingxi-clay)]'
+                            : 'border-[var(--lingxi-border)]',
                         )}>
                           {selectedModels.has(model.id) && <Check className="h-3 w-3 text-white" />}
                         </div>
-                        <span className="text-sm text-[var(--abu-text-primary)] flex-1 truncate">{model.label}</span>
+                        <span className="text-sm text-[var(--lingxi-text-primary)] flex-1 truncate">{model.label}</span>
                       </label>
                     ))}
                   </div>
@@ -750,20 +748,20 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
 
               {/* No fetch yet — show manually selected models with remove buttons */}
               {!isOllama && fetchedModels.length === 0 && selectedModels.size > 0 && (
-                <div className="space-y-1 max-h-48 overflow-y-auto rounded-lg border border-[var(--abu-border)] p-2">
+                <div className="space-y-1 max-h-48 overflow-y-auto rounded-lg border border-[var(--lingxi-border)] p-2">
                   {[...selectedModels].map((modelId) => (
                     <div
                       key={modelId}
-                      className="flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-[var(--abu-bg-hover)]"
+                      className="flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-[var(--lingxi-bg-hover)]"
                     >
-                      <div className="flex items-center justify-center h-4 w-4 rounded border bg-[var(--abu-clay)] border-[var(--abu-clay)] shrink-0">
+                      <div className="flex items-center justify-center h-4 w-4 rounded border bg-[var(--lingxi-clay)] border-[var(--lingxi-clay)] shrink-0">
                         <Check className="h-3 w-3 text-white" />
                       </div>
-                      <span className="text-sm text-[var(--abu-text-primary)] flex-1 truncate">{modelId}</span>
+                      <span className="text-sm text-[var(--lingxi-text-primary)] flex-1 truncate">{modelId}</span>
                       <button
                         type="button"
                         onClick={() => handleToggleModel(modelId)}
-                        className="text-[var(--abu-text-muted)] hover:text-red-400 shrink-0"
+                        className="text-[var(--lingxi-text-muted)] hover:text-red-400 shrink-0"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -774,21 +772,21 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
 
               {/* Ollama models — checkbox list with size */}
               {isOllama && ollamaStatus === 'online' && ollamaModels.length > 0 && (
-                <div className="space-y-1 max-h-48 overflow-y-auto rounded-lg border border-[var(--abu-border)] p-2">
+                <div className="space-y-1 max-h-48 overflow-y-auto rounded-lg border border-[var(--lingxi-border)] p-2">
                   {ollamaModels.map((model) => (
                     <label
                       key={model.id}
-                      className="flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-[var(--abu-bg-hover)] cursor-pointer"
+                      className="flex items-center gap-2.5 px-2 py-1.5 rounded-md hover:bg-[var(--lingxi-bg-hover)] cursor-pointer"
                     >
                       <div className={cn(
                         'flex items-center justify-center h-4 w-4 rounded border transition-colors',
                         selectedModels.has(model.id)
-                          ? 'bg-[var(--abu-clay)] border-[var(--abu-clay)]'
-                          : 'border-[var(--abu-border)]',
+                          ? 'bg-[var(--lingxi-clay)] border-[var(--lingxi-clay)]'
+                          : 'border-[var(--lingxi-border)]',
                       )}>
                         {selectedModels.has(model.id) && <Check className="h-3 w-3 text-white" />}
                       </div>
-                      <span className="text-sm text-[var(--abu-text-primary)] flex-1">{model.label}</span>
+                      <span className="text-sm text-[var(--lingxi-text-primary)] flex-1">{model.label}</span>
                     </label>
                   ))}
                 </div>
@@ -796,7 +794,7 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
 
               {/* Ollama — no models detected */}
               {isOllama && ollamaStatus === 'online' && ollamaModels.length === 0 && (
-                <div className="text-sm text-[var(--abu-text-tertiary)] px-1">
+                <div className="text-sm text-[var(--lingxi-text-tertiary)] px-1">
                   <p>{t.settings.ollamaNoModels}</p>
                   <p className="text-xs mt-1">{t.settings.ollamaNoModelsHint}</p>
                 </div>
@@ -827,7 +825,7 @@ export default function AddProviderModal({ open: isOpen, onClose }: AddProviderM
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 px-6 py-4 border-t border-[var(--abu-border)] flex justify-end gap-3">
+        <div className="shrink-0 px-6 py-4 border-t border-[var(--lingxi-border)] flex justify-end gap-3">
           <Button variant="ghost" onClick={handleClose}>
             {t.common.cancel}
           </Button>

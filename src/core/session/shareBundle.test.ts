@@ -76,7 +76,7 @@ describe('buildShareBundle', () => {
   it('emits the current schema version and Standard tier by default', async () => {
     const conv = makeConv([{ id: 'm1', role: 'user', content: 'hi', timestamp: 1 }]);
     const bundle = await buildShareBundle(conv);
-    expect(bundle.schema.abuShareVersion).toBe(SHARE_SCHEMA_VERSION);
+    expect(bundle.schema.lingxiShareVersion).toBe(SHARE_SCHEMA_VERSION);
     expect(bundle.schema.tier).toBe('standard');
     expect(bundle.schema.exportedAt).toBeGreaterThan(0);
   });

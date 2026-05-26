@@ -1,7 +1,7 @@
 /**
- * Skill evaluation tools — Abu's equivalent of `claude -p` based eval pipeline.
+ * Skill evaluation tools — Lingxi's equivalent of `claude -p` based eval pipeline.
  *
- * These tools let skill-creator test and optimize skills using Abu's own LLM,
+ * These tools let skill-creator test and optimize skills using Lingxi's own LLM,
  * regardless of which model the user has configured.
  */
 
@@ -25,7 +25,7 @@ interface TriggerResult {
 }
 
 /**
- * Build the available skills list as it would appear in Abu's system prompt,
+ * Build the available skills list as it would appear in Lingxi's system prompt,
  * with the target skill's description overridden.
  */
 function buildSkillsList(

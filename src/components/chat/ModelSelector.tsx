@@ -15,7 +15,7 @@ interface ModelSelectorProps {
 /** Capability icon mapping */
 export function CapabilityBadge({ cap, size = 'sm' }: { cap: ModelCapability; size?: 'sm' | 'xs' }) {
   const cls = size === 'xs' ? 'h-2.5 w-2.5' : 'h-3 w-3';
-  const muted = `${cls} text-[var(--abu-text-muted)] opacity-70`;
+  const muted = `${cls} text-[var(--lingxi-text-muted)] opacity-70`;
   switch (cap) {
     case 'thinking':
       return <Brain className={muted} />;
@@ -68,28 +68,28 @@ function ModelRow({
       tabIndex={0}
       className={cn(
         'flex items-center w-full px-3 py-1.5 text-left text-sm rounded-md transition-colors cursor-pointer',
-        'hover:bg-[var(--abu-bg-hover)]',
-        isActive && !dim && 'bg-[var(--abu-bg-hover)]'
+        'hover:bg-[var(--lingxi-bg-hover)]',
+        isActive && !dim && 'bg-[var(--lingxi-bg-hover)]'
       )}
       onClick={onSelect}
       onKeyDown={(e) => { if (e.key === 'Enter') onSelect(); }}
     >
       <span className={cn(
         'flex-1 truncate',
-        dim ? 'text-[var(--abu-text-muted)]' : 'text-[var(--abu-text-secondary)]'
+        dim ? 'text-[var(--lingxi-text-muted)]' : 'text-[var(--lingxi-text-secondary)]'
       )}>
         {model.label || model.id}
       </span>
 
       {isActive && !dim && (
-        <Check className="h-3.5 w-3.5 text-[var(--abu-clay)] shrink-0 mr-1" />
+        <Check className="h-3.5 w-3.5 text-[var(--lingxi-clay)] shrink-0 mr-1" />
       )}
 
       <button
         className={cn(
           'p-0.5 rounded shrink-0 mr-1 transition-colors',
-          'hover:bg-[var(--abu-bg-muted)]',
-          isFavorite ? 'text-amber-500' : 'text-[var(--abu-text-muted)] opacity-0 group-hover/row:opacity-100'
+          'hover:bg-[var(--lingxi-bg-muted)]',
+          isFavorite ? 'text-amber-500' : 'text-[var(--lingxi-text-muted)] opacity-0 group-hover/row:opacity-100'
         )}
         onClick={(e) => {
           e.stopPropagation();
@@ -266,14 +266,14 @@ export function ModelSelector({ open, onClose, anchorRef }: ModelSelectorProps) 
       className={cn(
         'absolute bottom-full left-0 mb-1.5 z-50',
         'w-72 max-h-96 rounded-lg shadow-lg',
-        'bg-[var(--abu-bg-base)] border border-[var(--abu-border)]',
+        'bg-[var(--lingxi-bg-base)] border border-[var(--lingxi-border)]',
         'flex flex-col overflow-hidden'
       )}
     >
       {/* Search */}
-      <div className="p-2 border-b border-[var(--abu-border)]">
+      <div className="p-2 border-b border-[var(--lingxi-border)]">
         <div className="relative">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--abu-text-muted)]" />
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--lingxi-text-muted)]" />
           <Input
             ref={searchRef}
             value={query}
@@ -287,10 +287,10 @@ export function ModelSelector({ open, onClose, anchorRef }: ModelSelectorProps) 
       {hasNoProviders ? (
         /* No providers message */
         <div className="p-4 text-center">
-          <p className="text-sm text-[var(--abu-text-tertiary)]">{t.settings.noProviders}</p>
-          <p className="text-xs text-[var(--abu-text-muted)] mt-1">{t.settings.noProvidersHint}</p>
+          <p className="text-sm text-[var(--lingxi-text-tertiary)]">{t.settings.noProviders}</p>
+          <p className="text-xs text-[var(--lingxi-text-muted)] mt-1">{t.settings.noProvidersHint}</p>
           <button
-            className="mt-2 inline-flex items-center gap-1 text-xs text-[var(--abu-clay)] hover:underline"
+            className="mt-2 inline-flex items-center gap-1 text-xs text-[var(--lingxi-clay)] hover:underline"
             onClick={() => {
               onClose();
               toggleSettings();
@@ -309,7 +309,7 @@ export function ModelSelector({ open, onClose, anchorRef }: ModelSelectorProps) 
               <div className="mb-1">
                 <div className="flex items-center gap-1.5 px-3 py-1">
                   <Star className="h-3 w-3 text-amber-500 fill-amber-500" />
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--abu-text-muted)]">
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--lingxi-text-muted)]">
                     Favorites
                   </span>
                 </div>
@@ -332,8 +332,8 @@ export function ModelSelector({ open, onClose, anchorRef }: ModelSelectorProps) 
             {resolvedRecents.length > 0 && (
               <div className="mb-1">
                 <div className="flex items-center gap-1.5 px-3 py-1">
-                  <Clock className="h-3 w-3 text-[var(--abu-text-muted)]" />
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--abu-text-muted)]">
+                  <Clock className="h-3 w-3 text-[var(--lingxi-text-muted)]" />
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--lingxi-text-muted)]">
                     Recent
                   </span>
                 </div>
@@ -355,14 +355,14 @@ export function ModelSelector({ open, onClose, anchorRef }: ModelSelectorProps) 
 
             {/* Divider between special sections and main list */}
             {(resolvedFavorites.length > 0 || resolvedRecents.length > 0) && filteredProviders.length > 0 && (
-              <div className="mx-3 my-1 border-t border-[var(--abu-border)]" />
+              <div className="mx-3 my-1 border-t border-[var(--lingxi-border)]" />
             )}
 
             {/* Main list grouped by provider */}
             {filteredProviders.map(({ provider, models }) => (
               <div key={provider.id} className="mb-1">
                 <div className="px-3 py-1">
-                  <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--abu-text-muted)]">
+                  <span className="text-[10px] font-medium uppercase tracking-wider text-[var(--lingxi-text-muted)]">
                     {provider.name}
                   </span>
                 </div>
@@ -383,7 +383,7 @@ export function ModelSelector({ open, onClose, anchorRef }: ModelSelectorProps) 
 
             {/* No results */}
             {filteredProviders.length === 0 && resolvedFavorites.length === 0 && resolvedRecents.length === 0 && (
-              <div className="px-3 py-4 text-center text-xs text-[var(--abu-text-muted)]">
+              <div className="px-3 py-4 text-center text-xs text-[var(--lingxi-text-muted)]">
                 No models found
               </div>
             )}

@@ -77,18 +77,18 @@ export default function SkillProposalCard({
   // ── Skill-patched notice (Task #41) ─────────────────────────────
   // Lightweight read-only pill for "agent silently modified a skill".
   // No buttons, no settled state — just a visibility surface so the
-  // user sees when Abu self-edits a skill. Future Task #24 can hang
+  // user sees when Lingxi self-edits a skill. Future Task #24 can hang
   // a "view diff" button off this payload without schema changes.
   if (card.type === 'skill-patched' && card.skillPatched) {
     const p = card.skillPatched;
     return (
-      <div className="my-2 px-3 py-2 rounded-lg border border-[var(--abu-border-subtle)] bg-[var(--abu-bg-muted)] text-xs text-[var(--abu-text-tertiary)] flex items-start gap-2">
-        <Sparkles className="h-3.5 w-3.5 text-[var(--abu-clay)] flex-shrink-0 mt-0.5" />
+      <div className="my-2 px-3 py-2 rounded-lg border border-[var(--lingxi-border-subtle)] bg-[var(--lingxi-bg-muted)] text-xs text-[var(--lingxi-text-tertiary)] flex items-start gap-2">
+        <Sparkles className="h-3.5 w-3.5 text-[var(--lingxi-clay)] flex-shrink-0 mt-0.5" />
         <div className="min-w-0">
           <span>{t.toolbox.skillPatchedCardLabel} </span>
-          <span className="font-medium text-[var(--abu-text-primary)]">{p.skillName}</span>
+          <span className="font-medium text-[var(--lingxi-text-primary)]">{p.skillName}</span>
           {p.summary && (
-            <span className="text-[var(--abu-text-muted)]"> — {p.summary}</span>
+            <span className="text-[var(--lingxi-text-muted)]"> — {p.summary}</span>
           )}
         </div>
       </div>
@@ -104,12 +104,12 @@ export default function SkillProposalCard({
   if (card.type === 'skill-deleted' && card.skillDeleted) {
     const d = card.skillDeleted;
     return (
-      <div className="my-2 px-3 py-2 rounded-lg border border-[var(--abu-border-subtle)] bg-[var(--abu-bg-muted)] text-xs text-[var(--abu-text-tertiary)] flex items-start gap-2">
-        <Trash2 className="h-3.5 w-3.5 text-[var(--abu-text-muted)] flex-shrink-0 mt-0.5" />
+      <div className="my-2 px-3 py-2 rounded-lg border border-[var(--lingxi-border-subtle)] bg-[var(--lingxi-bg-muted)] text-xs text-[var(--lingxi-text-tertiary)] flex items-start gap-2">
+        <Trash2 className="h-3.5 w-3.5 text-[var(--lingxi-text-muted)] flex-shrink-0 mt-0.5" />
         <div className="min-w-0">
           <span>{t.toolbox.skillDeletedCardLabel} </span>
-          <span className="font-medium text-[var(--abu-text-primary)]">{d.skillName}</span>
-          <span className="text-[var(--abu-text-muted)]">
+          <span className="font-medium text-[var(--lingxi-text-primary)]">{d.skillName}</span>
+          <span className="text-[var(--lingxi-text-muted)]">
             {' '}— {d.rescuable ? t.toolbox.skillDeletedCardRescuable : t.toolbox.skillDeletedCardPermanent}
           </span>
         </div>
@@ -127,7 +127,7 @@ export default function SkillProposalCard({
   };
 
   // Pass the workspace captured at proposal time, not the live global store.
-  // The global store can have drifted — e.g. user restarts Abu and reopens
+  // The global store can have drifted — e.g. user restarts Lingxi and reopens
   // this conversation; chatStore.setActiveConversation clears the workspace
   // if conv.workspacePath was never bound. Card-local workspace ensures
   // accept / reject still succeed.
@@ -226,12 +226,12 @@ export default function SkillProposalCard({
       setToolboxSearchQuery(proposal.skillName);
     };
 
-    const baseClass = 'my-2 px-3 py-2 rounded-lg border border-[var(--abu-border-subtle)] bg-[var(--abu-bg-muted)] text-xs text-[var(--abu-text-tertiary)]';
+    const baseClass = 'my-2 px-3 py-2 rounded-lg border border-[var(--lingxi-border-subtle)] bg-[var(--lingxi-bg-muted)] text-xs text-[var(--lingxi-text-tertiary)]';
     const content = (
       <>
         <span className="font-medium">{proposal.skillName}</span> — {label}
         {isAccepted && (
-          <span className="ml-2 text-[var(--abu-clay)]">{t.toolbox.skillProposalCardJump}</span>
+          <span className="ml-2 text-[var(--lingxi-clay)]">{t.toolbox.skillProposalCardJump}</span>
         )}
       </>
     );
@@ -239,7 +239,7 @@ export default function SkillProposalCard({
     return isAccepted ? (
       <button
         onClick={handleJumpToToolbox}
-        className={`${baseClass} w-full text-left hover:bg-[var(--abu-bg-elevated)] hover:border-[var(--abu-clay-ring)] transition-colors cursor-pointer`}
+        className={`${baseClass} w-full text-left hover:bg-[var(--lingxi-bg-elevated)] hover:border-[var(--lingxi-clay-ring)] transition-colors cursor-pointer`}
       >
         {content}
       </button>
@@ -260,7 +260,7 @@ export default function SkillProposalCard({
   //    has populated) doesn't flash a false "missing" state. ──────────
   if (draftsInitialized && !draftsLoading && !draftExists) {
     return (
-      <div className="my-2 px-3 py-2 rounded-lg border border-[var(--abu-border-subtle)] bg-[var(--abu-bg-muted)] text-xs text-[var(--abu-text-tertiary)]">
+      <div className="my-2 px-3 py-2 rounded-lg border border-[var(--lingxi-border-subtle)] bg-[var(--lingxi-bg-muted)] text-xs text-[var(--lingxi-text-tertiary)]">
         <span className="font-medium">{proposal.skillName}</span> — {t.toolbox.skillProposalCardMissing}
       </div>
     );
@@ -277,23 +277,23 @@ export default function SkillProposalCard({
       useSettingsStore.getState().openToolbox('skills');
     };
     return (
-      <div className="my-2 rounded-xl border border-[var(--abu-border-subtle)] bg-[var(--abu-bg-muted)] overflow-hidden">
+      <div className="my-2 rounded-xl border border-[var(--lingxi-border-subtle)] bg-[var(--lingxi-bg-muted)] overflow-hidden">
         <div className="px-3 py-2.5">
-          <div className="text-xs font-semibold text-[var(--abu-text-primary)] flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-[var(--abu-clay)]" />
+          <div className="text-xs font-semibold text-[var(--lingxi-text-primary)] flex items-center gap-1.5">
+            <Sparkles className="h-3.5 w-3.5 text-[var(--lingxi-clay)]" />
             {proposal.skillName}
           </div>
           {proposal.description && (
-            <div className="text-[11px] text-[var(--abu-text-muted)] mt-0.5 leading-relaxed line-clamp-2">
+            <div className="text-[11px] text-[var(--lingxi-text-muted)] mt-0.5 leading-relaxed line-clamp-2">
               {proposal.description}
             </div>
           )}
-          <div className="text-[11px] text-[var(--abu-text-tertiary)] mt-2 leading-relaxed">
+          <div className="text-[11px] text-[var(--lingxi-text-tertiary)] mt-2 leading-relaxed">
             {t.toolbox.skillProposalCardOnboardGate}
           </div>
           <button
             onClick={handleOpenToolbox}
-            className="mt-2 px-2.5 py-1 rounded-md text-[11px] font-medium text-white bg-[var(--abu-clay)] hover:bg-[var(--abu-clay-hover)] transition-colors"
+            className="mt-2 px-2.5 py-1 rounded-md text-[11px] font-medium text-white bg-[var(--lingxi-clay)] hover:bg-[var(--lingxi-clay-hover)] transition-colors"
           >
             {t.toolbox.skillProposalCardOnboardGateAction}
           </button>
@@ -304,26 +304,26 @@ export default function SkillProposalCard({
 
   // ── Active state: buttons + collapsible preview ──────────────────────
   return (
-    <div className="my-2 rounded-xl border border-[var(--abu-border)] bg-[var(--abu-bg-elevated)] overflow-hidden">
-      <div className="px-3 py-2 border-b border-[var(--abu-border-subtle)] flex items-center gap-2">
-        <Sparkles className="h-3.5 w-3.5 text-[var(--abu-clay)]" />
-        <span className="text-xs font-semibold text-[var(--abu-text-primary)]">
+    <div className="my-2 rounded-xl border border-[var(--lingxi-border)] bg-[var(--lingxi-bg-elevated)] overflow-hidden">
+      <div className="px-3 py-2 border-b border-[var(--lingxi-border-subtle)] flex items-center gap-2">
+        <Sparkles className="h-3.5 w-3.5 text-[var(--lingxi-clay)]" />
+        <span className="text-xs font-semibold text-[var(--lingxi-text-primary)]">
           {t.toolbox.skillProposalCardTitle}
         </span>
       </div>
 
       <div className="px-3 py-2.5">
-        <div className="text-sm font-semibold text-[var(--abu-text-primary)]">
+        <div className="text-sm font-semibold text-[var(--lingxi-text-primary)]">
           {proposal.skillName}
         </div>
         {proposal.description && (
-          <div className="text-xs text-[var(--abu-text-tertiary)] mt-0.5 leading-relaxed">
+          <div className="text-xs text-[var(--lingxi-text-tertiary)] mt-0.5 leading-relaxed">
             {proposal.description}
           </div>
         )}
         {proposal.triggerReason && (
-          <div className="text-[11px] text-[var(--abu-text-muted)] mt-1.5">
-            <span className="text-[var(--abu-text-tertiary)]">
+          <div className="text-[11px] text-[var(--lingxi-text-muted)] mt-1.5">
+            <span className="text-[var(--lingxi-text-tertiary)]">
               {t.toolbox.skillProposalCardWhy}：
             </span>
             {proposal.triggerReason}
@@ -333,7 +333,7 @@ export default function SkillProposalCard({
         {/* Expand / collapse trigger */}
         <button
           onClick={() => setExpanded(!expanded)}
-          className="mt-2 flex items-center gap-1 text-[11px] text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] transition-colors"
+          className="mt-2 flex items-center gap-1 text-[11px] text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] transition-colors"
         >
           {expanded ? (
             <ChevronDown className="h-3 w-3" />
@@ -348,19 +348,19 @@ export default function SkillProposalCard({
         </button>
 
         {expanded && (
-          <div className="mt-2 max-h-72 overflow-y-auto overlay-scroll rounded-md border border-[var(--abu-border-subtle)] bg-[var(--abu-bg-base)] px-3 py-2 text-[12px] leading-relaxed">
+          <div className="mt-2 max-h-72 overflow-y-auto overlay-scroll rounded-md border border-[var(--lingxi-border-subtle)] bg-[var(--lingxi-bg-base)] px-3 py-2 text-[12px] leading-relaxed">
             <MarkdownRenderer content={proposal.fullContent} />
           </div>
         )}
       </div>
 
-      <div className="px-3 py-2 border-t border-[var(--abu-border-subtle)] flex items-center gap-2 bg-[var(--abu-bg-base)]">
+      <div className="px-3 py-2 border-t border-[var(--lingxi-border-subtle)] flex items-center gap-2 bg-[var(--lingxi-bg-base)]">
         <button
           onClick={handleAccept}
           disabled={processing}
           className={cn(
             'px-3 py-1 rounded-md text-xs font-medium text-white transition-colors flex items-center gap-1',
-            'bg-[var(--abu-clay)] hover:bg-[var(--abu-clay-hover)] disabled:opacity-60',
+            'bg-[var(--lingxi-clay)] hover:bg-[var(--lingxi-clay-hover)] disabled:opacity-60',
           )}
         >
           {processing ? (
@@ -373,7 +373,7 @@ export default function SkillProposalCard({
         <button
           onClick={handleReject}
           disabled={processing}
-          className="px-3 py-1 rounded-md text-xs text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-muted)] transition-colors flex items-center gap-1 disabled:opacity-60"
+          className="px-3 py-1 rounded-md text-xs text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors flex items-center gap-1 disabled:opacity-60"
         >
           <X className="h-3 w-3" />
           {t.toolbox.skillProposalCardReject}
@@ -381,7 +381,7 @@ export default function SkillProposalCard({
         <button
           onClick={handleRejectCategory}
           disabled={processing}
-          className="px-3 py-1 rounded-md text-xs text-[var(--abu-text-muted)] hover:text-red-500 hover:bg-red-50 transition-colors flex items-center gap-1 disabled:opacity-60"
+          className="px-3 py-1 rounded-md text-xs text-[var(--lingxi-text-muted)] hover:text-red-500 hover:bg-red-50 transition-colors flex items-center gap-1 disabled:opacity-60"
           title={t.toolbox.skillProposalCardRejectCategory}
         >
           <Ban className="h-3 w-3" />
@@ -393,7 +393,7 @@ export default function SkillProposalCard({
         <button
           onClick={handleDefer}
           disabled={processing}
-          className="ml-auto px-3 py-1 rounded-md text-xs text-[var(--abu-text-muted)] hover:text-[var(--abu-text-tertiary)] hover:bg-[var(--abu-bg-muted)] transition-colors flex items-center gap-1 disabled:opacity-60"
+          className="ml-auto px-3 py-1 rounded-md text-xs text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-tertiary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors flex items-center gap-1 disabled:opacity-60"
           title={t.toolbox.skillProposalCardDefer}
         >
           <Clock className="h-3 w-3" />

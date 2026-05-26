@@ -1,6 +1,6 @@
 /**
  * i18n Core Module
- * Lightweight internationalization for Abu
+ * Lightweight internationalization for Lingxi
  *
  * Features:
  * - System language detection

@@ -214,7 +214,7 @@ export const useIMChannelStore = create<IMChannelStore>()(
       },
     })),
     {
-      name: 'abu-im-channel',
+      name: 'lingxi-im-channel',
       version: 2,
       migrate(persisted: unknown, version: number) {
         const state = persisted as Record<string, unknown>;

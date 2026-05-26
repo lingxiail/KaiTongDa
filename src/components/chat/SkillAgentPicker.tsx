@@ -54,7 +54,7 @@ export default function SkillAgentPicker({
       .map((s) => ({ type: 'skill' as const, name: s.name, description: s.description }));
 
     const agentItems: PickerItem[] = agents
-      .filter((a) => a.name !== 'abu' && !disabledAgentSet.has(a.name))
+      .filter((a) => a.name !== 'lingxi' && !disabledAgentSet.has(a.name))
       .map((a) => ({ type: 'agent' as const, name: a.name, description: a.description }));
 
     return [...skillItems, ...agentItems];
@@ -185,7 +185,7 @@ export default function SkillAgentPicker({
         {hasSelected && (
           <button
             onClick={handleClearBoth}
-            className="text-[11px] text-[var(--abu-text-muted)] hover:text-[var(--abu-text-tertiary)] transition-colors px-1"
+            className="text-[11px] text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-tertiary)] transition-colors px-1"
             title={t.skillAgentPicker.clearAll}
           >
             {t.skillAgentPicker.clearAll}
@@ -198,8 +198,8 @@ export default function SkillAgentPicker({
           onClick={() => setDropdownOpen((v) => !v)}
           className={cn(
             'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors',
-            'border border-[var(--abu-border-subtle)] text-[var(--abu-text-tertiary)]',
-            'hover:border-[var(--abu-border-hover)] hover:text-[var(--abu-text-primary)]',
+            'border border-[var(--lingxi-border-subtle)] text-[var(--lingxi-text-tertiary)]',
+            'hover:border-[var(--lingxi-border-hover)] hover:text-[var(--lingxi-text-primary)]',
           )}
         >
           <ChevronDown
@@ -262,8 +262,8 @@ export default function SkillAgentPicker({
           onClick={() => setDropdownOpen((v) => !v)}
           className={cn(
             'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium transition-colors',
-            'border border-[var(--abu-border-subtle)] text-[var(--abu-text-tertiary)]',
-            'hover:border-[var(--abu-border-hover)] hover:text-[var(--abu-text-primary)]',
+            'border border-[var(--lingxi-border-subtle)] text-[var(--lingxi-text-tertiary)]',
+            'hover:border-[var(--lingxi-border-hover)] hover:text-[var(--lingxi-text-primary)]',
           )}
         >
           <ChevronDown
@@ -284,7 +284,7 @@ export default function SkillAgentPicker({
       {hasSelected && (
         <button
           onClick={handleClearBoth}
-          className="text-[11px] text-[var(--abu-text-muted)] hover:text-red-500 transition-colors px-1"
+          className="text-[11px] text-[var(--lingxi-text-muted)] hover:text-red-500 transition-colors px-1"
           title={t.skillAgentPicker.clearAll}
         >
           {t.skillAgentPicker.clearAll}
@@ -302,26 +302,26 @@ export default function SkillAgentPicker({
       <div
         ref={dropdownRef}
         className={cn(
-          'absolute z-50 mt-1 rounded-xl border border-[var(--abu-border)]',
+          'absolute z-50 mt-1 rounded-xl border border-[var(--lingxi-border)]',
           'bg-white shadow-lg overflow-hidden w-72',
         )}
         style={{ bottom: '100%', left: 0, marginBottom: '4px' }}
       >
         {/* Search */}
-        <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--abu-border-subtle)]">
-          <Search className="h-3.5 w-3.5 text-[var(--abu-text-muted)] shrink-0" />
+        <div className="flex items-center gap-2 px-3 py-2 border-b border-[var(--lingxi-border-subtle)]">
+          <Search className="h-3.5 w-3.5 text-[var(--lingxi-text-muted)] shrink-0" />
           <input
             ref={searchInputRef}
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t.skillAgentPicker.searchPlaceholder}
-            className="flex-1 text-[13px] text-[var(--abu-text-primary)] bg-transparent outline-none placeholder:text-[var(--abu-text-muted)]"
+            className="flex-1 text-[13px] text-[var(--lingxi-text-primary)] bg-transparent outline-none placeholder:text-[var(--lingxi-text-muted)]"
           />
           {search && (
             <button
               onClick={() => setSearch('')}
-              className="text-[var(--abu-text-muted)] hover:text-[var(--abu-text-tertiary)]"
+              className="text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-tertiary)]"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -332,7 +332,7 @@ export default function SkillAgentPicker({
         <div className="max-h-64 overflow-y-auto py-1">
           {skillItems.length > 0 && (
             <>
-              <div className="px-3 py-1 text-[10px] font-semibold text-[var(--abu-text-muted)] uppercase tracking-wide">
+              <div className="px-3 py-1 text-[10px] font-semibold text-[var(--lingxi-text-muted)] uppercase tracking-wide">
                 {t.skillAgentPicker.skills}
               </div>
               {skillItems.map((item) => {
@@ -347,7 +347,7 @@ export default function SkillAgentPicker({
                       'w-full flex items-start gap-2 px-3 py-2 text-left text-[13px] transition-colors',
                       isSelected
                         ? 'bg-purple-50'
-                        : 'hover:bg-[var(--abu-bg-muted)]',
+                        : 'hover:bg-[var(--lingxi-bg-muted)]',
                     )}
                   >
                     <Wand2
@@ -364,13 +364,13 @@ export default function SkillAgentPicker({
                           'font-medium truncate',
                           isSelected
                             ? 'text-purple-700'
-                            : 'text-[var(--abu-text-primary)]',
+                            : 'text-[var(--lingxi-text-primary)]',
                         )}
                       >
                         /{item.name}
                       </div>
                       {item.description && (
-                        <div className="text-[11px] text-[var(--abu-text-tertiary)] truncate mt-0.5">
+                        <div className="text-[11px] text-[var(--lingxi-text-tertiary)] truncate mt-0.5">
                           {item.description}
                         </div>
                       )}
@@ -388,7 +388,7 @@ export default function SkillAgentPicker({
 
           {agentItems.length > 0 && (
             <>
-              <div className="px-3 py-1 text-[10px] font-semibold text-[var(--abu-text-muted)] uppercase tracking-wide border-t border-[var(--abu-border-subtle)] mt-1">
+              <div className="px-3 py-1 text-[10px] font-semibold text-[var(--lingxi-text-muted)] uppercase tracking-wide border-t border-[var(--lingxi-border-subtle)] mt-1">
                 {t.skillAgentPicker.agents}
               </div>
               {agentItems.map((item) => {
@@ -403,7 +403,7 @@ export default function SkillAgentPicker({
                       'w-full flex items-start gap-2 px-3 py-2 text-left text-[13px] transition-colors',
                       isSelected
                         ? 'bg-blue-50'
-                        : 'hover:bg-[var(--abu-bg-muted)]',
+                        : 'hover:bg-[var(--lingxi-bg-muted)]',
                     )}
                   >
                     <Bot
@@ -418,13 +418,13 @@ export default function SkillAgentPicker({
                           'font-medium truncate',
                           isSelected
                             ? 'text-blue-700'
-                            : 'text-[var(--abu-text-primary)]',
+                            : 'text-[var(--lingxi-text-primary)]',
                         )}
                       >
                         @{item.name}
                       </div>
                       {item.description && (
-                        <div className="text-[11px] text-[var(--abu-text-tertiary)] truncate mt-0.5">
+                        <div className="text-[11px] text-[var(--lingxi-text-tertiary)] truncate mt-0.5">
                           {item.description}
                         </div>
                       )}
@@ -441,7 +441,7 @@ export default function SkillAgentPicker({
           )}
 
           {skillItems.length === 0 && agentItems.length === 0 && (
-            <div className="px-4 py-6 text-center text-[13px] text-[var(--abu-text-muted)]">
+            <div className="px-4 py-6 text-center text-[13px] text-[var(--lingxi-text-muted)]">
               {t.skillAgentPicker.noResults}
             </div>
           )}

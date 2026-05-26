@@ -430,7 +430,7 @@ describe('SkillProposalCard · zombie-card detection (Task #40)', () => {
 
 // Task #41 · Agent silent patch notification. The card has no buttons
 // and no settled state — it's a one-shot visibility surface so users
-// see when Abu self-edits a skill instead of having to expand the
+// see when Lingxi self-edits a skill instead of having to expand the
 // tool call to notice.
 describe('SkillProposalCard · skill-patched notice (Task #41)', () => {
   const PATCHED_CARD: InteractiveNoticeCard = {

@@ -4,7 +4,7 @@
  * The Toolbox shows 3 top-level skill buckets (`SkillUXCategory`):
  *
  *   - **mine** — user/standard/project/project-standard/workspace-auto.
- *     Everything the human or Abu created on behalf of the user. Abu-created
+ *     Everything the human or Lingxi created on behalf of the user. Lingxi-created
  *     skills get the per-row "自进化" badge via sourceBadge() so the origin
  *     is still visible without a separate category.
  *   - **agent-evolved** — draft only. Pending agent proposals awaiting

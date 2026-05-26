@@ -10,7 +10,7 @@
  */
 
 import { BaseAdapter } from './base';
-import type { AdapterConfig, AbuMessage, DirectReplyContext } from './types';
+import type { AdapterConfig, LingxiMessage, DirectReplyContext } from './types';
 import { getTauriFetch } from '../../llm/tauriFetch';
 
 export class SlackAdapter extends BaseAdapter {
@@ -24,7 +24,7 @@ export class SlackAdapter extends BaseAdapter {
     supportsMessageUpdate: true,
   };
 
-  formatOutbound(message: AbuMessage): unknown {
+  formatOutbound(message: LingxiMessage): unknown {
     const blocks: unknown[] = [];
 
     if (message.title) {
@@ -80,7 +80,7 @@ export class SlackAdapter extends BaseAdapter {
   async replyToChat(
     token: string,
     context: DirectReplyContext,
-    message: AbuMessage,
+    message: LingxiMessage,
   ): Promise<{ messageId?: string }> {
     const payload = this.formatOutbound(message) as { blocks: unknown[] };
 

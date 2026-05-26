@@ -298,7 +298,7 @@ export const useTriggerStore = create<TriggerStore>()(
       },
     })),
     {
-      name: 'abu-triggers',
+      name: 'lingxi-triggers',
       version: 4,
       partialize: (state) => ({
         triggers: state.triggers,

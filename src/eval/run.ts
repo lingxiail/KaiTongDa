@@ -1,6 +1,6 @@
 #!/usr/bin/env tsx
 /**
- * Abu Agent Eval — CLI Entry Point
+ * Lingxi Agent Eval — CLI Entry Point
  *
  * Usage:
  *   tsx src/eval/run.ts tool-selection --provider anthropic --model claude-sonnet-4-20250514
@@ -37,7 +37,7 @@ const command = positionals[0];
 async function main() {
   if (!command) {
     console.log(`
-Abu Agent Eval Framework
+Lingxi Agent Eval Framework
 
 Commands:
   tool-selection    Run L2 tool selection eval

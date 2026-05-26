@@ -220,22 +220,22 @@ export default function ChatView() {
   // Conversation loading from disk (LRU cache miss) — show skeleton instead of welcome page
   if (activeConvId && !activeConv) {
     return (
-      <div className="flex flex-col h-full bg-[var(--abu-bg-base)]">
+      <div className="flex flex-col h-full bg-[var(--lingxi-bg-base)]">
         <div className="flex-1 overflow-hidden">
           <div className="w-full max-w-4xl mx-auto px-6 md:px-10 pt-5 pb-16 space-y-5">
             {/* User message skeleton */}
             <div className="flex justify-end">
               <div className="max-w-[70%] space-y-2">
-                <div className="h-4 w-48 bg-[var(--abu-bg-muted)] rounded animate-pulse" />
+                <div className="h-4 w-48 bg-[var(--lingxi-bg-muted)] rounded animate-pulse" />
               </div>
             </div>
             {/* Assistant message skeleton */}
             <div className="flex gap-3">
-              <div className="w-7 h-7 rounded-full bg-[var(--abu-bg-muted)] animate-pulse shrink-0" />
+              <div className="w-7 h-7 rounded-full bg-[var(--lingxi-bg-muted)] animate-pulse shrink-0" />
               <div className="flex-1 space-y-2.5">
-                <div className="h-4 w-full bg-[var(--abu-bg-muted)] rounded animate-pulse" />
-                <div className="h-4 w-3/4 bg-[var(--abu-bg-muted)] rounded animate-pulse" />
-                <div className="h-4 w-1/2 bg-[var(--abu-bg-muted)] rounded animate-pulse" />
+                <div className="h-4 w-full bg-[var(--lingxi-bg-muted)] rounded animate-pulse" />
+                <div className="h-4 w-3/4 bg-[var(--lingxi-bg-muted)] rounded animate-pulse" />
+                <div className="h-4 w-1/2 bg-[var(--lingxi-bg-muted)] rounded animate-pulse" />
               </div>
             </div>
           </div>
@@ -252,21 +252,21 @@ export default function ChatView() {
   // activeConv.id when present, so no createConversation churn happens.
   if (!activeConv || activeConv.messages.length === 0) {
     return (
-      <div className="flex flex-col h-full bg-[var(--abu-bg-base)]">
+      <div className="flex flex-col h-full bg-[var(--lingxi-bg-base)]">
         <div className="flex-1 flex flex-col items-center justify-center px-8 py-12">
           <div className="w-full max-w-2xl">
             {/* Title */}
             <div className="text-center mb-8">
               {/* Mascot */}
               <div className="w-20 h-20 mx-auto mb-4 rounded-full overflow-hidden">
-                <img src={abuAvatar} alt="Abu" className="w-full h-full object-cover" />
+                <img src={abuAvatar} alt="Lingxi" className="w-full h-full object-cover" />
               </div>
 
               {/* Slogan */}
-              <h1 className="text-[28px] font-semibold text-[var(--abu-text-primary)] leading-tight mb-2">
+              <h1 className="text-[28px] font-semibold text-[var(--lingxi-text-primary)] leading-tight mb-2">
                 {t.chat.welcomeTitle}
               </h1>
-              <p className="text-[15px] text-[var(--abu-text-tertiary)]">
+              <p className="text-[15px] text-[var(--lingxi-text-tertiary)]">
                 {t.chat.welcomeSubtitle}
               </p>
             </div>
@@ -274,11 +274,11 @@ export default function ChatView() {
             {/* First-run setup prompt */}
             {needsSetup && (
               <div className="mb-6 mx-auto max-w-md">
-                <div className="rounded-xl border border-[var(--abu-border)] bg-white/80 px-5 py-4 text-center">
-                  <p className="text-[15px] font-medium text-[var(--abu-text-primary)] mb-1">
+                <div className="rounded-xl border border-[var(--lingxi-border)] bg-white/80 px-5 py-4 text-center">
+                  <p className="text-[15px] font-medium text-[var(--lingxi-text-primary)] mb-1">
                     {t.chat.setupRequired}
                   </p>
-                  <p className="text-[13px] text-[var(--abu-text-tertiary)] mb-3">
+                  <p className="text-[13px] text-[var(--lingxi-text-tertiary)] mb-3">
                     {t.chat.setupRequiredDesc}
                   </p>
                   <button
@@ -321,7 +321,7 @@ export default function ChatView() {
   const messageGroups = groupMessagesByLoop(visibleMessages);
 
   return (
-    <div className="flex flex-col h-full min-h-0 min-w-0 bg-[var(--abu-bg-base)]">
+    <div className="flex flex-col h-full min-h-0 min-w-0 bg-[var(--lingxi-bg-base)]">
       {/* Command Confirmation Dialog — only show if it belongs to this conversation */}
       {commandConfirmRequest && commandConfirmRequest.conversationId === activeConvId && (
         <CommandConfirmDialog
@@ -395,11 +395,11 @@ export default function ChatView() {
             {activeConv?.status === 'running' && messages.every((m) => m.role === 'user') && (
               <div className="flex items-center gap-3 pl-9 py-1">
                 <div className="flex items-center gap-1">
-                  <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[var(--abu-clay-60)]" />
-                  <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[var(--abu-clay-60)]" />
-                  <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[var(--abu-clay-60)]" />
+                  <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[var(--lingxi-clay-60)]" />
+                  <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[var(--lingxi-clay-60)]" />
+                  <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[var(--lingxi-clay-60)]" />
                 </div>
-                <span className="text-[13px] text-[var(--abu-text-tertiary)]">{t.chat.thinking}</span>
+                <span className="text-[13px] text-[var(--lingxi-text-tertiary)]">{t.chat.thinking}</span>
               </div>
             )}
           </div>
@@ -412,7 +412,7 @@ export default function ChatView() {
         {!isAtBottom && (
           <button
             onClick={scrollToBottom}
-            className="sticky bottom-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 border border-[var(--abu-border)] text-[13px] text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-white transition-all backdrop-blur-sm"
+            className="sticky bottom-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 border border-[var(--lingxi-border)] text-[13px] text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-white transition-all backdrop-blur-sm"
           >
             <ChevronDown className="h-3.5 w-3.5" />
             <span>{t.chat.scrollToBottom}</span>
@@ -421,7 +421,7 @@ export default function ChatView() {
       </div>
 
       {/* Bottom Input */}
-      <div className="shrink-0 px-6 md:px-10 pb-4 pt-1.5 bg-[var(--abu-bg-base)]">
+      <div className="shrink-0 px-6 md:px-10 pb-4 pt-1.5 bg-[var(--lingxi-bg-base)]">
         <div className="max-w-4xl mx-auto flex flex-col gap-1.5">
           <ContextWarningBar
             conversationId={activeConv.id}
@@ -430,10 +430,10 @@ export default function ChatView() {
           <BackgroundAgents />
           <ChatInput variant="chat" onSend={handleSend} />
           <div className="flex items-center justify-center gap-3 mt-1.5">
-            <p className="text-[11px] text-[var(--abu-text-muted)]">
+            <p className="text-[11px] text-[var(--lingxi-text-muted)]">
               {t.chat.disclaimer}
             </p>
-            <span className="text-[var(--abu-text-muted)] opacity-50">·</span>
+            <span className="text-[var(--lingxi-text-muted)] opacity-50">·</span>
             <ConvIdBadge conversationId={activeConv.id} />
           </div>
         </div>

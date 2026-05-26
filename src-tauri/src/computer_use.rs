@@ -482,7 +482,7 @@ pub fn get_abu_window_id(window: tauri::Window) -> Result<u32, String> {
 /// everything on screen BELOW the specified window — effectively excluding
 /// that window and any windows above it from the screenshot.
 ///
-/// This allows Abu to take screenshots without hiding its own window.
+/// This allows Lingxi to take screenshots without hiding its own window.
 #[tauri::command]
 pub async fn capture_screen_excluding(
     exclude_window_id: u32,
@@ -520,7 +520,7 @@ fn capture_excluding_impl(
 ) -> Result<ScreenshotResult, String> {
     unsafe {
         // Capture everything on screen below the excluded window.
-        // This excludes the Abu window (and any window above it) from the screenshot.
+        // This excludes the Lingxi window (and any window above it) from the screenshot.
         let cg_image = CGWindowListCreateImage(
             CGRectInfinite,
             CGWindowListOption::OptionOnScreenBelowWindow,

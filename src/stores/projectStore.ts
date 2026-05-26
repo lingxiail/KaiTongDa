@@ -164,7 +164,7 @@ export const useProjectStore = create<ProjectStore>()(
       },
     })),
     {
-      name: 'abu-projects',
+      name: 'lingxi-projects',
       version: 1,
       partialize: (state) => ({
         projects: state.projects,

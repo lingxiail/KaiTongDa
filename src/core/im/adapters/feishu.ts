@@ -5,7 +5,7 @@
  */
 
 import { BaseAdapter } from './base';
-import type { AdapterConfig, AbuMessage, MessageColor, DirectReplyContext } from './types';
+import type { AdapterConfig, LingxiMessage, MessageColor, DirectReplyContext } from './types';
 import { getTauriFetch } from '../../llm/tauriFetch';
 
 export class FeishuAdapter extends BaseAdapter {
@@ -19,7 +19,7 @@ export class FeishuAdapter extends BaseAdapter {
     supportsMessageUpdate: true,
   };
 
-  formatOutbound(message: AbuMessage): unknown {
+  formatOutbound(message: LingxiMessage): unknown {
     const colorMap: Record<MessageColor, string> = {
       success: 'green',
       warning: 'orange',
@@ -64,7 +64,7 @@ export class FeishuAdapter extends BaseAdapter {
   async replyToChat(
     token: string,
     context: DirectReplyContext,
-    message: AbuMessage,
+    message: LingxiMessage,
   ): Promise<{ messageId?: string }> {
     const card = this.formatOutbound(message);
     const body = {

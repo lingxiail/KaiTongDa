@@ -8,7 +8,7 @@
  * basic fact.
  *
  * Design notes:
- * - **No LLM selector** — Abu users typically have 5-30 memories, so a
+ * - **No LLM selector** — Lingxi users typically have 5-30 memories, so a
  *   simple keyword-overlap score performs comparably to a Sonnet selector
  *   without the per-turn cost. CC uses Sonnet because they face hundreds.
  * - **Private memories never enter the candidate pool** — they're explicitly

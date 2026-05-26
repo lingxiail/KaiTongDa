@@ -20,7 +20,7 @@ export interface CUState {
   currentAction: string | null;
   latestScreenshot: string | null; // base64
   activeConversationId: string | null; // for abort targeting
-  /** Whether Abu window is hidden and border/stop-btn are shown (session-level, survives across batches) */
+  /** Whether Lingxi window is hidden and border/stop-btn are shown (session-level, survives across batches) */
   sessionWindowHidden: boolean;
   /** Session start timestamp for timeout check */
   sessionStartTime: number | null;

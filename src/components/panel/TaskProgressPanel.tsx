@@ -45,24 +45,24 @@ export default function TaskProgressPanel() {
   const { t } = useI18n();
 
   return (
-    <div className="task-progress-panel pb-5 border-b border-[var(--abu-border)]">
+    <div className="task-progress-panel pb-5 border-b border-[var(--lingxi-border)]">
       {/* Header */}
       <button
         onClick={() => setExpanded(!expanded)}
         className="flex items-center justify-between w-full text-left group"
       >
         <div className="flex items-center gap-2">
-          <ListChecks className="h-4 w-4 text-[var(--abu-text-tertiary)]" />
-          <span className="text-[13px] font-medium text-[var(--abu-text-primary)]">{t.panel.progress}</span>
+          <ListChecks className="h-4 w-4 text-[var(--lingxi-text-tertiary)]" />
+          <span className="text-[13px] font-medium text-[var(--lingxi-text-primary)]">{t.panel.progress}</span>
           {hasPlannedSteps && (
-            <span className="text-[11px] text-[var(--abu-text-muted)]">
+            <span className="text-[11px] text-[var(--lingxi-text-muted)]">
               {plannedSteps.filter((s) => s.status === 'completed').length}/{plannedSteps.length}
             </span>
           )}
         </div>
         <ChevronDown
           className={cn(
-            'h-4 w-4 text-[var(--abu-text-muted)] transition-transform',
+            'h-4 w-4 text-[var(--lingxi-text-muted)] transition-transform',
             !expanded && '-rotate-90'
           )}
         />
@@ -82,13 +82,13 @@ export default function TaskProgressPanel() {
             // Empty state - Claude Cowork style
             <div className="flex flex-col items-center py-4 text-center">
               <div className="flex items-center gap-1.5 mb-2">
-                <Circle className="h-3 w-3 text-[var(--abu-bg-pressed)]" />
-                <div className="w-4 h-px bg-[var(--abu-bg-pressed)]" />
-                <Circle className="h-3 w-3 text-[var(--abu-bg-pressed)]" />
-                <div className="w-4 h-px bg-[var(--abu-bg-pressed)]" />
-                <Circle className="h-3 w-3 text-[var(--abu-bg-pressed)]" />
+                <Circle className="h-3 w-3 text-[var(--lingxi-bg-pressed)]" />
+                <div className="w-4 h-px bg-[var(--lingxi-bg-pressed)]" />
+                <Circle className="h-3 w-3 text-[var(--lingxi-bg-pressed)]" />
+                <div className="w-4 h-px bg-[var(--lingxi-bg-pressed)]" />
+                <Circle className="h-3 w-3 text-[var(--lingxi-bg-pressed)]" />
               </div>
-              <p className="text-[12px] text-[var(--abu-text-muted)]">
+              <p className="text-[12px] text-[var(--lingxi-text-muted)]">
                 {t.panel.progressEmptyHint}
               </p>
             </div>
@@ -110,14 +110,14 @@ function ProgressStepRow({ step }: ProgressStepRowProps) {
     switch (step.status) {
       case 'completed':
         return (
-          <div className="w-5 h-5 rounded-full bg-[var(--abu-clay)] flex items-center justify-center">
+          <div className="w-5 h-5 rounded-full bg-[var(--lingxi-clay)] flex items-center justify-center">
             <Check className="h-3 w-3 text-white" strokeWidth={3} />
           </div>
         );
       case 'running':
         return (
-          <div className="w-5 h-5 rounded-full border-2 border-[var(--abu-clay)] flex items-center justify-center">
-            <Loader2 className="h-3 w-3 text-[var(--abu-clay)] animate-spin" />
+          <div className="w-5 h-5 rounded-full border-2 border-[var(--lingxi-clay)] flex items-center justify-center">
+            <Loader2 className="h-3 w-3 text-[var(--lingxi-clay)] animate-spin" />
           </div>
         );
       case 'error':
@@ -128,8 +128,8 @@ function ProgressStepRow({ step }: ProgressStepRowProps) {
         );
       default:
         return (
-          <div className="w-5 h-5 rounded-full border-2 border-[var(--abu-bg-pressed)] flex items-center justify-center">
-            <Circle className="h-2 w-2 text-[var(--abu-bg-pressed)]" />
+          <div className="w-5 h-5 rounded-full border-2 border-[var(--lingxi-bg-pressed)] flex items-center justify-center">
+            <Circle className="h-2 w-2 text-[var(--lingxi-bg-pressed)]" />
           </div>
         );
     }
@@ -141,9 +141,9 @@ function ProgressStepRow({ step }: ProgressStepRowProps) {
       <span
         className={cn(
           'text-[13px] leading-6',
-          step.status === 'completed' && 'text-[var(--abu-text-tertiary)]',
-          step.status === 'running' && 'text-[var(--abu-text-primary)]',
-          step.status === 'pending' && 'text-[var(--abu-text-muted)]',
+          step.status === 'completed' && 'text-[var(--lingxi-text-tertiary)]',
+          step.status === 'running' && 'text-[var(--lingxi-text-primary)]',
+          step.status === 'pending' && 'text-[var(--lingxi-text-muted)]',
           step.status === 'error' && 'text-red-600'
         )}
       >

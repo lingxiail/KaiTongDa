@@ -1,8 +1,8 @@
 /**
  * IM Channel Types — Phase 2: IM independent channel
  *
- * An IM channel connects Abu to an IM platform for direct interaction.
- * Users can @Abu in groups or DM the bot to use Abu's capabilities.
+ * An IM channel connects Lingxi to an IM platform for direct interaction.
+ * Users can @Lingxi in groups or DM the bot to use Lingxi's capabilities.
  */
 
 import type { IMPlatform } from './im';
@@ -11,7 +11,7 @@ import type { IMPlatform } from './im';
 
 export type IMCapabilityLevel = 'chat_only' | 'read_tools' | 'safe_tools' | 'full';
 
-/** Controls when Abu responds in group chats */
+/** Controls when Lingxi responds in group chats */
 export type IMResponseMode = 'mention_only' | 'all_messages';
 
 // ── Channel Config ──
@@ -60,7 +60,7 @@ export interface IMSession {
   key: string;
   /** Channel ID this session belongs to */
   channelId: string;
-  /** Abu conversation ID */
+  /** Lingxi conversation ID */
   conversationId: string;
   /** Last interaction timestamp */
   lastActiveAt: number;

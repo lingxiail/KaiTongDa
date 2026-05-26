@@ -83,7 +83,7 @@ function FileCard({ file, conversationId, operationLabels, previewTitle, finderT
       role="button"
       tabIndex={0}
       className={cn(
-        'group flex items-center gap-2 px-2 py-1.5 rounded-md bg-[var(--abu-bg-base)] hover:bg-[var(--abu-bg-muted)] transition-colors cursor-pointer',
+        'group flex items-center gap-2 px-2 py-1.5 rounded-md bg-[var(--lingxi-bg-base)] hover:bg-[var(--lingxi-bg-muted)] transition-colors cursor-pointer',
         file.operation === 'write' && 'ring-1 ring-amber-500/30',
         file.operation === 'create' && 'ring-1 ring-green-500/30',
         isUnavailable && 'opacity-60'
@@ -92,14 +92,14 @@ function FileCard({ file, conversationId, operationLabels, previewTitle, finderT
       onClick={handleClick}
       onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && (e.preventDefault(), handleClick())}
     >
-      <Icon className="w-3.5 h-3.5 text-[var(--abu-text-tertiary)] shrink-0" />
+      <Icon className="w-3.5 h-3.5 text-[var(--lingxi-text-tertiary)] shrink-0" />
       <span className={cn(
         'text-[12px] truncate flex-1',
         isUnavailable
           ? file.operation === 'read'
-            ? 'text-[var(--abu-text-muted)]'              // read: dim only, no strikethrough
-            : 'text-[var(--abu-text-muted)] line-through' // write/create: strikethrough = artifact lost
-          : 'text-[var(--abu-text-primary)]'
+            ? 'text-[var(--lingxi-text-muted)]'              // read: dim only, no strikethrough
+            : 'text-[var(--lingxi-text-muted)] line-through' // write/create: strikethrough = artifact lost
+          : 'text-[var(--lingxi-text-primary)]'
       )}>{fileName}</span>
       <span
         className={cn(
@@ -114,10 +114,10 @@ function FileCard({ file, conversationId, operationLabels, previewTitle, finderT
       {!isUnavailable && (
         <button
           onClick={handleReveal}
-          className="p-0.5 rounded hover:bg-[var(--abu-bg-hover)] opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+          className="p-0.5 rounded hover:bg-[var(--lingxi-bg-hover)] opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
           title={finderTitle}
         >
-          <ExternalLink className="w-3 h-3 text-[var(--abu-text-muted)]" />
+          <ExternalLink className="w-3 h-3 text-[var(--lingxi-text-muted)]" />
         </button>
       )}
     </div>
@@ -178,10 +178,10 @@ export default function FilesSection() {
   return (
     <div className="space-y-2 mt-3">
       <div className="flex items-center justify-between">
-        <h4 className="text-[11px] font-medium text-[var(--abu-text-muted)] uppercase tracking-wider">
+        <h4 className="text-[11px] font-medium text-[var(--lingxi-text-muted)] uppercase tracking-wider">
           {t.panel.files}
         </h4>
-        <span className="text-[10px] text-[var(--abu-text-muted)]">
+        <span className="text-[10px] text-[var(--lingxi-text-muted)]">
           {i18nFormat(t.panel.filesCount, { count: trackedFiles.length })}
         </span>
       </div>
@@ -201,7 +201,7 @@ export default function FilesSection() {
         {hiddenCount > 0 && (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="w-full text-center text-[11px] text-[var(--abu-text-muted)] hover:text-[var(--abu-text-tertiary)] py-1 transition-colors"
+            className="w-full text-center text-[11px] text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-tertiary)] py-1 transition-colors"
           >
             {expanded ? t.panel.collapse : i18nFormat(t.panel.moreFiles, { count: hiddenCount })}
           </button>

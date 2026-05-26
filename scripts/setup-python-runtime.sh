@@ -1,6 +1,6 @@
 #!/bin/bash
 # ============================================================
-# Setup embedded Python runtime for Abu
+# Setup embedded Python runtime for Lingxi
 # Downloads python-build-standalone, strips unnecessary modules,
 # and pre-installs document generation packages.
 #

@@ -107,13 +107,13 @@ export default function ProjectsSection() {
         <div className="group/header flex items-center justify-between px-2 py-1.5">
           <button
             onClick={() => setSectionCollapsed(!sectionCollapsed)}
-            className="flex items-center gap-1 text-[13px] font-medium text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]"
+            className="flex items-center gap-1 text-[13px] font-medium text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]"
           >
             <span>{t.project.sectionTitle}</span>
           </button>
           <button
             onClick={() => setShowCreateDialog(true)}
-            className="p-0.5 text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] transition-colors opacity-0 group-hover/header:opacity-100"
+            className="p-0.5 text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] transition-colors opacity-0 group-hover/header:opacity-100"
             title={t.project.createProject}
           >
             <Plus className="h-3.5 w-3.5" />
@@ -137,7 +137,7 @@ export default function ProjectsSection() {
         ) : !sectionCollapsed ? (
           <button
             onClick={() => setShowCreateDialog(true)}
-            className="w-full px-2 py-2 text-[12px] text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] transition-colors text-left"
+            className="w-full px-2 py-2 text-[12px] text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] transition-colors text-left"
           >
             + {t.project.emptyState}
           </button>
@@ -145,20 +145,20 @@ export default function ProjectsSection() {
 
         {/* Migration banner */}
         {!sectionCollapsed && migrationGroups.length > 0 && (
-          <div className="mx-2 mt-2 px-2.5 py-2 rounded-lg bg-[var(--abu-clay-bg)] text-[12px]">
-            <p className="text-[var(--abu-clay)]">
+          <div className="mx-2 mt-2 px-2.5 py-2 rounded-lg bg-[var(--lingxi-clay-bg)] text-[12px]">
+            <p className="text-[var(--lingxi-clay)]">
               💡 {format(t.project.migrationBanner, { count: String(migrationGroups.length) })}
             </p>
             <div className="flex items-center gap-2 mt-1.5">
               <button
                 onClick={() => { applyMigration(migrationGroups); setMigrationDismissed(true); }}
-                className="text-[var(--abu-clay)] font-medium hover:underline"
+                className="text-[var(--lingxi-clay)] font-medium hover:underline"
               >
                 {t.project.migrationAction}
               </button>
               <button
                 onClick={() => setMigrationDismissed(true)}
-                className="text-[var(--abu-text-muted)] hover:text-[var(--abu-text-tertiary)]"
+                className="text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-tertiary)]"
               >
                 {t.project.migrationDismiss}
               </button>
@@ -171,18 +171,18 @@ export default function ProjectsSection() {
           <div className="px-2 mt-1">
             <button
               onClick={() => setShowArchived(!showArchived)}
-              className="text-[11px] text-[var(--abu-text-muted)] hover:text-[var(--abu-text-tertiary)] transition-colors"
+              className="text-[11px] text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-tertiary)] transition-colors"
             >
               {format(t.project.archivedCount, { count: String(archivedProjects.length) })}
             </button>
             {showArchived && (
               <div className="mt-1 space-y-0.5">
                 {archivedProjects.map((p) => (
-                  <div key={p.id} className="flex items-center gap-1.5 px-2 py-1 text-[12px] text-[var(--abu-text-muted)]">
+                  <div key={p.id} className="flex items-center gap-1.5 px-2 py-1 text-[12px] text-[var(--lingxi-text-muted)]">
                     <span className="truncate flex-1 flex items-center gap-1.5"><FolderClosed className="h-3.5 w-3.5 shrink-0" strokeWidth={1.5} />{p.name}</span>
                     <button
                       onClick={() => restoreProject(p.id)}
-                      className="shrink-0 text-[var(--abu-clay)] hover:underline"
+                      className="shrink-0 text-[var(--lingxi-clay)] hover:underline"
                     >
                       {t.project.restore}
                     </button>

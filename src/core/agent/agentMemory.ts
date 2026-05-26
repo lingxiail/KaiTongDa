@@ -2,7 +2,7 @@
  * Agent Memory — per-agent persistent memory
  *
  * Each agent has a memory.md file stored at:
- *   ~/.abu/agents/{agentName}/memory.md
+ *   ~/.lingxi/agents/{agentName}/memory.md
  *
  * Memory is loaded into the agent system prompt and can be updated
  * by the agent via the update_memory tool (append / rewrite / clear).
@@ -40,7 +40,7 @@ async function getCachedHomeDir(): Promise<string> {
  */
 async function getMemoryPath(agentName: string): Promise<string> {
   const home = await getCachedHomeDir();
-  return joinPath(home, '.abu', 'agents', agentName, 'memory.md');
+  return joinPath(home, '.lingxi', 'agents', agentName, 'memory.md');
 }
 
 /**
@@ -107,10 +107,10 @@ const MAX_PROJECT_MEMORY_CHARS = 8000;
 
 /**
  * Get the project memory file path (sync — no IPC needed)
- * Storage: {workspacePath}/.abu/MEMORY.md
+ * Storage: {workspacePath}/.lingxi/MEMORY.md
  */
 function getProjectMemoryPath(workspacePath: string): string {
-  return joinPath(workspacePath, '.abu', 'MEMORY.md');
+  return joinPath(workspacePath, '.lingxi', 'MEMORY.md');
 }
 
 /**

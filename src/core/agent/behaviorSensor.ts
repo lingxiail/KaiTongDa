@@ -2,7 +2,7 @@
  * Behavior Sensor — window sampling for user work pattern awareness
  *
  * Samples the active window title every 5 minutes.
- * Raw data stored at ~/.abu/behavior-log.json (7-day retention).
+ * Raw data stored at ~/.lingxi/behavior-log.json (7-day retention).
  * Aggregates injected into system prompt as 3-5 line summary.
  *
  * Privacy: default OFF, only window titles (no content/screenshots),
@@ -34,7 +34,7 @@ let cachedHome: string | null = null;
 
 async function getLogPath(): Promise<string> {
   if (!cachedHome) cachedHome = await homeDir();
-  return joinPath(cachedHome, '.abu', 'behavior-log.json');
+  return joinPath(cachedHome, '.lingxi', 'behavior-log.json');
 }
 
 async function readBehaviorLog(): Promise<BehaviorSample[]> {

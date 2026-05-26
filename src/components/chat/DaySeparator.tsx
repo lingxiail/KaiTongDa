@@ -8,11 +8,11 @@ export default function DaySeparator({ timestamp }: { timestamp: number }) {
       aria-label={label}
       className="flex items-center gap-3 my-2 select-none"
     >
-      <div className="flex-1 h-px bg-[var(--abu-border-subtle)]" />
-      <span className="text-[11px] text-[var(--abu-text-muted)] tracking-wide">
+      <div className="flex-1 h-px bg-[var(--lingxi-border-subtle)]" />
+      <span className="text-[11px] text-[var(--lingxi-text-muted)] tracking-wide">
         {label}
       </span>
-      <div className="flex-1 h-px bg-[var(--abu-border-subtle)]" />
+      <div className="flex-1 h-px bg-[var(--lingxi-border-subtle)]" />
     </div>
   );
 }

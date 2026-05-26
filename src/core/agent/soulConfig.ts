@@ -1,12 +1,12 @@
 /**
- * Soul Config — Abu's personality definition (SOUL.md)
+ * Soul Config — Lingxi's personality definition (SOUL.md)
  *
- * SOUL.md defines Abu's character traits and communication style.
- * File location: ~/.abu/SOUL.md
+ * SOUL.md defines Lingxi's character traits and communication style.
+ * File location: ~/.lingxi/SOUL.md
  *
  * Three editing channels:
  *   1. Settings UI (SoulSection)
- *   2. Direct file editing (~/.abu/SOUL.md)
+ *   2. Direct file editing (~/.lingxi/SOUL.md)
  *   3. In-conversation via update_soul tool
  *
  * All writes go through saveSoul() as the single entry point.
@@ -29,11 +29,11 @@ async function getCachedHomeDir(): Promise<string> {
 }
 
 /**
- * Get the path to ~/.abu/SOUL.md
+ * Get the path to ~/.lingxi/SOUL.md
  */
 async function getSoulPath(): Promise<string> {
   const home = await getCachedHomeDir();
-  return joinPath(home, '.abu', 'SOUL.md');
+  return joinPath(home, '.lingxi', 'SOUL.md');
 }
 
 /**
@@ -47,7 +47,7 @@ function truncateAtParagraph(content: string, maxChars: number): string {
 }
 
 /**
- * Load Abu's soul from ~/.abu/SOUL.md.
+ * Load Lingxi's soul from ~/.lingxi/SOUL.md.
  * Returns empty string if file doesn't exist or can't be read.
  */
 export async function loadSoul(): Promise<string> {
@@ -62,18 +62,18 @@ export async function loadSoul(): Promise<string> {
 }
 
 /**
- * Save Abu's soul to ~/.abu/SOUL.md.
- * Ensures ~/.abu/ directory exists before writing.
+ * Save Lingxi's soul to ~/.lingxi/SOUL.md.
+ * Ensures ~/.lingxi/ directory exists before writing.
  * This is the SINGLE write entry point — both UI and update_soul tool call this.
  */
 export async function saveSoul(content: string): Promise<void> {
   const home = await getCachedHomeDir();
-  const abuDir = joinPath(home, '.abu');
+  const lingxiDir = joinPath(home, '.lingxi');
 
-  // Ensure ~/.abu/ directory exists
+  // Ensure ~/.lingxi/ directory exists
   try {
-    if (!(await exists(abuDir))) {
-      await mkdir(abuDir, { recursive: true });
+    if (!(await exists(lingxiDir))) {
+      await mkdir(lingxiDir, { recursive: true });
     }
   } catch {
     // Directory might already exist, ignore
@@ -85,7 +85,7 @@ export async function saveSoul(content: string): Promise<void> {
 }
 
 /**
- * Default soul template — Abu's factory personality.
+ * Default soul template — Lingxi's factory personality.
  * Used in settings UI when user clicks "Customize" to start from the default.
  */
 export function getDefaultSoulTemplate(): string {

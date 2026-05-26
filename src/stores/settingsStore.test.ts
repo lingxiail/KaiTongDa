@@ -302,35 +302,12 @@ describe('reconcileActiveProvider', () => {
       expect(state.providers.find(p => p.id === 'minimax')!.enabled).toBe(false);
     });
 
-    it('handles "qiniu placeholder + new minimax" V14 migration aftermath', () => {
-      // V14 migration created qiniu (default active, enabled, no key)
-      // User then added minimax with key
-      // Active is still qiniu — onRehydrate should keep this state stable
-      // because qiniu is still enabled, even though it has no key.
-      const qiniu = makeProvider({
-        id: 'qiniu',
-        enabled: true, // default-enabled by V14
-        apiKey: '',
-      });
-      const minimax = makeProvider({
-        id: 'minimax',
-        enabled: true,
-        apiKey: 'mm-key',
-        sortOrder: 1,
-      });
-      const state = makeState(
-        [qiniu, minimax],
-        { providerId: 'qiniu', modelId: 'm1' },
-      );
+    it('leaves the empty initial selection untouched when no providers exist', () => {
+      const state = makeState([], { providerId: '', modelId: '' });
 
       reconcileActiveProvider(state);
 
-      // qiniu is enabled → branch 1 hit → no changes
-      expect(state.activeModel).toEqual({ providerId: 'qiniu', modelId: 'm1' });
-      expect(state.providers[0].enabled).toBe(true);
-      // (The needsSetup banner is now correctly suppressed by the new
-      // ChatView predicate because minimax has a key — that's tested
-      // separately by ChatView, not here.)
+      expect(state.activeModel).toEqual({ providerId: '', modelId: '' });
     });
   });
 });

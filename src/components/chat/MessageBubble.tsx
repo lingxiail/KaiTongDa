@@ -73,23 +73,23 @@ function UserImageThumbnail({ image }: { image: Extract<MessageContent, { type: 
   if (expired) {
     return (
       <div
-        className="w-8 h-8 rounded overflow-hidden border border-[var(--abu-bg-pressed)] flex items-center justify-center bg-[var(--abu-bg-muted)]"
+        className="w-8 h-8 rounded overflow-hidden border border-[var(--lingxi-bg-pressed)] flex items-center justify-center bg-[var(--lingxi-bg-muted)]"
         title={t.chat.imageExpired}
       >
-        <ImageOff className="w-4 h-4 text-[var(--abu-text-muted)]" />
+        <ImageOff className="w-4 h-4 text-[var(--lingxi-text-muted)]" />
       </div>
     );
   }
 
   if (!src) {
     return (
-      <div className="w-8 h-8 rounded overflow-hidden border border-[var(--abu-bg-pressed)] bg-[var(--abu-bg-muted)] animate-pulse" />
+      <div className="w-8 h-8 rounded overflow-hidden border border-[var(--lingxi-bg-pressed)] bg-[var(--lingxi-bg-muted)] animate-pulse" />
     );
   }
 
   return (
     <div
-      className="w-8 h-8 rounded overflow-hidden border border-[var(--abu-border-subtle)] cursor-pointer hover:border-[var(--abu-border-hover)] transition-colors"
+      className="w-8 h-8 rounded overflow-hidden border border-[var(--lingxi-border-subtle)] cursor-pointer hover:border-[var(--lingxi-border-hover)] transition-colors"
       onClick={() => openPreview(effectivePath || image.filePath || src)}
       title={t.chat.clickToViewFull}
     >
@@ -119,17 +119,17 @@ function UserAttachmentChip({ filePath }: { filePath: string }) {
 
   return (
     <span
-      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[var(--abu-bg-muted)] border border-[var(--abu-bg-pressed)] hover:border-[var(--abu-clay-40)] cursor-pointer transition-all text-[13px] group/chip"
+      className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[var(--lingxi-bg-muted)] border border-[var(--lingxi-bg-pressed)] hover:border-[var(--lingxi-clay-40)] cursor-pointer transition-all text-[13px] group/chip"
       title={filePath}
       onClick={handleClick}
     >
-      <FileText className="w-3.5 h-3.5 text-[var(--abu-text-muted)] shrink-0" />
-      <span className="text-[var(--abu-text-primary)] truncate max-w-[200px]">{fileName}</span>
+      <FileText className="w-3.5 h-3.5 text-[var(--lingxi-text-muted)] shrink-0" />
+      <span className="text-[var(--lingxi-text-primary)] truncate max-w-[200px]">{fileName}</span>
       <button
         onClick={handleReveal}
-        className="p-0.5 rounded hover:bg-[var(--abu-bg-pressed)] opacity-0 group-hover/chip:opacity-100 transition-opacity shrink-0"
+        className="p-0.5 rounded hover:bg-[var(--lingxi-bg-pressed)] opacity-0 group-hover/chip:opacity-100 transition-opacity shrink-0"
       >
-        <FolderOpen className="w-3 h-3 text-[var(--abu-text-muted)]" />
+        <FolderOpen className="w-3 h-3 text-[var(--lingxi-text-muted)]" />
       </button>
     </span>
   );
@@ -154,22 +154,22 @@ function ThinkingBlock({ thinking }: { thinking: string }) {
   const { t } = useI18n();
 
   return (
-    <div className="my-3 rounded-xl overflow-hidden border border-[var(--abu-border-subtle)] bg-[var(--abu-bg-muted)] max-w-full">
+    <div className="my-3 rounded-xl overflow-hidden border border-[var(--lingxi-border-subtle)] bg-[var(--lingxi-bg-muted)] max-w-full">
       <button
         onClick={() => setExpanded(!expanded)}
-        className="btn-ghost w-full flex items-center gap-2 px-3.5 py-2.5 text-sm hover:bg-[var(--abu-bg-hover)]"
+        className="btn-ghost w-full flex items-center gap-2 px-3.5 py-2.5 text-sm hover:bg-[var(--lingxi-bg-hover)]"
       >
         {expanded ? (
-          <ChevronDown className="h-3.5 w-3.5 text-[var(--abu-text-tertiary)] shrink-0" />
+          <ChevronDown className="h-3.5 w-3.5 text-[var(--lingxi-text-tertiary)] shrink-0" />
         ) : (
-          <ChevronRight className="h-3.5 w-3.5 text-[var(--abu-text-tertiary)] shrink-0" />
+          <ChevronRight className="h-3.5 w-3.5 text-[var(--lingxi-text-tertiary)] shrink-0" />
         )}
         <Brain className="h-3.5 w-3.5 text-purple-500 shrink-0" />
-        <span className="text-[13px] font-medium text-[var(--abu-text-primary)]">{t.chat.thinkingProcess}</span>
+        <span className="text-[13px] font-medium text-[var(--lingxi-text-primary)]">{t.chat.thinkingProcess}</span>
       </button>
       {expanded && (
-        <div className="border-t border-[var(--abu-border-subtle)] px-4 py-3">
-          <pre className="text-[12px] text-[var(--abu-text-tertiary)] whitespace-pre-wrap break-words leading-relaxed">
+        <div className="border-t border-[var(--lingxi-border-subtle)] px-4 py-3">
+          <pre className="text-[12px] text-[var(--lingxi-text-tertiary)] whitespace-pre-wrap break-words leading-relaxed">
             {thinking}
           </pre>
         </div>
@@ -196,7 +196,7 @@ interface MessageActionsProps {
 function MessageTimestamp({ timestamp, className = '' }: { timestamp: number; className?: string }) {
   return (
     <span
-      className={`text-[11px] text-[var(--abu-text-muted)] tabular-nums select-none whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity ${className}`}
+      className={`text-[11px] text-[var(--lingxi-text-muted)] tabular-nums select-none whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity ${className}`}
       title={new Date(timestamp).toLocaleString()}
     >
       {formatRelativeTime(timestamp)}
@@ -220,7 +220,7 @@ function MessageActions({ message, onEdit, onDelete, onRegenerate, isUser }: Mes
       {/* Copy button */}
       <button
         onClick={handleCopy}
-        className="btn-ghost p-1.5 rounded-md text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)]"
+        className="btn-ghost p-1.5 rounded-md text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)]"
         title={t.chat.copy}
       >
         {copied ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
@@ -230,7 +230,7 @@ function MessageActions({ message, onEdit, onDelete, onRegenerate, isUser }: Mes
       {isUser && (
         <button
           onClick={onEdit}
-          className="btn-ghost p-1.5 rounded-md text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)]"
+          className="btn-ghost p-1.5 rounded-md text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)]"
           title={t.chat.edit}
         >
           <Pencil className="h-3.5 w-3.5" />
@@ -241,7 +241,7 @@ function MessageActions({ message, onEdit, onDelete, onRegenerate, isUser }: Mes
       {!isUser && (
         <button
           onClick={onRegenerate}
-          className="btn-ghost p-1.5 rounded-md text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)]"
+          className="btn-ghost p-1.5 rounded-md text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)]"
           title={t.chat.regenerate}
         >
           <RefreshCw className="h-3.5 w-3.5" />
@@ -251,7 +251,7 @@ function MessageActions({ message, onEdit, onDelete, onRegenerate, isUser }: Mes
       {/* Delete button */}
       <button
         onClick={onDelete}
-        className="btn-ghost p-1.5 rounded-md text-[var(--abu-text-tertiary)] hover:text-red-500 hover:bg-red-50"
+        className="btn-ghost p-1.5 rounded-md text-[var(--lingxi-text-tertiary)] hover:text-red-500 hover:bg-red-50"
         title={t.common.delete}
       >
         <Trash2 className="h-3.5 w-3.5" />
@@ -274,23 +274,23 @@ function EditInput({
   const { t } = useI18n();
 
   return (
-    <div className="min-w-[280px] rounded-2xl border border-[var(--abu-border-subtle)] bg-white overflow-hidden">
+    <div className="min-w-[280px] rounded-2xl border border-[var(--lingxi-border-subtle)] bg-white overflow-hidden">
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        className="w-full min-h-[80px] px-4 py-3 bg-[var(--abu-bg-muted)] text-[14px] text-[var(--abu-text-primary)] resize-none focus:outline-none border-none"
+        className="w-full min-h-[80px] px-4 py-3 bg-[var(--lingxi-bg-muted)] text-[14px] text-[var(--lingxi-text-primary)] resize-none focus:outline-none border-none"
         autoFocus
       />
-      <div className="flex items-center justify-end gap-3 px-4 py-2.5 border-t border-[var(--abu-bg-pressed)]">
+      <div className="flex items-center justify-end gap-3 px-4 py-2.5 border-t border-[var(--lingxi-bg-pressed)]">
         <button
           onClick={onCancel}
-          className="btn-ghost text-[13px] text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] transition-colors"
+          className="btn-ghost text-[13px] text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] transition-colors"
         >
           {t.common.cancel}
         </button>
         <button
           onClick={() => onSave(text)}
-          className="btn-ghost flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] bg-[var(--abu-clay)] text-white hover:bg-[var(--abu-clay-hover)] transition-colors"
+          className="btn-ghost flex items-center gap-1.5 px-4 py-1.5 rounded-full text-[13px] bg-[var(--lingxi-clay)] text-white hover:bg-[var(--lingxi-clay-hover)] transition-colors"
         >
           <RefreshCw className="h-3.5 w-3.5" />
           {t.chat.saveAndResend}
@@ -440,7 +440,7 @@ export default function MessageBubble({
           )}
           {/* Delegate agent badge — above the bubble */}
           {message.delegateAgent && (
-            <div className="flex items-center justify-end gap-1 text-[var(--abu-text-muted)]">
+            <div className="flex items-center justify-end gap-1 text-[var(--lingxi-text-muted)]">
               <AtSign className="h-3 w-3" />
               <span className="text-[11px] font-medium">{message.delegateAgent.name}</span>
             </div>
@@ -465,7 +465,7 @@ export default function MessageBubble({
               )}
               {/* Hide bubble when there's no text and no skill badge (pure image message) */}
               {(userCleanText || message.skill) && (
-                <div className="px-4 py-2.5 rounded-2xl rounded-br-sm bg-[var(--abu-bg-active)] text-[var(--abu-text-primary)]">
+                <div className="px-4 py-2.5 rounded-2xl rounded-br-sm bg-[var(--lingxi-bg-active)] text-[var(--lingxi-text-primary)]">
                   {/* Skill badge inside bubble */}
                   {message.skill && (
                     <div className="flex items-center gap-1.5 mb-1.5 opacity-90">
@@ -501,7 +501,7 @@ export default function MessageBubble({
         {message.thinking && <ThinkingBlock thinking={message.thinking} />}
 
         {textContent && (
-          <div className="text-[var(--abu-text-primary)] break-words select-text">
+          <div className="text-[var(--lingxi-text-primary)] break-words select-text">
             <MarkdownRenderer content={textContent} />
           </div>
         )}
@@ -513,7 +513,7 @@ export default function MessageBubble({
 
         {/* Token usage display */}
         {message.usage && !message.isStreaming && (
-          <div className="mt-2 text-[11px] text-[var(--abu-text-muted)]">
+          <div className="mt-2 text-[11px] text-[var(--lingxi-text-muted)]">
             {message.usage.inputTokens != null && `${t.chat.inputTokens}: ${message.usage.inputTokens.toLocaleString()}`}
             {message.usage.outputTokens != null && ` · ${t.chat.outputTokens}: ${message.usage.outputTokens.toLocaleString()}`}
           </div>
@@ -541,7 +541,7 @@ export default function MessageBubble({
       {/* ABU Avatar - 小布丁人 */}
       <div className="shrink-0 mt-0.5">
         <div className="w-7 h-7 rounded-full overflow-hidden">
-          <img src={abuAvatar} alt="Abu" className="w-full h-full object-cover" />
+          <img src={abuAvatar} alt="Lingxi" className="w-full h-full object-cover" />
         </div>
       </div>
 
@@ -551,7 +551,7 @@ export default function MessageBubble({
         {message.thinking && <ThinkingBlock thinking={message.thinking} />}
 
         {textContent && (
-          <div className="text-[var(--abu-text-primary)] break-words select-text">
+          <div className="text-[var(--lingxi-text-primary)] break-words select-text">
             <MarkdownRenderer content={textContent} />
           </div>
         )}
@@ -563,7 +563,7 @@ export default function MessageBubble({
 
         {/* Token usage display */}
         {message.usage && !message.isStreaming && (
-          <div className="mt-2 text-[11px] text-[var(--abu-text-muted)]">
+          <div className="mt-2 text-[11px] text-[var(--lingxi-text-muted)]">
             {message.usage.inputTokens != null && `${t.chat.inputTokens}: ${message.usage.inputTokens.toLocaleString()}`}
             {message.usage.outputTokens != null && ` · ${t.chat.outputTokens}: ${message.usage.outputTokens.toLocaleString()}`}
           </div>

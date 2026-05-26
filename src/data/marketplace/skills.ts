@@ -1,6 +1,6 @@
 import type { MarketplaceItem } from '@/types/marketplace';
 
-/** Skills marketplace templates - aligned with anthropics/skills + Abu built-in */
+/** Skills marketplace templates - aligned with anthropics/skills + Lingxi built-in */
 export const skillTemplates: MarketplaceItem[] = [
   // ============ 文档办公类 ============
   {
@@ -57,7 +57,7 @@ export const skillTemplates: MarketplaceItem[] = [
     id: 'html-widget',
     name: 'html-widget',
     description: '在对话中生成可交互的可视化组件 — 图表、动画、小工具、游戏等',
-    author: 'Abu',
+    author: 'Lingxi',
     category: '可视化',
     isBuiltin: true,
   },
@@ -159,7 +159,7 @@ export const skillTemplates: MarketplaceItem[] = [
     id: 'create-agent',
     name: 'create-agent',
     description: 'AI 引导创建自定义代理',
-    author: 'Abu',
+    author: 'Lingxi',
     category: '系统',
     isBuiltin: true,
   },
@@ -167,7 +167,7 @@ export const skillTemplates: MarketplaceItem[] = [
     id: 'schedule',
     name: 'schedule',
     description: '创建和管理定时任务，设置定期自动执行的操作',
-    author: 'Abu',
+    author: 'Lingxi',
     category: '系统',
     isBuiltin: true,
   },

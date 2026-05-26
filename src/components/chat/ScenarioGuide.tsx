@@ -67,8 +67,8 @@ export default function ScenarioGuide({ onSelectPrompt, onScenarioChange, visibl
                 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-medium transition-all',
                 'border cursor-pointer select-none',
                 isActive
-                  ? 'bg-[var(--abu-text-primary)] text-[var(--abu-bg-base)] border-[var(--abu-text-primary)]'
-                  : 'bg-[var(--abu-bg-muted)] text-[var(--abu-text-tertiary)] border-[var(--abu-border-subtle)] hover:border-[var(--abu-border-hover)] hover:text-[var(--abu-text-primary)]'
+                  ? 'bg-[var(--lingxi-text-primary)] text-[var(--lingxi-bg-base)] border-[var(--lingxi-text-primary)]'
+                  : 'bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-tertiary)] border-[var(--lingxi-border-subtle)] hover:border-[var(--lingxi-border-hover)] hover:text-[var(--lingxi-text-primary)]'
               )}
             >
               <Icon className="h-3.5 w-3.5" />
@@ -80,9 +80,9 @@ export default function ScenarioGuide({ onSelectPrompt, onScenarioChange, visibl
 
       {/* Divider */}
       <div className="flex items-center gap-3 mb-3 px-1">
-        <div className="flex-1 h-px bg-[var(--abu-border-subtle)]" />
-        <span className="text-[12px] text-[var(--abu-text-muted)] shrink-0">{t.chat.trySaying}</span>
-        <div className="flex-1 h-px bg-[var(--abu-border-subtle)]" />
+        <div className="flex-1 h-px bg-[var(--lingxi-border-subtle)]" />
+        <span className="text-[12px] text-[var(--lingxi-text-muted)] shrink-0">{t.chat.trySaying}</span>
+        <div className="flex-1 h-px bg-[var(--lingxi-border-subtle)]" />
       </div>
 
       {/* Example Prompts Grid */}
@@ -96,8 +96,8 @@ export default function ScenarioGuide({ onSelectPrompt, onScenarioChange, visibl
               onClick={() => handlePromptClick(key)}
               className={cn(
                 'text-left px-3.5 py-2.5 rounded-xl text-[13px] leading-relaxed transition-all cursor-pointer',
-                'border border-[var(--abu-border-subtle)] bg-white/60 text-[var(--abu-text-secondary)]',
-                'hover:bg-white hover:border-[var(--abu-border-hover)]',
+                'border border-[var(--lingxi-border-subtle)] bg-white/60 text-[var(--lingxi-text-secondary)]',
+                'hover:bg-white hover:border-[var(--lingxi-border-hover)]',
                 'active:scale-[0.98]',
                 'scenario-prompt-item'
               )}

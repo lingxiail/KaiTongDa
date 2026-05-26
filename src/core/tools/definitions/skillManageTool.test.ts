@@ -100,7 +100,7 @@ describe('skill_manage · create', () => {
 
     // Direct writes don't use a sidecar file — just one SKILL.md write.
     const writes = writtenByAtomicWrite();
-    const sidecar = writes.find((w) => w.path.endsWith('.abu-draft-meta.json'));
+    const sidecar = writes.find((w) => w.path.endsWith('.lingxi-draft-meta.json'));
     expect(sidecar).toBeUndefined();
     const skillMd = writes.find((w) => w.path.endsWith('SKILL.md'));
     expect(skillMd?.content).toContain('name: weekly-report');
@@ -129,7 +129,7 @@ describe('skill_manage · create', () => {
     // Drafts path writes both SKILL.md and the sidecar via atomicWrite.
     const writes = writtenByAtomicWrite();
     const skillMd = writes.find((w) => w.path.endsWith('SKILL.md'));
-    const sidecar = writes.find((w) => w.path.endsWith('.abu-draft-meta.json'));
+    const sidecar = writes.find((w) => w.path.endsWith('.lingxi-draft-meta.json'));
     expect(skillMd?.path).toContain('/drafts/auto-digest/SKILL.md');
     expect(sidecar).toBeDefined();
     expect(sidecar?.content).toContain('"triggerReason": "5 步任务成功"');
@@ -359,7 +359,7 @@ describe('skill_manage · patch', () => {
   it('patches a workspace-auto skill in place (no CoM)', async () => {
     const skill = makeSkill('local-skill', {
       source: 'workspace-auto',
-      skillDir: '/Users/testuser/.abu/projects/-workspace-myapp/skills/local-skill',
+      skillDir: '/Users/testuser/.lingxi/projects/-workspace-myapp/skills/local-skill',
     });
     vi.spyOn(skillLoader, 'getSkill').mockReturnValue(skill);
 
@@ -644,7 +644,7 @@ describe('skill_manage · edit', () => {
 
     expect(result.success).toBe(true);
     // Target path is under workspace-auto, not the original user dir.
-    expect(result.path).toContain('.abu/projects');
+    expect(result.path).toContain('.lingxi/projects');
     expect(result.path).toContain('user-skill');
   });
 
@@ -701,7 +701,7 @@ describe('skill_manage · delete', () => {
 
     const skill = makeSkill('wa-skill', {
       source: 'workspace-auto',
-      skillDir: '/ws/.abu/projects/key/skills/wa-skill',
+      skillDir: '/ws/.lingxi/projects/key/skills/wa-skill',
     });
     vi.spyOn(skillLoader, 'getSkill').mockReturnValue(skill);
 
@@ -712,7 +712,7 @@ describe('skill_manage · delete', () => {
     expect(result.success).toBe(true);
     expect(result.message).toMatch(/permanently/i);
     expect(mockRemove).toHaveBeenCalledWith(
-      '/ws/.abu/projects/key/skills/wa-skill',
+      '/ws/.lingxi/projects/key/skills/wa-skill',
       { recursive: true },
     );
     // Notice card reflects destructive action so chat shows "LingXi
@@ -728,7 +728,7 @@ describe('skill_manage · delete', () => {
     const draftsModule = await import('../../skill/drafts');
     const spy = vi
       .spyOn(draftsModule, 'rejectDraft')
-      .mockResolvedValueOnce({ trashDir: '/ws/.abu/projects/key/skills/drafts/.trash/old-123' });
+      .mockResolvedValueOnce({ trashDir: '/ws/.lingxi/projects/key/skills/drafts/.trash/old-123' });
 
     vi.spyOn(skillLoader, 'getSkill').mockReturnValue(
       makeSkill('old', { source: 'draft', skillDir: '/ws/.../drafts/old' }),

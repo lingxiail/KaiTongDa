@@ -2,7 +2,7 @@
  * IM Adapter Tests — formatOutbound, chunkContent, registry
  */
 import { describe, it, expect } from 'vitest';
-import type { AbuMessage } from './types';
+import type { LingxiMessage } from './types';
 import { FeishuAdapter } from './feishu';
 import { DingtalkAdapter } from './dingtalk';
 import { WecomAdapter } from './wecom';
@@ -20,7 +20,7 @@ describe('FeishuAdapter', () => {
   const adapter = new FeishuAdapter();
 
   it('formats interactive card', () => {
-    const msg: AbuMessage = { content: 'hello', title: 'Title', color: 'success', footer: 'ft' };
+    const msg: LingxiMessage = { content: 'hello', title: 'Title', color: 'success', footer: 'ft' };
     const payload = adapter.formatOutbound(msg) as {
       msg_type: string;
       card: {
@@ -38,7 +38,7 @@ describe('FeishuAdapter', () => {
   });
 
   it('no title → no header', () => {
-    const msg: AbuMessage = { content: 'text' };
+    const msg: LingxiMessage = { content: 'text' };
     const payload = adapter.formatOutbound(msg) as { card: { header?: unknown } };
     expect(payload.card.header).toBeUndefined();
   });
@@ -50,7 +50,7 @@ describe('DingtalkAdapter', () => {
   const adapter = new DingtalkAdapter();
 
   it('formats markdown message', () => {
-    const msg: AbuMessage = { content: 'body', title: 'Alert', footer: 'Abu AI' };
+    const msg: LingxiMessage = { content: 'body', title: 'Alert', footer: 'Lingxi AI' };
     const payload = adapter.formatOutbound(msg) as {
       msgtype: string;
       markdown: { title: string; text: string };
@@ -59,13 +59,13 @@ describe('DingtalkAdapter', () => {
     expect(payload.markdown.title).toBe('Alert');
     expect(payload.markdown.text).toContain('### Alert');
     expect(payload.markdown.text).toContain('body');
-    expect(payload.markdown.text).toContain('Abu AI');
+    expect(payload.markdown.text).toContain('Lingxi AI');
   });
 
   it('no title → default title', () => {
-    const msg: AbuMessage = { content: 'text' };
+    const msg: LingxiMessage = { content: 'text' };
     const payload = adapter.formatOutbound(msg) as { markdown: { title: string; text: string } };
-    expect(payload.markdown.title).toBe('Abu AI');
+    expect(payload.markdown.title).toBe('Lingxi AI');
     expect(payload.markdown.text).not.toContain('###');
   });
 });
@@ -76,7 +76,7 @@ describe('WecomAdapter', () => {
   const adapter = new WecomAdapter();
 
   it('formats markdown message', () => {
-    const msg: AbuMessage = { content: 'text', title: 'T', footer: 'F' };
+    const msg: LingxiMessage = { content: 'text', title: 'T', footer: 'F' };
     const payload = adapter.formatOutbound(msg) as {
       msgtype: string;
       markdown: { content: string };
@@ -113,7 +113,7 @@ describe('SlackAdapter', () => {
   const adapter = new SlackAdapter();
 
   it('formats Block Kit payload', () => {
-    const msg: AbuMessage = { content: '**bold**', title: 'Title', footer: 'footer' };
+    const msg: LingxiMessage = { content: '**bold**', title: 'Title', footer: 'footer' };
     const payload = adapter.formatOutbound(msg) as {
       blocks: { type: string; text?: { type: string; text: string }; elements?: unknown[] }[];
     };
@@ -124,7 +124,7 @@ describe('SlackAdapter', () => {
   });
 
   it('converts Markdown to mrkdwn', () => {
-    const msg: AbuMessage = { content: '## Heading\n**bold**\n[link](http://x)\n~~del~~\n- item' };
+    const msg: LingxiMessage = { content: '## Heading\n**bold**\n[link](http://x)\n~~del~~\n- item' };
     const payload = adapter.formatOutbound(msg) as {
       blocks: { text?: { text: string } }[];
     };
@@ -143,7 +143,7 @@ describe('CustomAdapter', () => {
   const adapter = new CustomAdapter();
 
   it('formats raw JSON', () => {
-    const msg: AbuMessage = { content: 'data', title: 'T', color: 'warning', footer: 'F' };
+    const msg: LingxiMessage = { content: 'data', title: 'T', color: 'warning', footer: 'F' };
     const payload = adapter.formatOutbound(msg) as {
       title: string;
       content: string;
@@ -171,7 +171,7 @@ describe('BaseAdapter chunking', () => {
       supportsMarkdown: false,
       supportsCard: false,
     };
-    formatOutbound(message: AbuMessage): unknown {
+    formatOutbound(message: LingxiMessage): unknown {
       return { text: message.content };
     }
   }
@@ -207,7 +207,7 @@ describe('BaseAdapter chunking', () => {
         supportsMarkdown: false,
         supportsCard: false,
       };
-      formatOutbound(message: AbuMessage): unknown {
+      formatOutbound(message: LingxiMessage): unknown {
         return { text: message.content };
       }
     }
@@ -255,7 +255,7 @@ describe('Adapter Registry', () => {
         supportsMarkdown: false,
         supportsCard: false,
       };
-      formatOutbound(message: AbuMessage) {
+      formatOutbound(message: LingxiMessage) {
         return { text: message.content };
       }
     }

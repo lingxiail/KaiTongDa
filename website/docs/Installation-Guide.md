@@ -1,16 +1,16 @@
-# Abu 安装指南
+# Lingxi 安装指南
 
 [English](Installation-Guide_EN.md) | **中文**
 
 ## 下载
 
-前往 [GitHub Releases](https://github.com/PM-Shawn/Abu-Cowork/releases) 下载对应平台的安装包：
+前往 [GitHub Releases](https://github.com/PM-Shawn/Lingxi-Cowork/releases) 下载对应平台的安装包：
 
 | 平台 | 文件格式 |
 |------|----------|
-| macOS (Apple Silicon) | `Abu_x.x.x_aarch64.dmg` |
-| macOS (Intel) | `Abu_x.x.x_x64.dmg` |
-| Windows | `Abu_x.x.x_x64-setup.exe` |
+| macOS (Apple Silicon) | `Lingxi_x.x.x_aarch64.dmg` |
+| macOS (Intel) | `Lingxi_x.x.x_x64.dmg` |
+| Windows | `Lingxi_x.x.x_x64-setup.exe` |
 
 ---
 
@@ -18,25 +18,25 @@
 
 ### 1. 安装应用
 
-双击 `.dmg` 文件，将 Abu 拖入 `Applications` 文件夹。
+双击 `.dmg` 文件，将 Lingxi 拖入 `Applications` 文件夹。
 
 ### 2. 处理"已损坏，无法打开"提示
 
-由于 Abu 目前未进行 Apple 签名和公证，首次打开时 macOS 会弹出以下提示：
+由于 Lingxi 目前未进行 Apple 签名和公证，首次打开时 macOS 会弹出以下提示：
 
-> "Abu"已损坏，无法打开。你应该将它移到废纸篓。
+> "Lingxi"已损坏，无法打开。你应该将它移到废纸篓。
 
 **解决方法：**
 
 打开「终端」（在启动台搜索"终端"或"Terminal"），输入以下命令：
 
 ```bash
-xattr -cr /Applications/Abu.app
+xattr -cr /Applications/Lingxi.app
 ```
 
-按回车执行，然后再次双击打开 Abu 即可。
+按回车执行，然后再次双击打开 Lingxi 即可。
 
-> **提示**：如果你把 Abu 放在了其他位置，将 `/Applications/Abu.app` 替换为实际路径。也可以输入 `xattr -cr ` 后直接把 Abu.app 拖入终端窗口，路径会自动填充。
+> **提示**：如果你把 Lingxi 放在了其他位置，将 `/Applications/Lingxi.app` 替换为实际路径。也可以输入 `xattr -cr ` 后直接把 Lingxi.app 拖入终端窗口，路径会自动填充。
 
 ### 3. 备选方法
 
@@ -62,7 +62,7 @@ sudo spctl --master-enable
 
 ### 2. 处理 SmartScreen 拦截
 
-由于 Abu 目前未进行代码签名，首次运行时 Windows SmartScreen 可能弹出以下提示：
+由于 Lingxi 目前未进行代码签名，首次运行时 Windows SmartScreen 可能弹出以下提示：
 
 > Windows 已保护你的电脑 — 阻止了无法识别的应用启动。
 
@@ -87,7 +87,7 @@ sudo spctl --master-enable
 
 ### Q: 这样操作安全吗？
 
-Abu 是开源软件，你可以在 GitHub 上查看全部源代码。上述提示是因为应用未购买商业代码签名证书，并非应用本身有问题。
+Lingxi 是开源软件，你可以在 GitHub 上查看全部源代码。上述提示是因为应用未购买商业代码签名证书，并非应用本身有问题。
 
 ### Q: 每次更新都需要重新操作吗？
 

@@ -122,8 +122,8 @@ class ToolRegistry {
 export const toolRegistry = new ToolRegistry();
 
 /**
- * Playwright browser tools that overlap with abu-browser-bridge.
- * When abu-browser-bridge is connected, these are filtered out to avoid
+ * Playwright browser tools that overlap with lingxi-browser-bridge.
+ * When lingxi-browser-bridge is connected, these are filtered out to avoid
  * the LLM accidentally launching a separate Chromium instance.
  */
 const PLAYWRIGHT_BROWSER_TOOLS = new Set([
@@ -149,14 +149,14 @@ const PLAYWRIGHT_BROWSER_TOOLS = new Set([
 /**
  * Get all available tools: builtin tools + MCP tools
  * Deduplicates by tool name — builtin tools take priority over MCP tools
- * Filters out conflicting playwright browser tools when abu-browser-bridge is connected
+ * Filters out conflicting playwright browser tools when lingxi-browser-bridge is connected
  */
 export function getAllTools(): ToolDefinition[] {
   const builtinTools = toolRegistry.getAll();
   const mcpTools = mcpManager.listTools();
   const toolMap = new Map<string, ToolDefinition>();
 
-  // Check if abu-browser-bridge is connected — if so, filter out playwright browser tools
+  // Check if lingxi-browser-bridge is connected — if so, filter out playwright browser tools
   const hasBrowserBridge = mcpManager.isConnected('abu-browser-bridge');
 
   // Computer use tools are always registered — the tool itself handles
@@ -345,9 +345,9 @@ function isOSPermissionError(result: string): boolean {
 
 function formatOSPermissionGuide(originalError: string): string {
   if (isWindows()) {
-    return `${originalError}\n\n系统未授权阿布访问此位置。请以管理员身份运行 Abu，或检查文件夹权限设置。`;
+    return `${originalError}\n\n系统未授权灵犀访问此位置。请以管理员身份运行 Lingxi，或检查文件夹权限设置。`;
   }
-  return `${originalError}\n\nmacOS 系统未授权阿布访问此位置。请前往「系统设置 → 隐私与安全性 → 文件和文件夹」中授权 Abu，然后重启 Abu。`;
+  return `${originalError}\n\nmacOS 系统未授权灵犀访问此位置。请前往「系统设置 → 隐私与安全性 → 文件和文件夹」中授权 Lingxi，然后重启 Lingxi。`;
 }
 
 // Re-export types for convenience

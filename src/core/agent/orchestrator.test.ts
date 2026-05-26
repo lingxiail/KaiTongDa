@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // Mock all external dependencies
 vi.mock('./registry', () => ({
   agentRegistry: {
-    getAgent: vi.fn().mockReturnValue({ name: 'abu', systemPrompt: '测试人格', description: '桌面助手' }),
+    getAgent: vi.fn().mockReturnValue({ name: 'lingxi', systemPrompt: '测试人格', description: '桌面助手' }),
     getAvailableAgents: vi.fn().mockReturnValue([]),
   },
 }));
@@ -84,7 +84,7 @@ beforeEach(() => {
 });
 
 describe('buildSystemPrompt - security features', () => {
-  const basePrompt = '你叫阿布，测试用基础 prompt。';
+  const basePrompt = '你叫灵犀，测试用基础 prompt。';
   const generalRoute = routeInput('你好');
 
   it('ends with safety anchor', async () => {
@@ -161,7 +161,7 @@ describe('buildSystemPrompt - security features', () => {
 });
 
 describe('buildSystemPrompt - structure', () => {
-  const basePrompt = '你叫阿布，测试用基础 prompt。';
+  const basePrompt = '你叫灵犀，测试用基础 prompt。';
   const generalRoute = routeInput('你好');
 
   it('includes current date/time', async () => {
@@ -222,7 +222,7 @@ describe('routeInput', () => {
   it('returns general route for plain text', () => {
     const result = routeInput('你好');
     expect(result.type).toBe('general');
-    expect(result.name).toBe('abu');
+    expect(result.name).toBe('lingxi');
   });
 
   it('returns general route for empty input', () => {

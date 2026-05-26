@@ -69,7 +69,7 @@ function getFileIcon(filePath: string) {
 function LazyFallback() {
   return (
     <div className="flex items-center justify-center h-full">
-      <Loader2 className="w-5 h-5 text-[var(--abu-clay)] animate-spin" />
+      <Loader2 className="w-5 h-5 text-[var(--lingxi-clay)] animate-spin" />
     </div>
   );
 }
@@ -187,14 +187,14 @@ export default function PreviewPanel() {
   return (
     <div className="flex flex-col h-full">
       {/* Header — mt-7 to clear the overlay title bar drag region */}
-      <div className="shrink-0 px-3 py-2.5 mt-7 border-b border-[var(--abu-bg-pressed)] flex items-center gap-2">
-        <Icon className="w-4 h-4 text-[var(--abu-text-tertiary)] shrink-0" />
-        <span className="text-[13px] font-medium text-[var(--abu-text-primary)] truncate flex-1">
+      <div className="shrink-0 px-3 py-2.5 mt-7 border-b border-[var(--lingxi-bg-pressed)] flex items-center gap-2">
+        <Icon className="w-4 h-4 text-[var(--lingxi-text-tertiary)] shrink-0" />
+        <span className="text-[13px] font-medium text-[var(--lingxi-text-primary)] truncate flex-1">
           {fileName}
         </span>
         {rendererType === 'html' && (
           <>
-            <div className="flex items-center bg-[var(--abu-bg-hover)] rounded p-0.5 mr-1">
+            <div className="flex items-center bg-[var(--lingxi-bg-hover)] rounded p-0.5 mr-1">
               <button
                 onClick={() => setHtmlViewMode('preview')}
                 className={`p-1 rounded text-[10px] ${htmlViewMode === 'preview' ? 'bg-white' : ''}`}
@@ -214,7 +214,7 @@ export default function PreviewPanel() {
               variant="ghost"
               size="icon"
               onClick={handleOpenInBrowser}
-              className="h-6 w-6 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-clay)]"
+              className="h-6 w-6 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-clay)]"
               title={t.chat.openInBrowser}
             >
               <Globe className="h-3.5 w-3.5" />
@@ -225,7 +225,7 @@ export default function PreviewPanel() {
           variant="ghost"
           size="icon"
           onClick={closePreview}
-          className="h-6 w-6 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)]"
+          className="h-6 w-6 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)]"
           title={t.panel.closePreview}
         >
           <X className="h-3.5 w-3.5" />
@@ -236,7 +236,7 @@ export default function PreviewPanel() {
       <div className="flex-1 min-h-0 overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center h-full">
-            <Loader2 className="w-5 h-5 text-[var(--abu-clay)] animate-spin" />
+            <Loader2 className="w-5 h-5 text-[var(--lingxi-clay)] animate-spin" />
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-full p-4 text-center">
@@ -251,7 +251,7 @@ export default function PreviewPanel() {
             {rendererType === 'csv' && content !== null && <CsvPreview content={content} />}
           </Suspense>
         ) : rendererType === 'image' && imageUrl ? (
-          <div className="flex items-center justify-center h-full p-4 bg-[var(--abu-bg-active)]">
+          <div className="flex items-center justify-center h-full p-4 bg-[var(--lingxi-bg-active)]">
             <img src={imageUrl} alt={fileName} className="max-w-full max-h-full object-contain" />
           </div>
         ) : rendererType === 'markdown' && content !== null ? (
@@ -293,13 +293,13 @@ export default function PreviewPanel() {
           </ScrollArea>
         ) : rendererType === 'text' && content !== null ? (
           <ScrollArea className="h-full">
-            <pre className="p-4 text-[12px] text-[var(--abu-text-primary)] font-mono whitespace-pre-wrap break-words">
+            <pre className="p-4 text-[12px] text-[var(--lingxi-text-primary)] font-mono whitespace-pre-wrap break-words">
               {content}
             </pre>
           </ScrollArea>
         ) : (
           <div className="flex flex-col items-center justify-center h-full p-4 text-center">
-            <p className="text-[13px] text-[var(--abu-text-tertiary)]">{t.panel.unsupportedFileType}</p>
+            <p className="text-[13px] text-[var(--lingxi-text-tertiary)]">{t.panel.unsupportedFileType}</p>
             <Button variant="outline" size="sm" onClick={handleOpenInFinder} className="mt-3">
               <FolderOpen className="w-3.5 h-3.5 mr-1.5" />
               {t.panel.showInFinder}

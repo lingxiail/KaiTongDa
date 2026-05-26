@@ -19,7 +19,7 @@ We provide security updates only for the latest minor release line. Older versio
 
 There are two private channels:
 
-- **Preferred — GitHub Private Vulnerability Reporting**: open a private report at <https://github.com/PM-Shawn/Abu-Cowork/security/advisories/new>. This keeps everything tracked in one place and lets us coordinate a fix and disclosure.
+- **Preferred — GitHub Private Vulnerability Reporting**: open a private report at <https://github.com/PM-Shawn/Lingxi-Cowork/security/advisories/new>. This keeps everything tracked in one place and lets us coordinate a fix and disclosure.
 - **Alternative — Email**: <syishao666@gmail.com>
 
 推荐走 GitHub 私有漏洞报告（上面那个链接），方便我们追踪修复进度和协调公开披露时间。也可以发邮件。
@@ -54,7 +54,7 @@ There are two private channels:
 
 ## Scope / 适用范围
 
-This policy covers the Abu desktop application source code in this repository. It does NOT cover:
+This policy covers the Lingxi desktop application source code in this repository. It does NOT cover:
 
 - Third-party LLM providers (Anthropic, OpenAI-compatible endpoints, etc.) — please report to the upstream vendor
 - User-installed Skills, MCP servers, or third-party plugins — please report to the respective maintainers
@@ -62,7 +62,7 @@ This policy covers the Abu desktop application source code in this repository. I
 
 —
 
-本策略仅覆盖本仓库内 Abu 桌面应用的源代码。**不**覆盖：
+本策略仅覆盖本仓库内 Lingxi 桌面应用的源代码。**不**覆盖：
 
 - 第三方 LLM 服务商（Anthropic、OpenAI 兼容端点等）——请向上游报告
 - 用户自行安装的 Skills、MCP 服务器或第三方插件——请向各自维护者报告

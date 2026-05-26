@@ -52,8 +52,8 @@ export default function DiagnosticCategory({ category, label, icon: Icon, result
     });
 
   return (
-    <section className="border border-[var(--abu-border)] rounded-lg overflow-hidden bg-[var(--abu-bg-base)]">
-      <header className="px-4 py-3 flex items-center gap-3 bg-[var(--abu-bg-muted)]">
+    <section className="border border-[var(--lingxi-border)] rounded-lg overflow-hidden bg-[var(--lingxi-bg-base)]">
+      <header className="px-4 py-3 flex items-center gap-3 bg-[var(--lingxi-bg-muted)]">
         <button
           type="button"
           onClick={() => setCollapsed((v) => !v)}
@@ -61,17 +61,17 @@ export default function DiagnosticCategory({ category, label, icon: Icon, result
           aria-expanded={!collapsed}
         >
           {collapsed ? (
-            <ChevronRight className="h-3.5 w-3.5 text-[var(--abu-text-muted)] shrink-0" />
+            <ChevronRight className="h-3.5 w-3.5 text-[var(--lingxi-text-muted)] shrink-0" />
           ) : (
-            <ChevronDown className="h-3.5 w-3.5 text-[var(--abu-text-muted)] shrink-0" />
+            <ChevronDown className="h-3.5 w-3.5 text-[var(--lingxi-text-muted)] shrink-0" />
           )}
-          <Icon className="h-4 w-4 text-[var(--abu-text-tertiary)] shrink-0" />
-          <h3 className="text-[13px] font-medium text-[var(--abu-text-primary)]">{label}</h3>
+          <Icon className="h-4 w-4 text-[var(--lingxi-text-tertiary)] shrink-0" />
+          <h3 className="text-[13px] font-medium text-[var(--lingxi-text-primary)]">{label}</h3>
           <span className={cn(
             'text-[11px] tabular-nums',
             summary.fail > 0 ? 'text-red-600' :
             summary.warn > 0 ? 'text-amber-600' :
-            'text-[var(--abu-text-muted)]'
+            'text-[var(--lingxi-text-muted)]'
           )}>
             · {summaryText}
           </span>
@@ -80,16 +80,16 @@ export default function DiagnosticCategory({ category, label, icon: Icon, result
           type="button"
           onClick={() => runCategory(category)}
           disabled={isChecking}
-          className="text-[11px] text-[var(--abu-text-muted)] hover:text-[var(--abu-clay)] transition-colors flex items-center gap-1 px-2 py-1 rounded-md hover:bg-[var(--abu-bg-hover)] disabled:opacity-50"
+          className="text-[11px] text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-clay)] transition-colors flex items-center gap-1 px-2 py-1 rounded-md hover:bg-[var(--lingxi-bg-hover)] disabled:opacity-50"
           title={t.diagnostic.categoryRecheck}
         >
           <RefreshCw className="h-3 w-3" />
         </button>
       </header>
       {!collapsed && (
-        <ul className="divide-y divide-[var(--abu-border-subtle)]">
+        <ul className="divide-y divide-[var(--lingxi-border-subtle)]">
           {results.length === 0 ? (
-            <li className="px-4 py-3 text-[12px] text-[var(--abu-text-muted)]">—</li>
+            <li className="px-4 py-3 text-[12px] text-[var(--lingxi-text-muted)]">—</li>
           ) : (
             results.map((r) => <DiagnosticItem key={r.id} result={r} />)
           )}

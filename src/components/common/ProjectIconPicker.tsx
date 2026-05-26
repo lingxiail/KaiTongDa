@@ -64,8 +64,8 @@ export function ProjectIconGrid({
             className={cn(
               'w-8 h-8 rounded-lg flex items-center justify-center transition-colors',
               value === key
-                ? 'bg-[var(--abu-clay-bg)] ring-2 ring-[var(--abu-clay)] text-[var(--abu-clay)]'
-                : 'text-[var(--abu-text-tertiary)] hover:bg-[var(--abu-bg-hover)] hover:text-[var(--abu-text-primary)]'
+                ? 'bg-[var(--lingxi-clay-bg)] ring-2 ring-[var(--lingxi-clay)] text-[var(--lingxi-clay)]'
+                : 'text-[var(--lingxi-text-tertiary)] hover:bg-[var(--lingxi-bg-hover)] hover:text-[var(--lingxi-text-primary)]'
             )}
           >
             <Icon className="h-4 w-4" strokeWidth={1.75} />

@@ -3,10 +3,10 @@ import { homeDir } from '@tauri-apps/api/path';
 import { joinPath, getParentDir } from '@/utils/pathUtils';
 
 /**
- * Save a skill or agent .md file to ~/.abu/{folder}/{name}/{fileName}.
+ * Save a skill or agent .md file to ~/.lingxi/{folder}/{name}/{fileName}.
  * If `oldFilePath` is provided and the name changed, removes the old directory.
  */
-export async function saveItemToAbuDir(
+export async function saveItemToLingxiDir(
   folder: 'skills' | 'agents',
   fileName: 'SKILL.md' | 'AGENT.md',
   name: string,
@@ -14,7 +14,7 @@ export async function saveItemToAbuDir(
   oldFilePath?: string,
 ): Promise<void> {
   const home = await homeDir();
-  const targetDir = joinPath(home, '.abu', folder, name);
+  const targetDir = joinPath(home, '.lingxi', folder, name);
   await mkdir(targetDir, { recursive: true });
   await writeTextFile(joinPath(targetDir, fileName), mdContent);
 

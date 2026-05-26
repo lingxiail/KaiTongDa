@@ -80,7 +80,7 @@ tags:
 2. 可在 `.abu/rules/` 下创建模块化规则文件（如 `coding-style.md`、`api-conventions.md`）
 3. 建议将 `.abu/ABU.md` 和 `.abu/rules/` 提交到 git
 4. 建议将 `.abu/MEMORY.md` 加入 `.gitignore`（AI 记忆不应入库）
-5. Abu 会在每次对话中自动加载这些规则
+5. Lingxi 会在每次对话中自动加载这些规则
 
 ## 注意事项
 - 生成的内容应基于实际项目分析，不要臆造不存在的信息

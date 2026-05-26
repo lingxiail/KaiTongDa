@@ -57,10 +57,10 @@ describe('SkillLoader.discoverSkills · workspace awareness', () => {
   it('scans global dirs only when workspacePath is null', async () => {
     stubFs(
       {
-        '/Users/testuser/.abu/skills': ['global-skill'],
+        '/Users/testuser/.lingxi/skills': ['global-skill'],
       },
       {
-        '/Users/testuser/.abu/skills/global-skill/SKILL.md': SKILL_TEMPLATE('global-skill'),
+        '/Users/testuser/.lingxi/skills/global-skill/SKILL.md': SKILL_TEMPLATE('global-skill'),
       },
     );
 
@@ -75,12 +75,12 @@ describe('SkillLoader.discoverSkills · workspace awareness', () => {
     const workspace = '/Users/testuser/projects/myapp';
     stubFs(
       {
-        [`${workspace}/.abu/skills`]: ['project-skill'],
-        '/Users/testuser/.abu/skills': ['global-skill'],
+        [`${workspace}/.lingxi/skills`]: ['project-skill'],
+        '/Users/testuser/.lingxi/skills': ['global-skill'],
       },
       {
-        [`${workspace}/.abu/skills/project-skill/SKILL.md`]: SKILL_TEMPLATE('project-skill'),
-        '/Users/testuser/.abu/skills/global-skill/SKILL.md': SKILL_TEMPLATE('global-skill'),
+        [`${workspace}/.lingxi/skills/project-skill/SKILL.md`]: SKILL_TEMPLATE('project-skill'),
+        '/Users/testuser/.lingxi/skills/global-skill/SKILL.md': SKILL_TEMPLATE('global-skill'),
       },
     );
 
@@ -93,10 +93,10 @@ describe('SkillLoader.discoverSkills · workspace awareness', () => {
     expect(loader.getCurrentWorkspace()).toBe(workspace);
   });
 
-  it('workspace-auto skills are discovered under ~/.abu/projects/<key>/skills', async () => {
+  it('workspace-auto skills are discovered under ~/.lingxi/projects/<key>/skills', async () => {
     const workspace = '/Users/testuser/projects/myapp';
     // sanitizePath('/Users/testuser/projects/myapp') → '-Users-testuser-projects-myapp'
-    const autoDir = '/Users/testuser/.abu/projects/-Users-testuser-projects-myapp/skills';
+    const autoDir = '/Users/testuser/.lingxi/projects/-Users-testuser-projects-myapp/skills';
     stubFs(
       {
         [autoDir]: ['auto-skill'],
@@ -117,7 +117,7 @@ describe('SkillLoader.discoverSkills · workspace awareness', () => {
 
   it('drafts are NOT in getAvailableSkills() by default (excluded from L0 index)', async () => {
     const workspace = '/Users/testuser/projects/myapp';
-    const draftDir = '/Users/testuser/.abu/projects/-Users-testuser-projects-myapp/skills/drafts';
+    const draftDir = '/Users/testuser/.lingxi/projects/-Users-testuser-projects-myapp/skills/drafts';
     stubFs(
       {
         [draftDir]: ['pending-skill'],
@@ -149,13 +149,13 @@ describe('SkillLoader.discoverSkills · workspace awareness', () => {
     const workspace = '/Users/testuser/projects/myapp';
     stubFs(
       {
-        [`${workspace}/.abu/skills`]: ['shared-name'],
-        '/Users/testuser/.abu/skills': ['shared-name'],
+        [`${workspace}/.lingxi/skills`]: ['shared-name'],
+        '/Users/testuser/.lingxi/skills': ['shared-name'],
       },
       {
-        [`${workspace}/.abu/skills/shared-name/SKILL.md`]:
+        [`${workspace}/.lingxi/skills/shared-name/SKILL.md`]:
           SKILL_TEMPLATE('shared-name').replace('Body content', 'WORKSPACE'),
-        '/Users/testuser/.abu/skills/shared-name/SKILL.md':
+        '/Users/testuser/.lingxi/skills/shared-name/SKILL.md':
           SKILL_TEMPLATE('shared-name').replace('Body content', 'GLOBAL'),
       },
     );
@@ -173,12 +173,12 @@ describe('SkillLoader.discoverSkills · workspace awareness', () => {
   it('switching workspace causes full re-scan', async () => {
     stubFs(
       {
-        '/ws/a/.abu/skills': ['a-only'],
-        '/ws/b/.abu/skills': ['b-only'],
+        '/ws/a/.lingxi/skills': ['a-only'],
+        '/ws/b/.lingxi/skills': ['b-only'],
       },
       {
-        '/ws/a/.abu/skills/a-only/SKILL.md': SKILL_TEMPLATE('a-only'),
-        '/ws/b/.abu/skills/b-only/SKILL.md': SKILL_TEMPLATE('b-only'),
+        '/ws/a/.lingxi/skills/a-only/SKILL.md': SKILL_TEMPLATE('a-only'),
+        '/ws/b/.lingxi/skills/b-only/SKILL.md': SKILL_TEMPLATE('b-only'),
       },
     );
 

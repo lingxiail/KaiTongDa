@@ -42,7 +42,7 @@ export const useProjectHintStore = create<ProjectHintStore>()(
       },
     }),
     {
-      name: 'abu-project-hint',
+      name: 'lingxi-project-hint',
       version: 1,
       partialize: (state) => ({ dismissedWorkspaces: state.dismissedWorkspaces }),
     },

@@ -12,15 +12,15 @@ import { Button } from '@/components/ui/button';
 import { Toggle } from '@/components/ui/toggle';
 import { Input } from '@/components/ui/input';
 
-// Abu 设计 token：toolbar 按钮风格（对齐 AboutSection 的"检查更新"按钮）
+// Lingxi 设计 token：toolbar 按钮风格（对齐 AboutSection 的"检查更新"按钮）
 const ABU_BTN_OUTLINE =
-  'border border-[var(--abu-border)] bg-transparent text-[var(--abu-text-secondary)] ' +
-  'hover:bg-[var(--abu-bg-active)] hover:text-[var(--abu-text-primary)] hover:border-[var(--abu-border-hover)] ' +
+  'border border-[var(--lingxi-border)] bg-transparent text-[var(--lingxi-text-secondary)] ' +
+  'hover:bg-[var(--lingxi-bg-active)] hover:text-[var(--lingxi-text-primary)] hover:border-[var(--lingxi-border-hover)] ' +
   'active:scale-[0.98]';
 
 const ABU_BTN_GHOST =
-  'bg-transparent text-[var(--abu-text-muted)] ' +
-  'hover:bg-[var(--abu-bg-active)] hover:text-[var(--abu-text-primary)]';
+  'bg-transparent text-[var(--lingxi-text-muted)] ' +
+  'hover:bg-[var(--lingxi-bg-active)] hover:text-[var(--lingxi-text-primary)]';
 
 const ABU_BTN_DESTRUCTIVE =
   'border border-red-200 bg-red-50 text-red-600 ' +
@@ -366,44 +366,44 @@ export default function PersonalMemorySection() {
       <div className="space-y-4">
         <div>
           <div className="flex items-center gap-1.5 relative" ref={tipRef}>
-            <h3 className="text-[15px] font-semibold text-[var(--abu-text-primary)]">
+            <h3 className="text-[15px] font-semibold text-[var(--lingxi-text-primary)]">
               {t.sidebar.personalMemoryTitle}
             </h3>
             <button
               onClick={() => setShowTip(!showTip)}
-              className="text-[var(--abu-text-placeholder)] hover:text-[var(--abu-text-muted)] transition-colors"
+              className="text-[var(--lingxi-text-placeholder)] hover:text-[var(--lingxi-text-muted)] transition-colors"
             >
               <HelpCircle className="h-3.5 w-3.5" />
             </button>
 
             {showTip && (
-              <div className="absolute top-full left-0 mt-2 w-[340px] p-4 bg-white rounded-xl shadow-lg border border-[var(--abu-border)] z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                <div className="space-y-2.5 text-[12px] text-[var(--abu-text-tertiary)] leading-relaxed">
-                  <p className="text-[13px] text-[var(--abu-text-secondary)] font-medium">{t.sidebar.memoryGuideTitle}</p>
+              <div className="absolute top-full left-0 mt-2 w-[340px] p-4 bg-white rounded-xl shadow-lg border border-[var(--lingxi-border)] z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+                <div className="space-y-2.5 text-[12px] text-[var(--lingxi-text-tertiary)] leading-relaxed">
+                  <p className="text-[13px] text-[var(--lingxi-text-secondary)] font-medium">{t.sidebar.memoryGuideTitle}</p>
                   <div className="space-y-1.5">
-                    <p><span className="font-medium text-[var(--abu-clay)]">{t.sidebar.memoryGuidePersonalName}</span> — {t.sidebar.memoryGuidePersonalDesc}</p>
+                    <p><span className="font-medium text-[var(--lingxi-clay)]">{t.sidebar.memoryGuidePersonalName}</span> — {t.sidebar.memoryGuidePersonalDesc}</p>
                     <p><span className="font-medium text-[#8b7ec8]">{t.sidebar.memoryGuideProjectMemoryName}</span> — {t.sidebar.memoryGuideProjectMemoryDesc}</p>
-                    <p><span className="font-medium text-[var(--abu-text-secondary)]">{t.sidebar.memoryGuideProjectRulesName}</span> — {t.sidebar.memoryGuideProjectRulesDesc}</p>
+                    <p><span className="font-medium text-[var(--lingxi-text-secondary)]">{t.sidebar.memoryGuideProjectRulesName}</span> — {t.sidebar.memoryGuideProjectRulesDesc}</p>
                   </div>
-                  <p className="text-[11px] text-[var(--abu-text-muted)] border-t border-[var(--abu-bg-active)] pt-2">{t.sidebar.memoryGuideTip}</p>
+                  <p className="text-[11px] text-[var(--lingxi-text-muted)] border-t border-[var(--lingxi-bg-active)] pt-2">{t.sidebar.memoryGuideTip}</p>
                 </div>
               </div>
             )}
           </div>
-          <p className="text-[13px] text-[var(--abu-text-muted)] mt-1">
+          <p className="text-[13px] text-[var(--lingxi-text-muted)] mt-1">
             {t.sidebar.personalMemoryDesc}
           </p>
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="w-5 h-5 border-2 border-[var(--abu-clay)] border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-[var(--lingxi-clay)] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : totalCount > 0 ? (
           <div className="space-y-4">
             {/* Top toolbar: count + bulk toggle / bulk actions */}
             <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div className="text-[12px] text-[var(--abu-text-placeholder)]">
+              <div className="text-[12px] text-[var(--lingxi-text-placeholder)]">
                 {bulkMode
                   ? format(t.memory.bulkSelected, { count: String(selectedKeys.size) })
                   : format(t.memory.entryCount, { count: String(totalCount) })}
@@ -454,7 +454,7 @@ export default function PersonalMemorySection() {
                 <button
                   type="button"
                   onClick={() => toggleGroup(groupKey)}
-                  className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--abu-text-muted)] uppercase tracking-wider hover:text-[var(--abu-text-primary)] transition-colors w-full"
+                  className="flex items-center gap-1.5 text-[11px] font-medium text-[var(--lingxi-text-muted)] uppercase tracking-wider hover:text-[var(--lingxi-text-primary)] transition-colors w-full"
                 >
                   {isCollapsed ? (
                     <ChevronRight className="h-3 w-3" />
@@ -467,7 +467,7 @@ export default function PersonalMemorySection() {
                     <FolderOpen className="h-3 w-3" />
                   )}
                   <span>{group.label}</span>
-                  <span className="text-[var(--abu-text-placeholder)]">({group.headers.length})</span>
+                  <span className="text-[var(--lingxi-text-placeholder)]">({group.headers.length})</span>
                 </button>
 
                 {/* Group entries — hidden when collapsed */}
@@ -479,20 +479,20 @@ export default function PersonalMemorySection() {
                       key={key}
                       className={`border rounded-lg overflow-hidden transition-colors ${
                         bulkMode && isSelected
-                          ? 'border-[var(--abu-clay)] bg-orange-50/50'
-                          : 'border-[var(--abu-border)] bg-[var(--abu-bg-muted)]'
+                          ? 'border-[var(--lingxi-clay)] bg-orange-50/50'
+                          : 'border-[var(--lingxi-border)] bg-[var(--lingxi-bg-muted)]'
                       }`}
                     >
                       <div
-                        className="flex items-center gap-2 px-3 py-2.5 cursor-pointer hover:bg-[var(--abu-bg-hover)] transition-colors"
+                        className="flex items-center gap-2 px-3 py-2.5 cursor-pointer hover:bg-[var(--lingxi-bg-hover)] transition-colors"
                         onClick={() => bulkMode ? toggleSelected(key) : handleExpand(header)}
                       >
                         {bulkMode && (
                           <span
                             className={`flex h-4 w-4 items-center justify-center rounded-full border transition-colors ${
                               isSelected
-                                ? 'border-[var(--abu-clay)] bg-[var(--abu-clay)] text-white'
-                                : 'border-[var(--abu-text-placeholder)]'
+                                ? 'border-[var(--lingxi-clay)] bg-[var(--lingxi-clay)] text-white'
+                                : 'border-[var(--lingxi-text-placeholder)]'
                             }`}
                           >
                             {isSelected && <Check className="h-2.5 w-2.5" strokeWidth={3} />}
@@ -501,7 +501,7 @@ export default function PersonalMemorySection() {
                         <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${TYPE_COLORS[header.type]}`}>
                           {getTypeLabel(header.type, t)}
                         </span>
-                        <span className="text-[13px] text-[var(--abu-text-primary)] flex-1 truncate flex items-center gap-1.5">
+                        <span className="text-[13px] text-[var(--lingxi-text-primary)] flex-1 truncate flex items-center gap-1.5">
                           {header.name}
                           {header.private && (
                             <span title={t.memory.privateTooltip} className="shrink-0">
@@ -509,7 +509,7 @@ export default function PersonalMemorySection() {
                             </span>
                           )}
                         </span>
-                        <span className="text-[11px] text-[var(--abu-text-placeholder)] whitespace-nowrap">
+                        <span className="text-[11px] text-[var(--lingxi-text-placeholder)] whitespace-nowrap">
                           {format(t.memory.updatedAt, { age: memoryAge(header.updated) })}
                         </span>
                         {isStale(header.updated) && (
@@ -522,29 +522,29 @@ export default function PersonalMemorySection() {
                         )}
                         {!bulkMode && (
                           expandedId === header.filename ? (
-                            <ChevronUp className="h-3.5 w-3.5 text-[var(--abu-text-placeholder)]" />
+                            <ChevronUp className="h-3.5 w-3.5 text-[var(--lingxi-text-placeholder)]" />
                           ) : (
-                            <ChevronDown className="h-3.5 w-3.5 text-[var(--abu-text-placeholder)]" />
+                            <ChevronDown className="h-3.5 w-3.5 text-[var(--lingxi-text-placeholder)]" />
                           )
                         )}
                       </div>
 
                       {!bulkMode && expandedId === header.filename && (
-                        <div className="px-3 pb-3 border-t border-[var(--abu-bg-active)]">
-                          <p className="text-[12px] text-[var(--abu-text-tertiary)] leading-relaxed mt-2 whitespace-pre-wrap">
+                        <div className="px-3 pb-3 border-t border-[var(--lingxi-bg-active)]">
+                          <p className="text-[12px] text-[var(--lingxi-text-tertiary)] leading-relaxed mt-2 whitespace-pre-wrap">
                             {expandedContent[header.filename] ?? header.description}
                           </p>
                           <div
-                            className="flex items-start justify-between gap-3 mt-2 pt-2 border-t border-[var(--abu-bg-muted)]"
+                            className="flex items-start justify-between gap-3 mt-2 pt-2 border-t border-[var(--lingxi-bg-muted)]"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <div className="flex-1 min-w-0">
-                              <div className="text-[10px] text-[var(--abu-text-placeholder)]">
+                              <div className="text-[10px] text-[var(--lingxi-text-placeholder)]">
                                 {header.source === 'auto_flush' ? t.memory.sourceAutoFlush : header.source === 'agent_explicit' ? t.memory.sourceAgentExplicit : t.memory.sourceUserManual}
                               </div>
                               <div className="flex items-center gap-2 mt-1.5">
                                 <Lock className="h-3 w-3 text-amber-600 shrink-0" />
-                                <span className="text-[11px] text-[var(--abu-text-secondary)]">
+                                <span className="text-[11px] text-[var(--lingxi-text-secondary)]">
                                   {t.memory.privateLabel}
                                 </span>
                                 <Toggle
@@ -553,7 +553,7 @@ export default function PersonalMemorySection() {
                                   onChange={() => handleTogglePrivate(header, group.workspacePath, !header.private)}
                                 />
                               </div>
-                              <p className="text-[10.5px] text-[var(--abu-text-placeholder)] mt-1 leading-snug">
+                              <p className="text-[10.5px] text-[var(--lingxi-text-placeholder)] mt-1 leading-snug">
                                 {t.memory.privateDesc}
                               </p>
 
@@ -574,15 +574,15 @@ export default function PersonalMemorySection() {
                                         {t.memory.privateDescHintBody}
                                       </p>
                                       <div className="mt-2">
-                                        <div className="text-[10px] text-[var(--abu-text-placeholder)] mb-0.5">
+                                        <div className="text-[10px] text-[var(--lingxi-text-placeholder)] mb-0.5">
                                           {t.memory.privateDescCurrent}：
                                         </div>
-                                        <div className="text-[11px] text-[var(--abu-text-tertiary)] line-through truncate">
+                                        <div className="text-[11px] text-[var(--lingxi-text-tertiary)] line-through truncate">
                                           {descHint.pristineDescription}
                                         </div>
                                       </div>
                                       <div className="mt-1.5">
-                                        <label className="text-[10px] text-[var(--abu-text-placeholder)] block mb-0.5">
+                                        <label className="text-[10px] text-[var(--lingxi-text-placeholder)] block mb-0.5">
                                           {t.memory.privateDescNewLabel}
                                         </label>
                                         <Input
@@ -621,7 +621,7 @@ export default function PersonalMemorySection() {
                             </div>
                             <button
                               onClick={(e) => { e.stopPropagation(); setDeleteTarget({ header, workspacePath: group.workspacePath }); }}
-                              className="p-1 rounded text-[var(--abu-text-placeholder)] hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
+                              className="p-1 rounded text-[var(--lingxi-text-placeholder)] hover:text-red-500 hover:bg-red-50 transition-colors shrink-0"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
                             </button>
@@ -637,10 +637,10 @@ export default function PersonalMemorySection() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-[13px] text-[var(--abu-text-placeholder)]">
+            <p className="text-[13px] text-[var(--lingxi-text-placeholder)]">
               {t.panel.memoryEmpty}
             </p>
-            <p className="text-[12px] text-[var(--abu-text-placeholder)] mt-1">
+            <p className="text-[12px] text-[var(--lingxi-text-placeholder)] mt-1">
               {t.memory.emptyHint}
             </p>
           </div>

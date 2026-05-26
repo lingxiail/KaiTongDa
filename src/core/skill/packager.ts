@@ -18,7 +18,7 @@ const MAX_SINGLE_FILE = 10 * 1024 * 1024;   // 10 MB per file
 const MAX_ARCHIVE_SIZE = 50 * 1024 * 1024;   // 50 MB total archive
 
 // .askill is a distribution format — strip VCS/OS noise and anything the
-// Tauri fs scope won't allow (dot-prefixed entries fall outside $HOME/.abu/**).
+// Tauri fs scope won't allow (dot-prefixed entries fall outside $HOME/.lingxi/**).
 const EXCLUDE_FILES = new Set(['Thumbs.db']);
 const EXCLUDE_DIRS = new Set(['node_modules', '__pycache__']);
 
@@ -126,7 +126,7 @@ export function validateArchive(bytes: Uint8Array): ValidationError | null {
  * The skill name is extracted from SKILL.md frontmatter.
  *
  * @param bytes    - The zip archive bytes
- * @param baseDir  - Target base directory (e.g. ~/.abu/skills/)
+ * @param baseDir  - Target base directory (e.g. ~/.lingxi/skills/)
  * @param options  - overwrite: replace existing skill directory
  * @returns UnpackResult with name, file list, and target directory
  */

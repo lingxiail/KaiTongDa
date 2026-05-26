@@ -2,7 +2,7 @@
  * Shared IM Types — Common types used by both triggers and IM channels
  */
 
-/** Built-in IM platforms shipped with Abu */
+/** Built-in IM platforms shipped with Lingxi */
 type BuiltinIMPlatform = 'feishu' | 'dingtalk' | 'wecom' | 'slack';
 
 /** IM platform identifier — built-in platforms + any plugin-registered platform */

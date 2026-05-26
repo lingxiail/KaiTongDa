@@ -53,7 +53,7 @@ function StatusIndicator({ status, onComplete }: StatusIndicatorProps) {
 function IMPlatformDot({ platform }: { platform: string }) {
   return (
     <span
-      className="shrink-0 h-4 w-4 rounded text-[8px] font-bold leading-4 text-center bg-[var(--abu-clay-bg-15)] text-[var(--abu-clay)]"
+      className="shrink-0 h-4 w-4 rounded text-[8px] font-bold leading-4 text-center bg-[var(--lingxi-clay-bg-15)] text-[var(--lingxi-clay)]"
       title={platform}
     >
       {getPlatformShortLabel(platform)}
@@ -244,7 +244,7 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="flex flex-col h-full w-[260px] bg-[var(--abu-bg-subtle)] border-r border-[var(--abu-border)]">
+    <div className="flex flex-col h-full w-[260px] bg-[var(--lingxi-bg-subtle)] border-r border-[var(--lingxi-border)]">
       {/* Drag region — covers the title bar area above sidebar content */}
       <div
         data-tauri-drag-region
@@ -257,11 +257,11 @@ export default function Sidebar() {
           className={cn(
             'btn-ghost flex items-center gap-3 w-full px-3 py-2.5 text-[14px] font-medium rounded-lg',
             activeConversationId === null && viewMode === 'chat'
-              ? 'bg-[var(--abu-bg-active)] text-[var(--abu-text-primary)]'
-              : 'text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)]'
+              ? 'bg-[var(--lingxi-bg-active)] text-[var(--lingxi-text-primary)]'
+              : 'text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)]'
           )}
         >
-          <Plus className={cn('h-[18px] w-[18px]', activeConversationId === null && viewMode === 'chat' ? 'text-[var(--abu-clay)]' : 'text-[var(--abu-text-tertiary)]')} strokeWidth={2} />
+          <Plus className={cn('h-[18px] w-[18px]', activeConversationId === null && viewMode === 'chat' ? 'text-[var(--lingxi-clay)]' : 'text-[var(--lingxi-text-tertiary)]')} strokeWidth={2} />
           <span>{t.sidebar.newTask}</span>
         </button>
         <button
@@ -269,11 +269,11 @@ export default function Sidebar() {
           className={cn(
             'btn-ghost flex items-center gap-3 w-full px-3 py-2.5 text-[14px] rounded-lg',
             viewMode === 'automation'
-              ? 'bg-[var(--abu-bg-active)] text-[var(--abu-text-primary)]'
-              : 'text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)]'
+              ? 'bg-[var(--lingxi-bg-active)] text-[var(--lingxi-text-primary)]'
+              : 'text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)]'
           )}
         >
-          <Workflow className={cn('h-[18px] w-[18px]', viewMode === 'automation' ? 'text-[var(--abu-clay)]' : 'text-[var(--abu-text-tertiary)]')} strokeWidth={1.75} />
+          <Workflow className={cn('h-[18px] w-[18px]', viewMode === 'automation' ? 'text-[var(--lingxi-clay)]' : 'text-[var(--lingxi-text-tertiary)]')} strokeWidth={1.75} />
           <span>{t.sidebar.automation}</span>
         </button>
         <button
@@ -281,11 +281,11 @@ export default function Sidebar() {
           className={cn(
             'btn-ghost flex items-center gap-3 w-full px-3 py-2.5 text-[14px] rounded-lg',
             viewMode === 'toolbox'
-              ? 'bg-[var(--abu-bg-active)] text-[var(--abu-text-primary)]'
-              : 'text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)]'
+              ? 'bg-[var(--lingxi-bg-active)] text-[var(--lingxi-text-primary)]'
+              : 'text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)]'
           )}
         >
-          <Wrench className={cn('h-[18px] w-[18px]', viewMode === 'toolbox' ? 'text-[var(--abu-clay)]' : 'text-[var(--abu-text-tertiary)]')} strokeWidth={1.75} />
+          <Wrench className={cn('h-[18px] w-[18px]', viewMode === 'toolbox' ? 'text-[var(--lingxi-clay)]' : 'text-[var(--lingxi-text-tertiary)]')} strokeWidth={1.75} />
           <span>{t.sidebar.toolbox}</span>
         </button>
       </nav>
@@ -300,7 +300,7 @@ export default function Sidebar() {
           <div className="flex items-center justify-between pr-1">
             <button
               onClick={() => setRecentsCollapsed(!recentsCollapsed)}
-              className="flex items-center gap-1 px-2 py-1.5 text-[13px] font-medium text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]"
+              className="flex items-center gap-1 px-2 py-1.5 text-[13px] font-medium text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]"
             >
               <span>{t.sidebar.recents}</span>
             </button>
@@ -312,7 +312,7 @@ export default function Sidebar() {
                   if (!next) setSearchQuery('');
                   else setTimeout(() => searchInputRef.current?.focus(), 0);
                 }}
-                className="p-1 rounded hover:bg-[var(--abu-bg-hover)] text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]"
+                className="p-1 rounded hover:bg-[var(--lingxi-bg-hover)] text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]"
                 title={t.sidebar.searchPlaceholder}
               >
                 <Search className="h-3.5 w-3.5" strokeWidth={2} />
@@ -325,7 +325,7 @@ export default function Sidebar() {
         {!recentsCollapsed && searchOpen && (
           <div className="px-4 pt-1 pb-1">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--abu-text-muted)]" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--lingxi-text-muted)]" />
               <input
                 ref={searchInputRef}
                 type="text"
@@ -338,12 +338,12 @@ export default function Sidebar() {
                   }
                 }}
                 placeholder={t.sidebar.searchPlaceholder}
-                className="w-full h-7 pl-8 pr-7 rounded-md text-xs bg-[var(--abu-bg-muted)] border border-[var(--abu-border-subtle)] focus:border-[var(--abu-clay-40)] focus:outline-none text-[var(--abu-text-primary)] placeholder:text-[var(--abu-text-muted)]"
+                className="w-full h-7 pl-8 pr-7 rounded-md text-xs bg-[var(--lingxi-bg-muted)] border border-[var(--lingxi-border-subtle)] focus:border-[var(--lingxi-clay-40)] focus:outline-none text-[var(--lingxi-text-primary)] placeholder:text-[var(--lingxi-text-muted)]"
               />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -357,7 +357,7 @@ export default function Sidebar() {
         <div className="px-4">
         {sortedConvs.length === 0 ? (
           <div className="px-4 py-3">
-            <p className="text-[13px] text-[var(--abu-text-tertiary)]">{t.sidebar.noSessionsYet}</p>
+            <p className="text-[13px] text-[var(--lingxi-text-tertiary)]">{t.sidebar.noSessionsYet}</p>
           </div>
         ) : (
           <div className="space-y-0.5">
@@ -375,8 +375,8 @@ export default function Sidebar() {
                 className={cn(
                   'group flex items-center gap-2 px-2 py-2 rounded-lg cursor-pointer transition-colors w-full text-left',
                   conv.id === activeConversationId && viewMode === 'chat'
-                    ? 'bg-[var(--abu-bg-active)] text-[var(--abu-text-primary)]'
-                    : 'text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)]'
+                    ? 'bg-[var(--lingxi-bg-active)] text-[var(--lingxi-text-primary)]'
+                    : 'text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)]'
                 )}
               >
                 {conv.imPlatform && (
@@ -389,7 +389,7 @@ export default function Sidebar() {
                   <input
                     autoFocus
                     defaultValue={conv.title}
-                    className="flex-1 text-[13px] bg-transparent border-b border-[var(--abu-clay)] outline-none min-w-0"
+                    className="flex-1 text-[13px] bg-transparent border-b border-[var(--lingxi-clay)] outline-none min-w-0"
                     onClick={(e) => e.stopPropagation()}
                     onBlur={(e) => {
                       const val = e.target.value.trim();
@@ -405,7 +405,7 @@ export default function Sidebar() {
                   <span className="flex-1 truncate text-[13px]">{conv.title.replace(/\[Attachment:\s*`[^`]*`\]\s*/g, '').trim() || conv.title}</span>
                 )}
                 {badgeCounts[conv.id] > 0 && (
-                  <span className="shrink-0 min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--abu-clay)] text-white text-[10px] font-bold leading-[18px] text-center">
+                  <span className="shrink-0 min-w-[18px] h-[18px] px-1 rounded-full bg-[var(--lingxi-clay)] text-white text-[10px] font-bold leading-[18px] text-center">
                     {badgeCounts[conv.id] > 99 ? '99+' : badgeCounts[conv.id]}
                   </span>
                 )}
@@ -417,7 +417,7 @@ export default function Sidebar() {
                   variant="ghost"
                   size="icon"
                   onClick={(e) => handleDeleteConversation(e, conv.id)}
-                  className="h-5 w-5 opacity-0 group-hover:opacity-100 text-[var(--abu-text-tertiary)] hover:text-red-500 hover:bg-transparent shrink-0"
+                  className="h-5 w-5 opacity-0 group-hover:opacity-100 text-[var(--lingxi-text-tertiary)] hover:text-red-500 hover:bg-transparent shrink-0"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
                 </Button>
@@ -436,7 +436,7 @@ export default function Sidebar() {
           {/* User avatar + nickname (clickable to edit) */}
           <button
             onClick={() => setProfileOpen(true)}
-            className="w-8 h-8 rounded-full overflow-hidden shrink-0 hover:ring-2 hover:ring-[var(--abu-clay-40)] transition-shadow"
+            className="w-8 h-8 rounded-full overflow-hidden shrink-0 hover:ring-2 hover:ring-[var(--lingxi-clay-40)] transition-shadow"
             title={t.sidebar.editProfile}
           >
             <img src={userAvatar || abuAvatar} alt="Avatar" className="w-full h-full object-cover" />
@@ -446,13 +446,13 @@ export default function Sidebar() {
             className="flex-1 min-w-0 text-left"
             title={t.sidebar.editProfile}
           >
-            <div className="text-[13px] font-semibold text-[var(--abu-text-primary)] truncate">
+            <div className="text-[13px] font-semibold text-[var(--lingxi-text-primary)] truncate">
               {userNickname || t.sidebar.defaultNickname}
             </div>
           </button>
           <button
             onClick={handleImport}
-            className="btn-ghost p-1.5 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md"
+            className="btn-ghost p-1.5 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-md"
             title={t.sidebar.importSession}
           >
             <Upload className="h-3.5 w-3.5" />
@@ -462,8 +462,8 @@ export default function Sidebar() {
             className={cn(
               'btn-ghost p-1.5 rounded-md relative',
               viewMode === 'settings'
-                ? 'text-[var(--abu-clay)] bg-[var(--abu-bg-active)]'
-                : 'text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)]'
+                ? 'text-[var(--lingxi-clay)] bg-[var(--lingxi-bg-active)]'
+                : 'text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)]'
             )}
           >
             <Settings className="h-3.5 w-3.5" />
@@ -473,7 +473,7 @@ export default function Sidebar() {
           </button>
           <button
             onClick={() => setGuideOpen(true)}
-            className="btn-ghost p-1.5 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md"
+            className="btn-ghost p-1.5 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-md"
             title={t.sidebar.help}
           >
             <HelpCircle className="h-3.5 w-3.5" />
@@ -485,7 +485,7 @@ export default function Sidebar() {
       {contextMenu && (
         <div
           ref={contextMenuRef}
-          className="fixed z-50 bg-white rounded-lg shadow-lg border border-[var(--abu-border)] py-1 min-w-[140px]"
+          className="fixed z-50 bg-white rounded-lg shadow-lg border border-[var(--lingxi-border)] py-1 min-w-[140px]"
           style={{ left: contextMenu.x, top: contextMenu.y }}
         >
           <button
@@ -493,14 +493,14 @@ export default function Sidebar() {
               setEditingId(contextMenu.convId);
               setContextMenu(null);
             }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)]"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)]"
           >
             <Pencil className="h-3.5 w-3.5" />
             {t.sidebar.renameConversation}
           </button>
           <button
             onClick={() => handleExport(contextMenu.convId)}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)]"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)]"
           >
             <Download className="h-3.5 w-3.5" />
             {t.sidebar.exportConversation}
@@ -514,7 +514,7 @@ export default function Sidebar() {
               <div className="relative">
                 <button
                   onClick={(e) => { e.stopPropagation(); setShowMoveSubmenu(!showMoveSubmenu); }}
-                  className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)]"
+                  className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)]"
                 >
                   <FolderInput className="h-3.5 w-3.5" />
                   <span className="flex-1 text-left">{t.project.moveToProject}</span>
@@ -524,7 +524,7 @@ export default function Sidebar() {
                   <div
                     ref={moveSubmenuRef}
                     style={moveSubmenuStyle}
-                    className="absolute left-full ml-1 bg-white rounded-lg shadow-lg border border-[var(--abu-border)] py-1 min-w-[140px] overflow-y-auto overscroll-contain z-10"
+                    className="absolute left-full ml-1 bg-white rounded-lg shadow-lg border border-[var(--lingxi-border)] py-1 min-w-[140px] overflow-y-auto overscroll-contain z-10"
                   >
                     {activeProjects.map((p) => (
                       <button
@@ -535,8 +535,8 @@ export default function Sidebar() {
                           setShowMoveSubmenu(false);
                         }}
                         className={cn(
-                          'flex items-center gap-2 w-full px-3 py-1.5 text-[13px] hover:bg-[var(--abu-bg-active)]',
-                          convMeta?.projectId === p.id ? 'text-[var(--abu-clay)]' : 'text-[var(--abu-text-secondary)]'
+                          'flex items-center gap-2 w-full px-3 py-1.5 text-[13px] hover:bg-[var(--lingxi-bg-active)]',
+                          convMeta?.projectId === p.id ? 'text-[var(--lingxi-clay)]' : 'text-[var(--lingxi-text-secondary)]'
                         )}
                       >
                         <FolderClosed className="h-3.5 w-3.5" strokeWidth={1.5} />
@@ -545,14 +545,14 @@ export default function Sidebar() {
                     ))}
                     {convMeta?.projectId && (
                       <>
-                        <div className="my-1 border-t border-[var(--abu-border)]" />
+                        <div className="my-1 border-t border-[var(--lingxi-border)]" />
                         <button
                           onClick={() => {
                             useChatStore.getState().setConversationProject(contextMenu.convId, undefined);
                             setContextMenu(null);
                             setShowMoveSubmenu(false);
                           }}
-                          className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--abu-text-tertiary)] hover:bg-[var(--abu-bg-active)]"
+                          className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--lingxi-text-tertiary)] hover:bg-[var(--lingxi-bg-active)]"
                         >
                           <Minus className="h-3.5 w-3.5" />
                           {t.project.removeFromProject}
@@ -569,7 +569,7 @@ export default function Sidebar() {
               handleDeleteConversation(e, contextMenu.convId);
               setContextMenu(null);
             }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-red-500 hover:bg-[var(--abu-bg-active)]"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-red-500 hover:bg-[var(--lingxi-bg-active)]"
           >
             <Trash2 className="h-3.5 w-3.5" />
             {t.sidebar.deleteConversation}
@@ -593,7 +593,7 @@ export default function Sidebar() {
       {shareConvId && (
         <ShareExportDialog
           convId={shareConvId}
-          defaultFilename={`abu-conversation-${conversationIndex[shareConvId]?.title || shareConvId}.abu.json`}
+          defaultFilename={`lingxi-conversation-${conversationIndex[shareConvId]?.title || shareConvId}.lingxi.json`}
           onClose={() => setShareConvId(null)}
         />
       )}
@@ -601,11 +601,11 @@ export default function Sidebar() {
 
       {/* Undo delete toast */}
       {pendingDelete && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-2.5 bg-[var(--abu-text-primary)] text-white rounded-xl shadow-lg animate-in fade-in slide-in-from-bottom-2 duration-200" role="alert" aria-live="assertive">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-2.5 bg-[var(--lingxi-text-primary)] text-white rounded-xl shadow-lg animate-in fade-in slide-in-from-bottom-2 duration-200" role="alert" aria-live="assertive">
           <span className="text-sm">{t.sidebar.conversationDeleted}</span>
           <button
             onClick={handleUndoDelete}
-            className="flex items-center gap-1 text-sm font-medium text-[var(--abu-clay)] hover:text-[var(--abu-clay)] transition-colors"
+            className="flex items-center gap-1 text-sm font-medium text-[var(--lingxi-clay)] hover:text-[var(--lingxi-clay)] transition-colors"
           >
             <Undo2 className="h-3.5 w-3.5" />
             {t.sidebar.undo}

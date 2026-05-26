@@ -16,7 +16,7 @@
  */
 
 import { getAdapter } from './adapters/registry';
-import type { AbuMessage, DirectReplyContext } from './adapters/types';
+import type { LingxiMessage, DirectReplyContext } from './adapters/types';
 import type { IMPlatform, IMReplyContext } from '../../types/im';
 import { tokenManager } from './tokenManager';
 import { useIMChannelStore } from '../../stores/imChannelStore';
@@ -64,7 +64,7 @@ function getChannelCredentials(platform: IMPlatform): { appId: string; appSecret
 async function trySendViaApi(
   platform: IMPlatform,
   replyContext: IMReplyContext,
-  message: AbuMessage,
+  message: LingxiMessage,
 ): Promise<{ sent: boolean; messageId?: string; error?: string }> {
   const adapter = getAdapter(platform);
   if (!adapter?.replyToChat) {
@@ -114,7 +114,7 @@ export async function sendThinking(
     replyContext,
   };
 
-  const msg: AbuMessage = { content: text };
+  const msg: LingxiMessage = { content: text };
 
   // 1. Try sessionWebhook (DingTalk)
   if (replyContext.sessionWebhook && adapter) {
@@ -141,11 +141,11 @@ export async function sendThinking(
  * Resolution order:
  * 1. sessionWebhook (DingTalk) — send directly
  * 2. API token reply (Feishu, Slack, WeCom, D-Chat) — via platform API
- * 3. Degraded success — reply stored in Abu conversation only
+ * 3. Degraded success — reply stored in Lingxi conversation only
  */
 export async function sendFinal(
   handle: ReplyHandle,
-  message: AbuMessage,
+  message: LingxiMessage,
 ): Promise<{ success: boolean; error?: string }> {
   const adapter = getAdapter(handle.platform);
   if (!adapter) {
@@ -168,7 +168,7 @@ export async function sendFinal(
     return { success: true };
   }
 
-  // 3. Degraded success — message is in Abu's conversation, just can't push to IM
+  // 3. Degraded success — message is in Lingxi's conversation, just can't push to IM
   console.log(
     `[StreamingReply] No direct reply channel for ${handle.platform}. ` +
     `Reply stored in conversation only. Reason: ${apiResult.error}`,

@@ -89,7 +89,7 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
     <div>
       {/* Project header row */}
       <div
-        className="group flex items-center gap-1.5 px-2 rounded-lg transition-colors hover:bg-[var(--abu-bg-hover)]"
+        className="group flex items-center gap-1.5 px-2 rounded-lg transition-colors hover:bg-[var(--lingxi-bg-hover)]"
         onContextMenu={handleContextMenu}
       >
         <button
@@ -97,19 +97,19 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
           className="flex-1 min-w-0 flex items-center gap-1.5 py-1.5 text-left"
         >
           {expanded
-            ? <FolderOpen className="h-3.5 w-3.5 text-[var(--abu-text-tertiary)] shrink-0" strokeWidth={1.5} />
-            : <FolderClosed className="h-3.5 w-3.5 text-[var(--abu-text-tertiary)] shrink-0" strokeWidth={1.5} />
+            ? <FolderOpen className="h-3.5 w-3.5 text-[var(--lingxi-text-tertiary)] shrink-0" strokeWidth={1.5} />
+            : <FolderClosed className="h-3.5 w-3.5 text-[var(--lingxi-text-tertiary)] shrink-0" strokeWidth={1.5} />
           }
-          <span className="flex-1 truncate text-[13px] text-[var(--abu-text-secondary)]">
+          <span className="flex-1 truncate text-[13px] text-[var(--lingxi-text-secondary)]">
             {project.name}
           </span>
           {project.pinned && (
-            <Pin className="h-3 w-3 text-[var(--abu-text-muted)] shrink-0" />
+            <Pin className="h-3 w-3 text-[var(--lingxi-text-muted)] shrink-0" />
           )}
         </button>
         <button
           onClick={(e) => { e.stopPropagation(); onNewTask(project.id); }}
-          className="p-0.5 text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] transition-colors opacity-0 group-hover:opacity-100 shrink-0"
+          className="p-0.5 text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] transition-colors opacity-0 group-hover:opacity-100 shrink-0"
           title={t.project.newTask}
         >
           <Plus className="h-3 w-3" />
@@ -137,8 +137,8 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
                 className={cn(
                   'group/conv flex items-center gap-1.5 w-full pl-8 pr-2 py-1.5 rounded-lg text-[12px] transition-colors cursor-pointer',
                   isActive
-                    ? 'bg-[var(--abu-bg-active)] text-[var(--abu-text-primary)]'
-                    : 'text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)] hover:text-[var(--abu-text-primary)]'
+                    ? 'bg-[var(--lingxi-bg-active)] text-[var(--lingxi-text-primary)]'
+                    : 'text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)] hover:text-[var(--lingxi-text-primary)]'
                 )}
               >
                 <ConvStatusDot status={loadedConversations[conv.id]?.status ?? 'idle'} />
@@ -149,7 +149,7 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
                   <input
                     autoFocus
                     defaultValue={conv.title}
-                    className="flex-1 text-[12px] bg-transparent border-b border-[var(--abu-clay)] outline-none min-w-0"
+                    className="flex-1 text-[12px] bg-transparent border-b border-[var(--lingxi-clay)] outline-none min-w-0"
                     onClick={(e) => e.stopPropagation()}
                     onBlur={(e) => {
                       const val = e.target.value.trim();
@@ -168,7 +168,7 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
                 )}
                 <button
                   onClick={(e) => { e.stopPropagation(); deleteConversation(conv.id); }}
-                  className="h-4 w-4 flex items-center justify-center opacity-0 group-hover/conv:opacity-100 text-[var(--abu-text-tertiary)] hover:text-red-500 shrink-0"
+                  className="h-4 w-4 flex items-center justify-center opacity-0 group-hover/conv:opacity-100 text-[var(--lingxi-text-tertiary)] hover:text-red-500 shrink-0"
                 >
                   <Trash2 className="h-3 w-3" />
                 </button>
@@ -179,7 +179,7 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
           {hasMore && (
             <button
               onClick={() => toggleExpanded(project.id)}
-              className="w-full pl-8 pr-2 py-0.5 text-[11px] text-[var(--abu-text-muted)] hover:text-[var(--abu-text-tertiary)] text-left"
+              className="w-full pl-8 pr-2 py-0.5 text-[11px] text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-tertiary)] text-left"
             >
               +{conversations.length - MAX_VISIBLE_CONVERSATIONS} more
             </button>
@@ -192,19 +192,19 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
       {contextMenu && (
         <div
           ref={contextMenuRef}
-          className="fixed z-50 bg-white rounded-lg shadow-lg border border-[var(--abu-border)] py-1 min-w-[160px]"
+          className="fixed z-50 bg-white rounded-lg shadow-lg border border-[var(--lingxi-border)] py-1 min-w-[160px]"
           style={{ left: contextMenu.x, top: contextMenu.y }}
         >
           <button
             onClick={() => { togglePin(project.id); setContextMenu(null); }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)]"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)]"
           >
             {project.pinned ? <PinOff className="h-3.5 w-3.5" /> : <Pin className="h-3.5 w-3.5" />}
             {project.pinned ? t.project.unpin : t.project.pin}
           </button>
           <button
             onClick={() => { onOpenSettings(project.id); setContextMenu(null); }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)]"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)]"
           >
             <Settings className="h-3.5 w-3.5" />
             {t.project.editSettings}
@@ -217,22 +217,22 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
               });
               setContextMenu(null);
             }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)]"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)]"
           >
             <FolderOpen className="h-3.5 w-3.5" />
             {t.project.openInFinder}
           </button>
-          <div className="my-1 border-t border-[var(--abu-border)]" />
+          <div className="my-1 border-t border-[var(--lingxi-border)]" />
           <button
             onClick={() => { setContextMenu(null); setShowArchiveConfirm(true); }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)]"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)]"
           >
             <Archive className="h-3.5 w-3.5" />
             {t.project.archive}
           </button>
           <button
             onClick={() => { setContextMenu(null); setShowDeleteConfirm(true); }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-red-500 hover:bg-[var(--abu-bg-active)]"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-red-500 hover:bg-[var(--lingxi-bg-active)]"
           >
             <Trash2 className="h-3.5 w-3.5" />
             {t.project.delete}
@@ -245,7 +245,7 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
           regardless of whether the conversation lives under a project. */}
       {convMenu && (
         <div
-          className="fixed z-50 bg-white rounded-lg shadow-lg border border-[var(--abu-border)] py-1 min-w-[140px]"
+          className="fixed z-50 bg-white rounded-lg shadow-lg border border-[var(--lingxi-border)] py-1 min-w-[140px]"
           style={{ left: convMenu.x, top: convMenu.y }}
         >
           <button
@@ -253,7 +253,7 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
               setEditingConvId(convMenu.convId);
               setConvMenu(null);
             }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)]"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)]"
           >
             <Pencil className="h-3.5 w-3.5" />
             {t.sidebar.renameConversation}
@@ -267,7 +267,7 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
               await loadConversation(targetId);
               setShareConvId(targetId);
             }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)]"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)]"
           >
             <Download className="h-3.5 w-3.5" />
             {t.sidebar.exportConversation}
@@ -277,18 +277,18 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
               setConversationProject(convMenu.convId, undefined);
               setConvMenu(null);
             }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-active)]"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-active)]"
           >
             <FolderMinus className="h-3.5 w-3.5" />
             {t.project.removeFromProject}
           </button>
-          <div className="my-1 border-t border-[var(--abu-border)]" />
+          <div className="my-1 border-t border-[var(--lingxi-border)]" />
           <button
             onClick={() => {
               deleteConversation(convMenu.convId);
               setConvMenu(null);
             }}
-            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-red-500 hover:bg-[var(--abu-bg-active)]"
+            className="flex items-center gap-2 w-full px-3 py-1.5 text-[13px] text-red-500 hover:bg-[var(--lingxi-bg-active)]"
           >
             <Trash2 className="h-3.5 w-3.5" />
             {t.sidebar.deleteConversation}
@@ -300,7 +300,7 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
       {shareConvId && (
         <ShareExportDialog
           convId={shareConvId}
-          defaultFilename={`abu-conversation-${conversationIndex[shareConvId]?.title || shareConvId}.abu.json`}
+          defaultFilename={`lingxi-conversation-${conversationIndex[shareConvId]?.title || shareConvId}.lingxi.json`}
           onClose={() => setShareConvId(null)}
         />
       )}
@@ -312,16 +312,16 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
           onClick={(e) => { if (e.target === e.currentTarget) setShowArchiveConfirm(false); }}
         >
           <div className="bg-white rounded-2xl shadow-xl w-[380px] p-6 animate-in zoom-in-95 duration-150">
-            <h3 className="text-[16px] font-semibold text-[var(--abu-text-primary)] mb-2">
+            <h3 className="text-[16px] font-semibold text-[var(--lingxi-text-primary)] mb-2">
               {t.project.archiveProject}
             </h3>
-            <p className="text-[14px] text-[var(--abu-text-tertiary)] leading-relaxed mb-6">
+            <p className="text-[14px] text-[var(--lingxi-text-tertiary)] leading-relaxed mb-6">
               {format(t.project.archiveConfirm, { name: project.name })}
             </p>
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setShowArchiveConfirm(false)}
-                className="px-4 py-2 rounded-lg text-[13px] font-medium text-[var(--abu-text-tertiary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+                className="px-4 py-2 rounded-lg text-[13px] font-medium text-[var(--lingxi-text-tertiary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
               >
                 {t.project.cancel}
               </button>
@@ -346,16 +346,16 @@ export default function ProjectItem({ project, conversations, expanded, onNewTas
           onClick={(e) => { if (e.target === e.currentTarget) setShowDeleteConfirm(false); }}
         >
           <div className="bg-white rounded-2xl shadow-xl w-[380px] p-6 animate-in zoom-in-95 duration-150">
-            <h3 className="text-[16px] font-semibold text-[var(--abu-text-primary)] mb-2">
+            <h3 className="text-[16px] font-semibold text-[var(--lingxi-text-primary)] mb-2">
               {t.project.deleteProject}
             </h3>
-            <p className="text-[14px] text-[var(--abu-text-tertiary)] leading-relaxed mb-6">
+            <p className="text-[14px] text-[var(--lingxi-text-tertiary)] leading-relaxed mb-6">
               {t.project.deleteConfirm}
             </p>
             <div className="flex items-center justify-end gap-3">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 rounded-lg text-[13px] font-medium text-[var(--abu-text-tertiary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+                className="px-4 py-2 rounded-lg text-[13px] font-medium text-[var(--lingxi-text-tertiary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
               >
                 {t.project.cancel}
               </button>

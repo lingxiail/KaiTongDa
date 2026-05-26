@@ -24,10 +24,10 @@ export default function InstructionsEditModal({ open, onClose, workspacePath }: 
     async function loadContent() {
       setLoading(true);
       try {
-        const abuMdPath = joinPath(workspacePath, '.abu', 'ABU.md');
-        const fileExists = await exists(abuMdPath);
+        const lingxiMdPath = joinPath(workspacePath, '.lingxi', 'LINGXI.md');
+        const fileExists = await exists(lingxiMdPath);
         if (fileExists) {
-          const text = await readTextFile(abuMdPath);
+          const text = await readTextFile(lingxiMdPath);
           if (!cancelled) setContent(text);
         } else {
           if (!cancelled) setContent('');
@@ -57,12 +57,12 @@ export default function InstructionsEditModal({ open, onClose, workspacePath }: 
     setSaving(true);
     setError(null);
     try {
-      const abuDir = joinPath(workspacePath, '.abu');
-      if (!(await exists(abuDir))) {
-        await mkdir(abuDir, { recursive: true });
+      const lingxiDir = joinPath(workspacePath, '.lingxi');
+      if (!(await exists(lingxiDir))) {
+        await mkdir(lingxiDir, { recursive: true });
       }
-      const abuMdPath = joinPath(abuDir, 'ABU.md');
-      await writeTextFile(abuMdPath, content);
+      const lingxiMdPath = joinPath(lingxiDir, 'LINGXI.md');
+      await writeTextFile(lingxiMdPath, content);
       onClose();
     } catch (err) {
       console.error('Failed to save instructions:', err);
@@ -80,23 +80,23 @@ export default function InstructionsEditModal({ open, onClose, workspacePath }: 
       }}
     >
       <div className="bg-white rounded-2xl shadow-xl w-[480px] max-h-[80vh] flex flex-col p-6 animate-in zoom-in-95 duration-150">
-        <h3 className="text-[16px] font-semibold text-[var(--abu-text-primary)] mb-1">
+        <h3 className="text-[16px] font-semibold text-[var(--lingxi-text-primary)] mb-1">
           {t.panel.instructionsTitle}
         </h3>
-        <p className="text-[13px] text-[var(--abu-text-muted)] mb-4">
+        <p className="text-[13px] text-[var(--lingxi-text-muted)] mb-4">
           {t.panel.instructionsDesc}
         </p>
 
         {loading ? (
           <div className="flex-1 flex items-center justify-center py-12">
-            <div className="w-5 h-5 border-2 border-[var(--abu-clay)] border-t-transparent rounded-full animate-spin" />
+            <div className="w-5 h-5 border-2 border-[var(--lingxi-clay)] border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder={t.panel.instructionsPlaceholder}
-            className="flex-1 min-h-[280px] max-h-[50vh] w-full px-3 py-3 rounded-lg border border-[var(--abu-border)] text-[13px] text-[var(--abu-text-primary)] bg-[var(--abu-bg-base)] focus:outline-none focus:border-[var(--abu-clay)] transition-colors resize-none font-mono leading-relaxed"
+            className="flex-1 min-h-[280px] max-h-[50vh] w-full px-3 py-3 rounded-lg border border-[var(--lingxi-border)] text-[13px] text-[var(--lingxi-text-primary)] bg-[var(--lingxi-bg-base)] focus:outline-none focus:border-[var(--lingxi-clay)] transition-colors resize-none font-mono leading-relaxed"
           />
         )}
 
@@ -113,14 +113,14 @@ export default function InstructionsEditModal({ open, onClose, workspacePath }: 
         <div className="flex gap-3 mt-4">
           <button
             onClick={onClose}
-            className="flex-1 py-2.5 rounded-lg text-[13px] font-medium bg-[var(--abu-bg-muted)] text-[var(--abu-text-secondary)] hover:bg-[var(--abu-bg-hover)] transition-colors"
+            className="flex-1 py-2.5 rounded-lg text-[13px] font-medium bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-secondary)] hover:bg-[var(--lingxi-bg-hover)] transition-colors"
           >
             {t.common.cancel}
           </button>
           <button
             onClick={handleSave}
             disabled={saving || loading}
-            className="flex-1 py-2.5 rounded-lg text-[14px] font-medium bg-[var(--abu-clay)] text-white hover:bg-[var(--abu-clay-hover)] transition-colors disabled:opacity-50"
+            className="flex-1 py-2.5 rounded-lg text-[14px] font-medium bg-[var(--lingxi-clay)] text-white hover:bg-[var(--lingxi-clay-hover)] transition-colors disabled:opacity-50"
           >
             {saving ? t.panel.instructionsSaving : t.common.save}
           </button>

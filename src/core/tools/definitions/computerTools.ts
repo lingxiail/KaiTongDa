@@ -33,7 +33,7 @@ function toScreenCoords(x: number, y: number): { x: number; y: number } {
 /**
  * Take a lightweight auto-screenshot after an action.
  * Uses exclusion-based capture when available (no window hide needed).
- * Falls back to regular capture when Abu window is already hidden (batch mode).
+ * Falls back to regular capture when Lingxi window is already hidden (batch mode).
  */
 async function takeAutoScreenshot(): Promise<ToolResultContent[]> {
   // Wait for UI to settle after the action (e.g. click animation, page load)
@@ -44,14 +44,14 @@ async function takeAutoScreenshot(): Promise<ToolResultContent[]> {
     let result: { base64: string; width: number; height: number; scale_factor: number };
 
     if (excludeId != null && !computerUseBatchMode) {
-      // Exclusion mode: Abu is visible, exclude from screenshot (+ overlay if present)
+      // Exclusion mode: Lingxi is visible, exclude from screenshot (+ overlay if present)
       result = await invoke('capture_screen_excluding', {
         excludeWindowId: excludeId,
         x: null, y: null, width: null, height: null,
         maxWidth: SCREENSHOT_MAX_WIDTH,
       });
     } else {
-      // Batch mode: Abu window is already hidden by toolExecutor, use regular capture
+      // Batch mode: Lingxi window is already hidden by toolExecutor, use regular capture
       result = await invoke('capture_screen', {
         x: null, y: null, width: null, height: null,
         maxWidth: SCREENSHOT_MAX_WIDTH,
@@ -70,15 +70,15 @@ async function takeAutoScreenshot(): Promise<ToolResultContent[]> {
   }
 }
 
-/** Cached Abu window ID for screenshot exclusion (macOS). */
-let cachedAbuWindowId: number | null = null;
+/** Cached Lingxi window ID for screenshot exclusion (macOS). */
+let cachedLingxiWindowId: number | null = null;
 
-/** Get the Abu window's CGWindowID, cached after first call. */
-async function getAbuWindowId(): Promise<number | null> {
-  if (cachedAbuWindowId != null) return cachedAbuWindowId;
+/** Get the Lingxi window's CGWindowID, cached after first call. */
+async function getLingxiWindowId(): Promise<number | null> {
+  if (cachedLingxiWindowId != null) return cachedLingxiWindowId;
   try {
-    cachedAbuWindowId = await invoke<number>('get_abu_window_id');
-    return cachedAbuWindowId;
+    cachedLingxiWindowId = await invoke<number>('get_abu_window_id');
+    return cachedLingxiWindowId;
   } catch {
     return null; // Non-macOS or API unavailable
   }
@@ -86,15 +86,15 @@ async function getAbuWindowId(): Promise<number | null> {
 
 /**
  * Get the best window ID for screenshot exclusion.
- * If the overlay is visible, use its ID (higher level → excludes both overlay and Abu).
- * Otherwise use Abu's window ID.
+ * If the overlay is visible, use its ID (higher level → excludes both overlay and Lingxi).
+ * Otherwise use Lingxi's window ID.
  */
 async function getExcludeWindowId(): Promise<number | null> {
   try {
     const overlayId = await invoke<number | null>('get_overlay_window_id');
     if (overlayId != null) return overlayId;
   } catch { /* ignore */ }
-  return getAbuWindowId();
+  return getLingxiWindowId();
 }
 
 /** Open macOS System Settings to a specific privacy panel. */
@@ -120,12 +120,12 @@ async function openMacOSSettings(panel: 'ScreenCapture' | 'Accessibility'): Prom
 
 async function executeScreenshot(input: Record<string, unknown>): Promise<ToolResult> {
   // Permission is already checked in the main execute() entry point.
-  // Capture screenshot excluding Abu + overlay windows (no need to hide/show).
+  // Capture screenshot excluding Lingxi + overlay windows (no need to hide/show).
   // Falls back to old capture_screen with window_hide if exclusion is unavailable.
   const excludeId = await getExcludeWindowId();
 
   if (excludeId != null) {
-    // macOS: use capture_screen_excluding — Abu window stays visible to user
+    // macOS: use capture_screen_excluding — Lingxi window stays visible to user
     return captureWithExclusion(excludeId, input);
   } else {
     // Fallback (Windows / error): hide window, capture, show window
@@ -133,7 +133,7 @@ async function executeScreenshot(input: Record<string, unknown>): Promise<ToolRe
   }
 }
 
-/** Screenshot via CGWindowListCreateImage excluding Abu window. No window hide needed. */
+/** Screenshot via CGWindowListCreateImage excluding Lingxi window. No window hide needed. */
 async function captureWithExclusion(abuWindowId: number, input: Record<string, unknown>): Promise<ToolResult> {
   const result = await invoke<{ base64: string; width: number; height: number; scale_factor: number }>('capture_screen_excluding', {
     excludeWindowId: abuWindowId,
@@ -148,7 +148,7 @@ async function captureWithExclusion(abuWindowId: number, input: Record<string, u
   return formatScreenshotResult(result);
 }
 
-/** Fallback: hide Abu window → capture → show window. Used on Windows or when exclusion fails. */
+/** Fallback: hide Lingxi window → capture → show window. Used on Windows or when exclusion fails. */
 async function captureWithWindowHide(input: Record<string, unknown>): Promise<ToolResult> {
   try { await invoke('window_hide'); } catch { /* ignore */ }
   await new Promise(r => setTimeout(r, 300));
@@ -202,7 +202,7 @@ export const computerTool: ToolDefinition = {
   description: `操控电脑屏幕：截图、鼠标和键盘操作。仅在必须看屏幕画面或操作 GUI 界面时才用，能用其他工具完成的不要用此工具。
 
 操作类型（action）：
-- screenshot：截屏（阿布窗口不会出现在截图中）。可选 x, y, width, height 裁剪区域。
+- screenshot：截屏（灵犀窗口不会出现在截图中）。可选 x, y, width, height 裁剪区域。
 - click：点击坐标。参数：x, y, button（left/right/middle/double，默认 left）。
 - move：移动鼠标。参数：x, y。
 - scroll：滚动。参数：x, y, direction（up/down/left/right）, amount（默认 3）。
@@ -282,14 +282,14 @@ export const computerTool: ToolDefinition = {
         // subsequent times it's a no-op). The dialog has an "Open System Settings" button.
         const granted = await invoke<boolean>('request_screen_recording');
         if (!granted) {
-          return 'Error: 没有录屏权限。请在弹出的系统对话框中点击「打开系统设置」，授权 Abu 后重启。\n\nNo Screen Recording permission. Please click "Open System Settings" in the dialog, grant Abu access, then restart Abu.';
+          return 'Error: 没有录屏权限。请在弹出的系统对话框中点击「打开系统设置」，授权 Lingxi 后重启。\n\nNo Screen Recording permission. Please click "Open System Settings" in the dialog, grant Lingxi access, then restart Lingxi.';
         }
       }
 
       if (action !== 'screenshot' && !perms.accessibility) {
         // No system dialog for Accessibility — need to open Settings directly
         await openMacOSSettings('Accessibility');
-        return 'Error: 没有辅助功能权限。已自动打开系统设置，请在「辅助功能」中授权 Abu，然后重启 Abu。\n\nNo Accessibility permission. System Settings has been opened — please grant Abu access in Accessibility, then restart Abu.';
+        return 'Error: 没有辅助功能权限。已自动打开系统设置，请在「辅助功能」中授权 Lingxi，然后重启 Lingxi。\n\nNo Accessibility permission. System Settings has been opened — please grant Lingxi access in Accessibility, then restart Lingxi.';
       }
     } catch {
       // Non-macOS or FFI unavailable — proceed
@@ -311,7 +311,7 @@ export const computerTool: ToolDefinition = {
       }
     }
 
-    // Hide Abu window during operations so it doesn't block click targets
+    // Hide Lingxi window during operations so it doesn't block click targets
     // In batch mode, agentLoop handles window hide/show at batch level
     const needsHideWindow = !computerUseBatchMode && ['click', 'move', 'scroll', 'drag', 'type', 'key'].includes(action);
     if (needsHideWindow) {
@@ -415,7 +415,7 @@ export const computerTool: ToolDefinition = {
 
       return actionResult;
     } finally {
-      // Restore Abu window AFTER everything is done (including auto-screenshot)
+      // Restore Lingxi window AFTER everything is done (including auto-screenshot)
       if (needsHideWindow) {
         try { await invoke('window_show'); } catch { /* ignore */ }
       }

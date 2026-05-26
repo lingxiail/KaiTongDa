@@ -77,7 +77,7 @@ describe('OutputSender.extractAIResponse', () => {
     ]);
     const result = outputSender.extractAIResponse('conv-1', 'full');
     expect(result).toContain('**事件**: q');
-    expect(result).toContain('**Abu**: a');
+    expect(result).toContain('**Lingxi**: a');
   });
 
   it('custom_template — returns last assistant message', () => {
@@ -117,7 +117,7 @@ describe('OutputSender.buildMessage', () => {
     vi.clearAllMocks();
   });
 
-  it('last_message mode builds correct AbuMessage', () => {
+  it('last_message mode builds correct LingxiMessage', () => {
     mockConversation([
       { role: 'user', content: 'event' },
       { role: 'assistant', content: 'AI analysis result' },
@@ -140,7 +140,7 @@ describe('OutputSender.buildMessage', () => {
     expect(msg.content).toBe('AI analysis result');
     expect(msg.title).toBe('Alert Monitor');
     expect(msg.color).toBe('info');
-    expect(msg.footer).toContain('Abu AI');
+    expect(msg.footer).toContain('Lingxi AI');
     expect(msg.footer).toContain('2026-03-13 14:32');
   });
 

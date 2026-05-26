@@ -64,7 +64,7 @@ import { checkForUpdate } from '@/core/updates/checker';
  * empty or the user is still in a fullscreen app (defer until next
  * focus event). Fire-and-forget; all failures are non-fatal.
  *
- * When abuIsFocused=true (called from the focus event), Abu is definitely
+ * When abuIsFocused=true (called from the focus event), Lingxi is definitely
  * the foreground window, so no fullscreen app can be blocking — skip the
  * shell-based fullscreen check entirely (avoids spawning PowerShell on Windows).
  */
@@ -381,7 +381,7 @@ function App() {
       <div className={cn('fixed left-0 right-0 z-40 pointer-events-none', mac ? 'top-0 h-11' : 'top-0 h-8')}>
         <button
           onClick={toggleSidebar}
-          className="absolute btn-ghost p-1 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md transition-[left] duration-200 pointer-events-auto"
+          className="absolute btn-ghost p-1 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-md transition-[left] duration-200 pointer-events-auto"
           style={{ top: mac ? 8 : 4, left: sidebarCollapsed ? 96 : 232 }}
           title={sidebarCollapsed ? t.sidebar.showSidebar : t.sidebar.hideSidebar}
         >
@@ -391,7 +391,7 @@ function App() {
         {showRightPanelToggle && (
           <button
             onClick={toggleRightPanel}
-            className="absolute right-2 btn-ghost p-1 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-md pointer-events-auto"
+            className="absolute right-2 btn-ghost p-1 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-md pointer-events-auto"
             style={{ top: mac ? 8 : 4 }}
             title={rightPanelCollapsed ? t.panel.showPanel : t.panel.hidePanel}
           >
@@ -410,7 +410,7 @@ function App() {
         </div>
 
         {/* Main — pt-7 on macOS to clear overlay title bar; no padding on Windows (native title bar) */}
-        <main className={cn('flex-1 min-w-0 bg-[var(--abu-bg-base)]', mac ? 'pt-11' : 'pt-8')}>
+        <main className={cn('flex-1 min-w-0 bg-[var(--lingxi-bg-base)]', mac ? 'pt-11' : 'pt-8')}>
           {viewMode === 'automation' && <AutomationView />}
           {viewMode === 'toolbox' && <ToolboxView />}
           {viewMode === 'settings' && <SystemSettingsView />}

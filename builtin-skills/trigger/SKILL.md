@@ -23,7 +23,7 @@ tags:
 
 ## 什么是触发器
 
-触发器是"事件驱动的自动化任务"——当外部事件发生时，阿布自动执行指定操作。
+触发器是"事件驱动的自动化任务"——当外部事件发生时，灵犀自动执行指定操作。
 与定时任务的区别：定时任务按时间周期执行，触发器按事件发生执行。
 
 ## 触发器类型
@@ -155,7 +155,7 @@ curl -X POST http://localhost:18080/trigger/{触发器ID} \
 
 ```python
 #!/usr/bin/env python3
-"""监听 IM 数据库，将告警消息推送给阿布"""
+"""监听 IM 数据库，将告警消息推送给灵犀"""
 import sqlite3, time, hashlib, requests
 
 DB_PATH = "/path/to/im.db"

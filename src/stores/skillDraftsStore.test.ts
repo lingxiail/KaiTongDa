@@ -137,7 +137,7 @@ describe('skillDraftsStore · acceptDraft', () => {
   it('acceptDraft does NOT mutate the global workspace (Task #44)', async () => {
     // Regression guard for the silent-workspace-switch bug: when a
     // user clicks accept on a card from a *different* project's
-    // conversation, Abu used to flip useWorkspaceStore.currentPath
+    // conversation, Lingxi used to flip useWorkspaceStore.currentPath
     // to the card's workspace as a side effect, so discoveryStore
     // could scan the right project. That mutated the user's global
     // context without asking. The fix threads the workspace through

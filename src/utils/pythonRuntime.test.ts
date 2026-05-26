@@ -148,12 +148,12 @@ describe('pythonRuntime', () => {
       }));
       const { resolveResource } = await import('@tauri-apps/api/path');
       const { exists } = await import('@tauri-apps/plugin-fs');
-      vi.mocked(resolveResource).mockResolvedValue('C:\\Program Files\\Abu\\python-runtime\\python.exe');
+      vi.mocked(resolveResource).mockResolvedValue('C:\\Program Files\\Lingxi\\python-runtime\\python.exe');
       vi.mocked(exists).mockResolvedValue(true);
 
       const { resolveCommandPython } = await import('./pythonRuntime');
       const result = await resolveCommandPython('python3 test.py');
-      expect(result).toBe('"C:\\Program Files\\Abu\\python-runtime\\python.exe" -I test.py');
+      expect(result).toBe('"C:\\Program Files\\Lingxi\\python-runtime\\python.exe" -I test.py');
     });
   });
 });

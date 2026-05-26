@@ -16,7 +16,7 @@ import type { NormalizedIMMessage } from './inboundRouter';
 import { resolveCapability, getCallbacksForLevel } from './authGate';
 import { sessionMapper } from './sessionMapper';
 import { sendThinking, sendFinal, addProcessingReaction } from './streamingReply';
-import type { AbuMessage } from './adapters/types';
+import type { LingxiMessage } from './adapters/types';
 import type { IMChannel, IMCapabilityLevel } from '../../types/imChannel';
 import { tokenManager } from './tokenManager';
 import { consumeTriggerContext } from './triggerContextCache';
@@ -133,7 +133,7 @@ class IMChannelRouter {
       console.log('[IMChannel] Concurrency limit reached, queueing message');
       this.queuedMessages.push({ message, channelId: channel.id });
       const queuePos = this.queuedMessages.length;
-      const queueMsg: AbuMessage = {
+      const queueMsg: LingxiMessage = {
         content: `收到！当前有 ${this.runningCount} 个请求正在处理，你的请求已排队（第 ${queuePos} 位），请稍候。`,
       };
       sendThinking(message.platform, message.replyContext)
@@ -178,7 +178,7 @@ class IMChannelRouter {
 
       // Handle "新对话" reset — confirm and wait for next message
       if (resolveResult.isReset) {
-        const resetMsg: AbuMessage = { content: getI18n().imChannel.sessionResetConfirm };
+        const resetMsg: LingxiMessage = { content: getI18n().imChannel.sessionResetConfirm };
         replyHandle = await sendThinking(message.platform, message.replyContext);
         await sendFinal(replyHandle, resetMsg);
         useIMChannelStore.getState().setChannelStatus(channel.id, 'connected');
@@ -188,7 +188,7 @@ class IMChannelRouter {
 
       if (isRecovered) {
         // Send recovery confirmation
-        const confirmMsg: AbuMessage = {
+        const confirmMsg: LingxiMessage = {
           content: format(getI18n().imChannel.sessionRecovered, { context: recoverableContext ?? '' }),
         };
         replyHandle = await sendThinking(message.platform, message.replyContext);
@@ -200,7 +200,7 @@ class IMChannelRouter {
 
       if (hasRecoverableSession) {
         // Hint the user that they can recover
-        const hintMsg: AbuMessage = {
+        const hintMsg: LingxiMessage = {
           content: getI18n().imChannel.sessionExpiredHint,
         };
         // Send hint as a side-effect, don't block main flow
@@ -254,9 +254,9 @@ class IMChannelRouter {
       // 5. Extract and send reply
       const lastAIContent = this.extractLastAIReply(session.conversationId);
       if (lastAIContent) {
-        const replyMessage: AbuMessage = {
+        const replyMessage: LingxiMessage = {
           content: lastAIContent,
-          footer: `Abu AI · ${new Date().toLocaleString('zh-CN')}`,
+          footer: `Lingxi AI · ${new Date().toLocaleString('zh-CN')}`,
         };
         const result = await sendFinal(replyHandle, replyMessage);
         if (!result.success) {
@@ -318,8 +318,8 @@ class IMChannelRouter {
    */
   private async sendErrorReply(message: NormalizedIMMessage, error: string) {
     const truncated = error.length > 100 ? error.slice(0, 100) + '...' : error;
-    const errorMessage: AbuMessage = {
-      content: `Abu 处理出错: ${truncated}`,
+    const errorMessage: LingxiMessage = {
+      content: `Lingxi 处理出错: ${truncated}`,
     };
     const handle = { platform: message.platform, supportsUpdate: false, replyContext: message.replyContext };
     await sendFinal(handle, errorMessage);

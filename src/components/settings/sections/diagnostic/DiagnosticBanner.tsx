@@ -21,14 +21,14 @@ const STYLES = {
     iconColor: 'text-red-600',
   },
   'checking': {
-    bg: 'bg-[var(--abu-clay-bg)] border-[var(--abu-clay-bg-15)] text-[var(--abu-text-primary)]',
+    bg: 'bg-[var(--lingxi-clay-bg)] border-[var(--lingxi-clay-bg-15)] text-[var(--lingxi-text-primary)]',
     icon: Loader2,
-    iconColor: 'text-[var(--abu-clay)]',
+    iconColor: 'text-[var(--lingxi-clay)]',
   },
   'no-data': {
-    bg: 'bg-[var(--abu-bg-muted)] border-[var(--abu-border)] text-[var(--abu-text-tertiary)]',
+    bg: 'bg-[var(--lingxi-bg-muted)] border-[var(--lingxi-border)] text-[var(--lingxi-text-tertiary)]',
     icon: Activity,
-    iconColor: 'text-[var(--abu-text-muted)]',
+    iconColor: 'text-[var(--lingxi-text-muted)]',
   },
 } as const;
 
@@ -66,7 +66,7 @@ export default function DiagnosticBanner() {
       <div className="flex-1 min-w-0">
         <div className="text-[14px] font-medium">{verdict}</div>
         {lastCheckedAt && overall !== 'no-data' && (
-          <div className="text-[11px] text-[var(--abu-text-muted)] mt-0.5">
+          <div className="text-[11px] text-[var(--lingxi-text-muted)] mt-0.5">
             {i18nFormat(t.diagnostic.lastChecked, { when: formatRelativeTime(lastCheckedAt) })}
           </div>
         )}
@@ -75,7 +75,7 @@ export default function DiagnosticBanner() {
         type="button"
         onClick={runAll}
         disabled={isChecking}
-        className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium bg-white border border-[var(--abu-border)] text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[12px] font-medium bg-white border border-[var(--lingxi-border)] text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <RefreshCw className={cn('h-3.5 w-3.5', isChecking && 'animate-spin')} />
         {overall === 'no-data' ? t.diagnostic.runAll : t.diagnostic.runAllAgain}

@@ -2,7 +2,7 @@
 name: reflect
 description: 复盘当前对话——回顾任务过程、总结经验教训、主动沉淀可复用的 skill。当用户要求"复盘"、"反思"、"总结一下刚才"、"有什么值得记住的"时使用。
 trigger: 用户明确要求复盘、反思、回顾本次对话，或询问"这次有什么值得沉淀的"
-do-not-trigger: 用户只是讨论反思概念、问 Abu 能不能反思、或在非复盘场景提到"回顾"
+do-not-trigger: 用户只是讨论反思概念、问 Lingxi 能不能反思、或在非复盘场景提到"回顾"
 user-invocable: true
 argument-hint: <可选：聚焦某个方面，如"工具使用"、"出错的地方">
 context: inline

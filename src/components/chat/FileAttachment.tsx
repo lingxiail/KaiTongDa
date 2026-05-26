@@ -177,8 +177,8 @@ export default function FileAttachment({ filePath }: FileAttachmentProps) {
   // Loading skeleton — match the standard card shape so the layout doesn't jump
   if (!resolved) {
     return (
-      <div className="w-full rounded-lg bg-[var(--abu-bg-muted)] border border-[var(--abu-border)] px-4 py-3 opacity-50">
-        <div className="h-5 w-32 bg-[var(--abu-border)] rounded animate-pulse" />
+      <div className="w-full rounded-lg bg-[var(--lingxi-bg-muted)] border border-[var(--lingxi-border)] px-4 py-3 opacity-50">
+        <div className="h-5 w-32 bg-[var(--lingxi-border)] rounded animate-pulse" />
       </div>
     );
   }
@@ -186,15 +186,15 @@ export default function FileAttachment({ filePath }: FileAttachmentProps) {
   // Missing: no original on disk and no snapshot record at all
   if (resolved.status === 'missing') {
     return (
-      <div className="flex items-center gap-3 w-full rounded-lg border border-dashed border-[var(--abu-border)] bg-[var(--abu-bg-muted)] px-4 py-3 opacity-60">
-        <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 bg-[var(--abu-bg-muted)]">
-          <FileX className="w-5 h-5 text-[var(--abu-text-muted)]" />
+      <div className="flex items-center gap-3 w-full rounded-lg border border-dashed border-[var(--lingxi-border)] bg-[var(--lingxi-bg-muted)] px-4 py-3 opacity-60">
+        <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 bg-[var(--lingxi-bg-muted)]">
+          <FileX className="w-5 h-5 text-[var(--lingxi-text-muted)]" />
         </div>
         <div className="flex flex-col min-w-0">
-          <span className="text-[13.5px] font-medium text-[var(--abu-text-muted)] truncate line-through">
+          <span className="text-[13.5px] font-medium text-[var(--lingxi-text-muted)] truncate line-through">
             {resolved.basename}
           </span>
-          <span className="text-[11px] text-[var(--abu-text-muted)]">
+          <span className="text-[11px] text-[var(--lingxi-text-muted)]">
             {t.chat.fileMissing}
           </span>
         </div>
@@ -209,15 +209,15 @@ export default function FileAttachment({ filePath }: FileAttachmentProps) {
         ? t.chat.fileOversized
         : t.chat.fileBackupFailed;
     return (
-      <div className="flex items-center gap-3 w-full rounded-lg border border-[var(--abu-border)] bg-[var(--abu-bg-muted)] px-4 py-3 opacity-70">
-        <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 bg-[var(--abu-bg-muted)]">
+      <div className="flex items-center gap-3 w-full rounded-lg border border-[var(--lingxi-border)] bg-[var(--lingxi-bg-muted)] px-4 py-3 opacity-70">
+        <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 bg-[var(--lingxi-bg-muted)]">
           <FileWarning className="w-5 h-5 text-amber-500/80" />
         </div>
         <div className="flex flex-col min-w-0">
-          <span className="text-[13.5px] font-medium text-[var(--abu-text-primary)] truncate">
+          <span className="text-[13.5px] font-medium text-[var(--lingxi-text-primary)] truncate">
             {resolved.entry.basename}
           </span>
-          <span className="text-[11px] text-[var(--abu-text-muted)]">
+          <span className="text-[11px] text-[var(--lingxi-text-muted)]">
             {reasonLabel}
           </span>
         </div>
@@ -235,7 +235,7 @@ export default function FileAttachment({ filePath }: FileAttachmentProps) {
         onClick={handleClick}
         className={cn(
           'group rounded-lg cursor-pointer transition-all overflow-hidden',
-          'bg-[var(--abu-bg-muted)] border border-[var(--abu-border)] hover:border-[var(--abu-clay-40)]',
+          'bg-[var(--lingxi-bg-muted)] border border-[var(--lingxi-border)] hover:border-[var(--lingxi-clay-40)]',
           'max-w-[240px]'
         )}
         title="点击预览图片"
@@ -247,8 +247,8 @@ export default function FileAttachment({ filePath }: FileAttachmentProps) {
           onError={() => setThumbUrl(null)}
         />
         <div className="px-2.5 py-1.5 flex items-center gap-2">
-          <FileImage className="w-3.5 h-3.5 text-[var(--abu-text-muted)] shrink-0" />
-          <span className="text-[12px] text-[var(--abu-text-primary)] truncate">{fileName}</span>
+          <FileImage className="w-3.5 h-3.5 text-[var(--lingxi-text-muted)] shrink-0" />
+          <span className="text-[12px] text-[var(--lingxi-text-primary)] truncate">{fileName}</span>
         </div>
       </div>
     );
@@ -259,7 +259,7 @@ export default function FileAttachment({ filePath }: FileAttachmentProps) {
     <div
       className={cn(
         'group flex items-center gap-3 w-full rounded-lg transition-all',
-        'bg-[var(--abu-bg-muted)] border border-[var(--abu-border)] hover:border-[var(--abu-border-hover)]',
+        'bg-[var(--lingxi-bg-muted)] border border-[var(--lingxi-border)] hover:border-[var(--lingxi-border-hover)]',
         'px-4 py-3',
       )}
     >
@@ -272,17 +272,17 @@ export default function FileAttachment({ filePath }: FileAttachmentProps) {
         {/* File Icon */}
         <div className={cn(
           'w-10 h-10 rounded-lg flex items-center justify-center shrink-0',
-          'bg-[var(--abu-bg-muted)]'
+          'bg-[var(--lingxi-bg-muted)]'
         )}>
-          <Icon className="w-5 h-5 text-[var(--abu-text-tertiary)]" />
+          <Icon className="w-5 h-5 text-[var(--lingxi-text-tertiary)]" />
         </div>
 
         {/* File Info */}
         <div className="flex flex-col min-w-0">
-          <span className="text-[13.5px] font-medium text-[var(--abu-text-primary)] truncate">
+          <span className="text-[13.5px] font-medium text-[var(--lingxi-text-primary)] truncate">
             {fileName.replace(/\.[^/.]+$/, '') || fileName}
           </span>
-          <span className="text-[11px] text-[var(--abu-text-muted)]">
+          <span className="text-[11px] text-[var(--lingxi-text-muted)]">
             {category} · {label}
           </span>
         </div>
@@ -293,12 +293,12 @@ export default function FileAttachment({ filePath }: FileAttachmentProps) {
         onClick={handleOpenWithDefaultApp}
         className={cn(
           'flex items-center gap-1.5 px-3 py-2 shrink-0 cursor-pointer whitespace-nowrap',
-          'rounded-lg border border-[var(--abu-border)] bg-[var(--abu-bg-base)] hover:bg-[var(--abu-bg-muted)] transition-colors',
+          'rounded-lg border border-[var(--lingxi-border)] bg-[var(--lingxi-bg-base)] hover:bg-[var(--lingxi-bg-muted)] transition-colors',
         )}
         title={openWithLabel ? `用 ${openWithLabel} 打开` : t.chat.openWithDefaultApp}
       >
-        <OpenWithIcon className="w-4 h-4 text-[var(--abu-text-muted)]" />
-        <span className="text-[12.5px] text-[var(--abu-text-tertiary)]">
+        <OpenWithIcon className="w-4 h-4 text-[var(--lingxi-text-muted)]" />
+        <span className="text-[12.5px] text-[var(--lingxi-text-tertiary)]">
           {openWithLabel ? `用 ${openWithLabel} 打开` : t.chat.openWithDefaultApp}
         </span>
       </button>
@@ -331,8 +331,8 @@ export function ImageThumbnail({ src }: { src: string }) {
     <div
       onClick={() => isLocalPath && openPreview(src)}
       className={cn(
-        'w-16 h-16 rounded-lg overflow-hidden border border-[var(--abu-bg-pressed)] transition-all',
-        'hover:border-[var(--abu-clay-40)]',
+        'w-16 h-16 rounded-lg overflow-hidden border border-[var(--lingxi-bg-pressed)] transition-all',
+        'hover:border-[var(--lingxi-clay-40)]',
         isLocalPath && 'cursor-pointer'
       )}
       title={isLocalPath ? '点击预览大图' : src}
@@ -392,7 +392,7 @@ export function ImagePreviewCard({ filePath }: { filePath: string }) {
       onClick={() => openPreview(filePath)}
       className={cn(
         'group/card inline-block rounded-lg cursor-pointer transition-all overflow-hidden relative',
-        'bg-[var(--abu-bg-muted)] border border-[var(--abu-border)] hover:border-[var(--abu-clay-40)]',
+        'bg-[var(--lingxi-bg-muted)] border border-[var(--lingxi-border)] hover:border-[var(--lingxi-clay-40)]',
         'max-w-[240px]'
       )}
       title={t.chat.clickToPreview}
@@ -408,25 +408,25 @@ export function ImagePreviewCard({ filePath }: { filePath: string }) {
             onError={() => { setImgUrl(null); setLoadFailed(true); }}
           />
         ) : (
-          <div className="w-full h-[80px] rounded bg-[var(--abu-bg-muted)] flex items-center justify-center">
-            <FileImage className={cn('w-8 h-8', loadFailed ? 'text-[var(--abu-text-placeholder)]' : 'text-[var(--abu-clay)] animate-pulse')} />
+          <div className="w-full h-[80px] rounded bg-[var(--lingxi-bg-muted)] flex items-center justify-center">
+            <FileImage className={cn('w-8 h-8', loadFailed ? 'text-[var(--lingxi-text-placeholder)]' : 'text-[var(--lingxi-clay)] animate-pulse')} />
           </div>
         )}
       </div>
       {/* File info */}
       <div className="px-2.5 pb-2 pt-0.5 flex items-center gap-1">
         <div className="min-w-0 flex-1">
-          <div className="text-[12px] font-medium text-[var(--abu-text-primary)] truncate">{fileName}</div>
+          <div className="text-[12px] font-medium text-[var(--lingxi-text-primary)] truncate">{fileName}</div>
           {dimensions && (
-            <div className="text-[10px] text-[var(--abu-text-placeholder)] mt-0.5">{dimensions.w} × {dimensions.h}</div>
+            <div className="text-[10px] text-[var(--lingxi-text-placeholder)] mt-0.5">{dimensions.w} × {dimensions.h}</div>
           )}
         </div>
         <button
           onClick={handleReveal}
-          className="p-1 rounded hover:bg-[var(--abu-bg-muted)] opacity-0 group-hover/card:opacity-100 transition-opacity shrink-0"
+          className="p-1 rounded hover:bg-[var(--lingxi-bg-muted)] opacity-0 group-hover/card:opacity-100 transition-opacity shrink-0"
           title={t.chat.openInFinder}
         >
-          <ExternalLink className="w-3 h-3 text-[var(--abu-text-muted)]" />
+          <ExternalLink className="w-3 h-3 text-[var(--lingxi-text-muted)]" />
         </button>
       </div>
     </div>

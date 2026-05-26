@@ -1,7 +1,7 @@
 /**
  * IM Adapter Types — Unified message format and adapter interfaces
  *
- * All platforms convert to/from AbuMessage.
+ * All platforms convert to/from LingxiMessage.
  * Upper layers never touch platform-specific formats.
  */
 
@@ -10,11 +10,11 @@
 export type MessageColor = 'success' | 'warning' | 'danger' | 'info';
 
 /**
- * Abu unified message format.
+ * Lingxi unified message format.
  * All outbound messages are built from this format.
  * All inbound messages are normalized to this format.
  */
-export interface AbuMessage {
+export interface LingxiMessage {
   /** Markdown-formatted body text */
   content: string;
   /** Message title (supported by some platforms) */
@@ -66,14 +66,14 @@ export interface AdapterConfig {
 export interface OutboundAdapter {
   readonly config: AdapterConfig;
 
-  /** Convert AbuMessage to platform-specific payload */
-  formatOutbound(message: AbuMessage): unknown;
+  /** Convert LingxiMessage to platform-specific payload */
+  formatOutbound(message: LingxiMessage): unknown;
 
   /** Send a single HTTP request (base class provides default) */
   sendOutbound(webhookUrl: string, payload: unknown, headers?: Record<string, string>): Promise<void>;
 
   /** Send complete message with auto-chunking + per-chunk retry */
-  sendMessage(webhookUrl: string, message: AbuMessage, headers?: Record<string, string>): Promise<void>;
+  sendMessage(webhookUrl: string, message: LingxiMessage, headers?: Record<string, string>): Promise<void>;
 }
 
 /**
@@ -122,14 +122,14 @@ export interface IMAdapter extends OutboundAdapter {
   replyToChat?(
     token: string,
     context: DirectReplyContext,
-    message: AbuMessage,
+    message: LingxiMessage,
   ): Promise<{ messageId?: string }>;
 }
 
 // ── Inbound Message (Phase 1B) ──
 
 export interface InboundMessage {
-  message: AbuMessage;
+  message: LingxiMessage;
   sender: {
     id: string;
     name: string;

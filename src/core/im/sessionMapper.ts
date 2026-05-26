@@ -1,5 +1,5 @@
 /**
- * SessionMapper — Map IM messages to Abu conversations
+ * SessionMapper — Map IM messages to Lingxi conversations
  *
  * Session resolution rules:
  * 1. Has thread (Slack thread_ts, Feishu messageId reply) → key = "platform:chatId:threadId"
@@ -58,7 +58,7 @@ export class SessionMapper {
   }
 
   /**
-   * Resolve which Abu conversation this IM message belongs to.
+   * Resolve which Lingxi conversation this IM message belongs to.
    */
   resolve(
     message: NormalizedIMMessage,
@@ -103,7 +103,7 @@ export class SessionMapper {
     let archivedConvId: string | undefined;
 
     if (existing) {
-      // Check if the underlying conversation still exists (user may have deleted it in Abu)
+      // Check if the underlying conversation still exists (user may have deleted it in Lingxi)
       const convExists = !!useChatStore.getState().conversationIndex[existing.conversationId];
       const timeoutMs = channel.sessionTimeoutMinutes * 60 * 1000;
       const isExpired = timeoutMs > 0 && (Date.now() - existing.lastActiveAt > timeoutMs);
@@ -172,7 +172,7 @@ export class SessionMapper {
     channel: IMChannel,
     capability: IMCapabilityLevel,
   ): IMSession {
-    // Create a new Abu conversation for this IM session
+    // Create a new Lingxi conversation for this IM session
     const chatStore = useChatStore.getState();
     const workspacePath = channel.workspacePaths[0] ?? null;
     const conversationId = chatStore.createConversation(workspacePath, {

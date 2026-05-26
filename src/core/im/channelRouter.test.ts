@@ -130,7 +130,7 @@ vi.mock('@/i18n', () => ({
       sessionRecovered: '',
       sessionExpiredHint: '',
       sessionQueueFull: '',
-      errorReply: 'Abu 处理出错: {error}',
+      errorReply: 'Lingxi 处理出错: {error}',
     },
   }),
   format: (t: string, v: Record<string, string>) => {
@@ -232,7 +232,7 @@ describe('IMChannelRouter', () => {
     const finalCalls = mockSendFinal.mock.calls;
     expect(finalCalls.length).toBeGreaterThanOrEqual(1);
     const lastCall = finalCalls[finalCalls.length - 1];
-    expect(lastCall[1].content).toContain('Abu 处理出错');
+    expect(lastCall[1].content).toContain('Lingxi 处理出错');
   });
 
   it('decrements runningCount even on error', async () => {

@@ -34,9 +34,9 @@ import ConfirmDialog from '@/components/common/ConfirmDialog';
  * Map a skill source to its visual badge (Task #22). User-scope skills
  * get no badge — that's the "my skills" default and adding a pill there
  * would be pure noise. Only surface sources where the distinction matters:
- *   - builtin         → "内置" (comes with Abu)
+ *   - builtin         → "内置" (comes with Lingxi)
  *   - workspace-auto  → "本项目自治" (agent-written, accepted via card)
- *   - project*        → "项目" (workspace's own .abu/skills git-tracked)
+ *   - project*        → "项目" (workspace's own .lingxi/skills git-tracked)
  *   - standard        → "标准" (~/.agents/skills cross-client)
  */
 type SourceBadge = { labelKey: 'skillSourceBuiltin' | 'skillSourceWorkspaceAuto' | 'skillSourceProject' | 'skillSourceStandard'; tone: 'neutral' | 'clay' | 'blue' | 'slate' } | null;
@@ -49,8 +49,8 @@ function sourceBadge(skill: Skill): SourceBadge {
 }
 
 const SOURCE_BADGE_TONE: Record<'neutral' | 'clay' | 'blue' | 'slate', string> = {
-  neutral: 'bg-[var(--abu-bg-muted)] text-[var(--abu-text-muted)]',
-  clay: 'bg-[var(--abu-clay-tint)] text-[var(--abu-clay)]',
+  neutral: 'bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-muted)]',
+  clay: 'bg-[var(--lingxi-clay-tint)] text-[var(--lingxi-clay)]',
   blue: 'bg-blue-50 text-blue-600',
   slate: 'bg-slate-100 text-slate-600',
 };
@@ -121,12 +121,12 @@ function FileTreeItem({
     return (
       <div className="mb-0.5">
         <div
-          className="flex items-center gap-2 py-1.5 mx-2 px-3 rounded-md cursor-pointer hover:bg-[var(--abu-bg-active)]/60 text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] text-[13px] transition-colors"
+          className="flex items-center gap-2 py-1.5 mx-2 px-3 rounded-md cursor-pointer hover:bg-[var(--lingxi-bg-active)]/60 text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] text-[13px] transition-colors"
           style={{ marginLeft: ml }}
           onClick={() => setExpanded(!expanded)}
         >
           {expanded ? <ChevronDown className="h-3 w-3 shrink-0" /> : <ChevronRight className="h-3 w-3 shrink-0" />}
-          <Folder className="h-3.5 w-3.5 shrink-0 text-[var(--abu-text-muted)]" />
+          <Folder className="h-3.5 w-3.5 shrink-0 text-[var(--lingxi-text-muted)]" />
           <span className="truncate">{node.name}</span>
         </div>
         {expanded && node.children.map((child) => (
@@ -140,7 +140,7 @@ function FileTreeItem({
   return (
     <div
       className={`flex items-center gap-2 py-1.5 mx-2 px-3 mb-0.5 rounded-md cursor-pointer text-[13px] transition-colors ${
-        isActive ? 'bg-[var(--abu-bg-active)] text-[var(--abu-text-primary)]' : 'text-[var(--abu-text-muted)] hover:bg-[var(--abu-bg-active)]/60 hover:text-[var(--abu-text-primary)]'
+        isActive ? 'bg-[var(--lingxi-bg-active)] text-[var(--lingxi-text-primary)]' : 'text-[var(--lingxi-text-muted)] hover:bg-[var(--lingxi-bg-active)]/60 hover:text-[var(--lingxi-text-primary)]'
       }`}
       style={{ marginLeft: ml }}
       onClick={() => onFileClick?.(node.path)}
@@ -160,7 +160,7 @@ interface SkillsSectionProps {
 export default function SkillsSection({ manualCreateTrigger, onAICreate, onManualCreate, onUploadFile }: SkillsSectionProps) {
   const { skills, refresh } = useDiscoveryStore();
   // We subscribe to drafts count here (not SkillDraftsPanel itself) so
-  // the 阿布沉淀 category's visibility condition accounts for pending
+  // the 灵犀沉淀 category's visibility condition accounts for pending
   // drafts even when there are no workspace-auto skills yet.
   const draftsCount = useSkillDraftsStore((s) => s.drafts.length);
   const { toolboxSearchQuery, setToolboxSearchQuery, disabledSkills, toggleSkillEnabled, closeToolbox } = useSettingsStore();
@@ -300,7 +300,7 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
   } | null>(null);
   const [importInProgress, setImportInProgress] = useState(false);
 
-  // Import a .askill package → unpack into user scope (~/.abu/skills/).
+  // Import a .askill package → unpack into user scope (~/.lingxi/skills/).
   // Reuses the existing packager's validation + unpack pipeline. On
   // name conflict we stash state and pop a ConfirmDialog; everything
   // else surfaces as a toast.
@@ -324,11 +324,11 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
         return;
       }
 
-      // user scope: global skills live under ~/.abu/skills/, which is
+      // user scope: global skills live under ~/.lingxi/skills/, which is
       // where hand-imported skills naturally belong. The app's own
       // SkillLoader picks this path up automatically.
       const home = await homeDir();
-      const baseDir = `${home}/.abu/skills`;
+      const baseDir = `${home}/.lingxi/skills`;
 
       try {
         const result = await unpackSkill(archiveBytes, baseDir);
@@ -544,13 +544,13 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
       <div key={skill.name} className="mb-0.5">
         <div
           className={`flex items-center gap-3 mx-2 pl-7 pr-3 py-2.5 rounded-lg cursor-pointer transition-colors ${
-            isRowActive ? 'bg-[var(--abu-bg-active)]' : 'hover:bg-[var(--abu-bg-active)]/60'
+            isRowActive ? 'bg-[var(--lingxi-bg-active)]' : 'hover:bg-[var(--lingxi-bg-active)]/60'
           }`}
           onClick={() => handleSkillClick(skill.name)}
         >
-          <FileText className={`h-4 w-4 shrink-0 ${!isEnabled ? 'text-[var(--abu-text-placeholder)]' : 'text-[var(--abu-text-muted)]'}`} />
+          <FileText className={`h-4 w-4 shrink-0 ${!isEnabled ? 'text-[var(--lingxi-text-placeholder)]' : 'text-[var(--lingxi-text-muted)]'}`} />
           <span className={`text-sm flex-1 truncate ${
-            !isEnabled ? 'text-[var(--abu-text-placeholder)]' : isSelected ? 'text-[var(--abu-text-primary)] font-medium' : 'text-[var(--abu-text-tertiary)]'
+            !isEnabled ? 'text-[var(--lingxi-text-placeholder)]' : isSelected ? 'text-[var(--lingxi-text-primary)] font-medium' : 'text-[var(--lingxi-text-tertiary)]'
           }`}>
             {skill.name}
           </span>
@@ -565,7 +565,7 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
               </span>
             );
           })()}
-          <div className="p-0.5 text-[var(--abu-text-muted)]">
+          <div className="p-0.5 text-[var(--lingxi-text-muted)]">
             {isExpanded
               ? <ChevronDown className="h-3.5 w-3.5" />
               : <ChevronRight className="h-3.5 w-3.5" />
@@ -577,8 +577,8 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
             <div
               className={`flex items-center gap-2 py-1.5 mx-2 px-3 mb-0.5 rounded-md cursor-pointer text-[13px] transition-colors ${
                 selectedSkill === skill.name && !selectedFile
-                  ? 'bg-[var(--abu-bg-active)] text-[var(--abu-text-primary)]'
-                  : 'text-[var(--abu-text-muted)] hover:bg-[var(--abu-bg-active)]/60 hover:text-[var(--abu-text-primary)]'
+                  ? 'bg-[var(--lingxi-bg-active)] text-[var(--lingxi-text-primary)]'
+                  : 'text-[var(--lingxi-text-muted)] hover:bg-[var(--lingxi-bg-active)]/60 hover:text-[var(--lingxi-text-primary)]'
               }`}
               style={{ marginLeft: 52 }}
               onClick={() => handleFileClick(skill.name, 'SKILL.md')}
@@ -613,12 +613,12 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
   return (
     <div className="flex h-full overflow-hidden">
       {/* Left: Skill list with file trees */}
-      <div className="w-[340px] shrink-0 border-r border-[var(--abu-border)] flex flex-col overflow-hidden bg-[var(--abu-bg-base)]">
+      <div className="w-[340px] shrink-0 border-r border-[var(--lingxi-border)] flex flex-col overflow-hidden bg-[var(--lingxi-bg-base)]">
         {/* Header: Title + Search + Create */}
-        <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--abu-border)]">
+        <div className="shrink-0 px-4 pt-4 pb-3 border-b border-[var(--lingxi-border)]">
           {showSearch ? (
             <div className="relative">
-              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--abu-text-tertiary)]" />
+              <Search className="absolute left-2 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-[var(--lingxi-text-tertiary)]" />
               <input
                 autoFocus
                 type="text"
@@ -627,81 +627,81 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
                 onChange={(e) => setToolboxSearchQuery(e.target.value)}
                 onBlur={() => { if (!toolboxSearchQuery) setShowSearch(false); }}
                 onKeyDown={(e) => { if (e.key === 'Escape') { setToolboxSearchQuery(''); setShowSearch(false); } }}
-                className="w-full pl-7 pr-7 py-1 text-sm border border-[var(--abu-border)] rounded-md bg-[var(--abu-bg-base)] focus:outline-none focus:ring-1 focus:ring-[var(--abu-clay-ring)] text-[var(--abu-text-primary)]"
+                className="w-full pl-7 pr-7 py-1 text-sm border border-[var(--lingxi-border)] rounded-md bg-[var(--lingxi-bg-base)] focus:outline-none focus:ring-1 focus:ring-[var(--lingxi-clay-ring)] text-[var(--lingxi-text-primary)]"
               />
               <button
                 onClick={() => { setToolboxSearchQuery(''); setShowSearch(false); }}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)]"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)]"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
           ) : (
             <div className="flex items-center justify-between">
-              <span className="text-base font-semibold text-[var(--abu-text-primary)]">{t.toolbox.skills}</span>
+              <span className="text-base font-semibold text-[var(--lingxi-text-primary)]">{t.toolbox.skills}</span>
               <div className="flex items-center gap-1">
                 <button
                   onClick={() => setShowSearch(true)}
-                  className="p-1 text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] transition-colors"
+                  className="p-1 text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] transition-colors"
                 >
                   <Search className="h-3.5 w-3.5" />
                 </button>
                 <div className="relative">
                   <button
                     onClick={(e) => { e.stopPropagation(); setShowCreateMenu(!showCreateMenu); }}
-                    className="p-1 text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] transition-colors"
+                    className="p-1 text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] transition-colors"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
                   {showCreateMenu && (
-                    <div className="absolute z-50 top-full right-0 mt-1 w-44 bg-white rounded-lg shadow-lg border border-[var(--abu-border)] py-1">
+                    <div className="absolute z-50 top-full right-0 mt-1 w-44 bg-white rounded-lg shadow-lg border border-[var(--lingxi-border)] py-1">
                       {onAICreate && (
                         <button
                           onClick={() => { setShowCreateMenu(false); onAICreate(); }}
-                          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-active)] transition-colors"
+                          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-active)] transition-colors"
                         >
-                          <Wand2 className="h-3.5 w-3.5 text-[var(--abu-clay)]" />
-                          <span>{t.toolbox.createWithAbu}</span>
+                          <Wand2 className="h-3.5 w-3.5 text-[var(--lingxi-clay)]" />
+                          <span>{t.toolbox.createWithLingxi}</span>
                         </button>
                       )}
                       {onManualCreate && (
                         <button
                           onClick={() => { setShowCreateMenu(false); onManualCreate(); }}
-                          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-active)] transition-colors"
+                          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-active)] transition-colors"
                         >
-                          <PenLine className="h-3.5 w-3.5 text-[var(--abu-text-muted)]" />
+                          <PenLine className="h-3.5 w-3.5 text-[var(--lingxi-text-muted)]" />
                           <span>{t.toolbox.createManually}</span>
                         </button>
                       )}
                       {onUploadFile && (
                         <button
                           onClick={() => { setShowCreateMenu(false); onUploadFile(); }}
-                          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-active)] transition-colors"
+                          className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-active)] transition-colors"
                         >
-                          <Upload className="h-3.5 w-3.5 text-[var(--abu-text-muted)]" />
+                          <Upload className="h-3.5 w-3.5 text-[var(--lingxi-text-muted)]" />
                           <span>{t.toolbox.uploadFile}</span>
                         </button>
                       )}
                       <button
                         onClick={handleImport}
                         disabled={importInProgress}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-active)] transition-colors disabled:opacity-50"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-active)] transition-colors disabled:opacity-50"
                       >
-                        <Upload className="h-3.5 w-3.5 text-[var(--abu-text-muted)]" />
+                        <Upload className="h-3.5 w-3.5 text-[var(--lingxi-text-muted)]" />
                         <span>{t.toolbox.importSkill}</span>
                       </button>
                       <button
                         onClick={() => { setShowCreateMenu(false); setShowNpmInstall(true); }}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-active)] transition-colors"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-active)] transition-colors"
                       >
-                        <Package className="h-3.5 w-3.5 text-[var(--abu-text-muted)]" />
+                        <Package className="h-3.5 w-3.5 text-[var(--lingxi-text-muted)]" />
                         <span>{t.toolbox.installFromNpm}</span>
                       </button>
                       <button
                         onClick={() => { setShowCreateMenu(false); setShowAgentSkillsInstall(true); }}
-                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-active)] transition-colors"
+                        className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-active)] transition-colors"
                       >
-                        <Globe className="h-3.5 w-3.5 text-[var(--abu-text-muted)]" />
+                        <Globe className="h-3.5 w-3.5 text-[var(--lingxi-text-muted)]" />
                         <span>{t.toolbox.installAgentSkills}</span>
                       </button>
                     </div>
@@ -714,11 +714,11 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
         {/* Category blocks manager (Task #45 · reject-category undo) —
             hidden when the workspace has no blocks. Kept at the top
             because it's a global "management" surface (not tied to any
-            one skill), and doesn't belong inside the 阿布沉淀 category. */}
+            one skill), and doesn't belong inside the 灵犀沉淀 category. */}
         <SkillCategoryBlocksPanel />
         <div className="flex-1 overflow-y-auto overlay-scroll py-2">
           {filteredSkills.length === 0 ? (
-            <div className="text-xs text-[var(--abu-text-muted)] py-8 text-center">{t.toolbox.noSkillsFound}</div>
+            <div className="text-xs text-[var(--lingxi-text-muted)] py-8 text-center">{t.toolbox.noSkillsFound}</div>
           ) : (
             <>
               {/* Category · Mine — user's own or team-shipped skills.
@@ -729,7 +729,7 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
               {skillGroups.mine.length > 0 && (
                 <div>
                   <div
-                    className="flex items-center gap-1.5 px-5 py-2.5 cursor-pointer text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]"
+                    className="flex items-center gap-1.5 px-5 py-2.5 cursor-pointer text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]"
                     onClick={() => toggleCategory('mine')}
                   >
                     {collapsedCategories.has('mine')
@@ -737,7 +737,7 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
                       : <ChevronDown className="h-3 w-3" />
                     }
                     <span className="text-[13px] font-medium">{t.toolbox.categoryMine}</span>
-                    <span className="text-[11px] text-[var(--abu-text-placeholder)] ml-1">{skillGroups.mine.length}</span>
+                    <span className="text-[11px] text-[var(--lingxi-text-placeholder)] ml-1">{skillGroups.mine.length}</span>
                   </div>
                   {!collapsedCategories.has('mine') && skillGroups.mine.map((skill) => renderSkillRow(skill))}
                 </div>
@@ -750,7 +750,7 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
               {draftsCount > 0 && (
                 <div>
                   <div
-                    className="flex items-center gap-1.5 px-5 py-2.5 cursor-pointer text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]"
+                    className="flex items-center gap-1.5 px-5 py-2.5 cursor-pointer text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]"
                     onClick={() => toggleCategory('agent-evolved')}
                   >
                     {collapsedCategories.has('agent-evolved')
@@ -759,17 +759,17 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
                     }
                     <span className="text-[13px] font-medium">{t.toolbox.categoryAgentEvolved}</span>
                     <span className="ml-1.5 px-1.5 py-0.5 text-[10px] rounded bg-purple-100 text-purple-700">{t.toolbox.categoryAgentEvolvedBadge}</span>
-                    <span className="text-[11px] text-[var(--abu-text-placeholder)] ml-1">{draftsCount}</span>
+                    <span className="text-[11px] text-[var(--lingxi-text-placeholder)] ml-1">{draftsCount}</span>
                   </div>
                   {!collapsedCategories.has('agent-evolved') && <SkillDraftsPanel />}
                 </div>
               )}
 
-              {/* Category · Built-in — bundled with Abu. Read-only. */}
+              {/* Category · Built-in — bundled with Lingxi. Read-only. */}
               {skillGroups.builtin.length > 0 && (
                 <div>
                   <div
-                    className="flex items-center gap-1.5 px-5 py-2.5 cursor-pointer text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]"
+                    className="flex items-center gap-1.5 px-5 py-2.5 cursor-pointer text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]"
                     onClick={() => toggleCategory('builtin')}
                   >
                     {collapsedCategories.has('builtin')
@@ -787,31 +787,31 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
       </div>
 
       {/* Right: Skill detail or file content */}
-      <div className="flex-1 overflow-y-auto overlay-scroll bg-[var(--abu-bg-base)]">
+      <div className="flex-1 overflow-y-auto overlay-scroll bg-[var(--lingxi-bg-base)]">
         {selected ? (
           selectedFile ? (
             /* Show selected file content */
             <div className="px-6 py-6">
               <div className="flex items-center gap-2 mb-4">
                 <button
-                  className="text-xs text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] transition-colors"
+                  className="text-xs text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] transition-colors"
                   onClick={() => { setSelectedFile(null); setFileContent(null); }}
                 >
                   {selected.name}
                 </button>
-                <span className="text-xs text-[var(--abu-text-muted)]">/</span>
-                <span className="text-sm font-medium text-[var(--abu-text-primary)]">{selectedFile.path}</span>
+                <span className="text-xs text-[var(--lingxi-text-muted)]">/</span>
+                <span className="text-sm font-medium text-[var(--lingxi-text-primary)]">{selectedFile.path}</span>
               </div>
-              <div className="border border-[var(--abu-border)] rounded-lg overflow-hidden">
-                <div className="px-5 py-4 bg-[var(--abu-bg-base)]">
+              <div className="border border-[var(--lingxi-border)] rounded-lg overflow-hidden">
+                <div className="px-5 py-4 bg-[var(--lingxi-bg-base)]">
                   {fileContent !== null ? (
                     selectedFile.path.endsWith('.md') ? (
                       <MarkdownRenderer content={fileContent} />
                     ) : (
-                      <pre className="text-xs text-[var(--abu-text-primary)] whitespace-pre-wrap break-all font-mono leading-relaxed">{fileContent}</pre>
+                      <pre className="text-xs text-[var(--lingxi-text-primary)] whitespace-pre-wrap break-all font-mono leading-relaxed">{fileContent}</pre>
                     )
                   ) : (
-                    <div className="text-sm text-[var(--abu-text-muted)]">Loading...</div>
+                    <div className="text-sm text-[var(--lingxi-text-muted)]">Loading...</div>
                   )}
                 </div>
               </div>
@@ -821,7 +821,7 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
             <div className="px-6 py-6">
               {/* Row 1: Name + Toggle + Menu */}
               <div className="flex items-center justify-between gap-3 mb-4">
-                <h2 className="text-xl font-semibold text-[var(--abu-text-primary)] truncate min-w-0" title={selected.name}>{selected.name}</h2>
+                <h2 className="text-xl font-semibold text-[var(--lingxi-text-primary)] truncate min-w-0" title={selected.name}>{selected.name}</h2>
                 <div className="flex items-center gap-2 shrink-0">
                   <Toggle
                     checked={!disabledSet.has(selected.name)}
@@ -831,16 +831,16 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
                   <div className="relative">
                       <button
                         onClick={(e) => { e.stopPropagation(); setMenuSkill(menuSkill === selected.name ? null : selected.name); }}
-                        className="p-1.5 rounded-lg text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+                        className="p-1.5 rounded-lg text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
                       >
                         <MoreHorizontal className="h-4 w-4" />
                       </button>
                       {menuSkill === selected.name && (
-                        <div className="absolute right-0 top-8 z-10 bg-white border border-[var(--abu-border)] rounded-lg shadow-lg py-1 min-w-[140px]">
+                        <div className="absolute right-0 top-8 z-10 bg-white border border-[var(--lingxi-border)] rounded-lg shadow-lg py-1 min-w-[140px]">
                           {/* Try in chat - only when enabled */}
                           {!disabledSet.has(selected.name) && (
                             <button
-                              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+                              className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
                               onClick={() => {
                                 setMenuSkill(null);
                                 startNewConversation();
@@ -854,7 +854,7 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
                           )}
                           {/* Export - available for all skills */}
                           <button
-                            className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+                            className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
                             onClick={() => { handleExport(selected); setMenuSkill(null); }}
                           >
                             <Download className="h-3 w-3" />
@@ -864,7 +864,7 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
                               builtin skills typically have no history, so
                               the modal's empty state explains this. */}
                           <button
-                            className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+                            className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
                             onClick={() => { setHistorySkill(selected); setMenuSkill(null); }}
                           >
                             <Clock className="h-3 w-3" />
@@ -874,7 +874,7 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
                           {selected.source !== 'builtin' && !isSystemSkill(selected) && (
                             <>
                               <button
-                                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-muted)] transition-colors"
+                                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors"
                                 onClick={() => { setEditorSkill(selected); setMenuSkill(null); }}
                               >
                                 <Pencil className="h-3 w-3" />
@@ -897,8 +897,8 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
 
               {/* Row 2: Source */}
               <div className="mb-5">
-                <div className="text-xs text-[var(--abu-text-muted)] mb-0.5">{t.toolbox.skillAddedBy}</div>
-                <div className="text-sm font-medium text-[var(--abu-text-primary)]">{
+                <div className="text-xs text-[var(--lingxi-text-muted)] mb-0.5">{t.toolbox.skillAddedBy}</div>
+                <div className="text-sm font-medium text-[var(--lingxi-text-primary)]">{
                   selected.source === 'builtin' ? t.toolbox.skillSourceBuiltin :
                   selected.source === 'user' ? t.toolbox.skillSourceUser :
                   selected.source === 'standard' ? t.toolbox.skillSourceStandard :
@@ -909,42 +909,42 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
 
               {/* Description */}
               <div className="flex items-center gap-1 mb-1.5">
-                <span className="text-xs text-[var(--abu-text-muted)]">Description</span>
-                <Info className="h-3 w-3 text-[var(--abu-text-muted)]" />
+                <span className="text-xs text-[var(--lingxi-text-muted)]">Description</span>
+                <Info className="h-3 w-3 text-[var(--lingxi-text-muted)]" />
               </div>
-              <p className="text-sm text-[var(--abu-text-primary)] leading-relaxed mb-7">{selected.description}</p>
+              <p className="text-sm text-[var(--lingxi-text-primary)] leading-relaxed mb-7">{selected.description}</p>
 
               {/* Content area: License + SKILL.md with preview/source toggle */}
-              <div className="border border-[var(--abu-border)] rounded-lg overflow-hidden">
+              <div className="border border-[var(--lingxi-border)] rounded-lg overflow-hidden">
                 {/* Toggle bar */}
-                <div className="flex items-center justify-end gap-1.5 px-4 py-2.5 bg-[var(--abu-bg-base)] border-b border-[var(--abu-border)]">
+                <div className="flex items-center justify-end gap-1.5 px-4 py-2.5 bg-[var(--lingxi-bg-base)] border-b border-[var(--lingxi-border)]">
                   <button
                     onClick={() => setContentViewMode('preview')}
-                    className={`p-1.5 rounded transition-colors ${contentViewMode === 'preview' ? 'text-[var(--abu-text-primary)] bg-[var(--abu-bg-hover)]' : 'text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]'}`}
+                    className={`p-1.5 rounded transition-colors ${contentViewMode === 'preview' ? 'text-[var(--lingxi-text-primary)] bg-[var(--lingxi-bg-hover)]' : 'text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]'}`}
                     title="Preview"
                   >
                     <Eye className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => setContentViewMode('source')}
-                    className={`p-1.5 rounded transition-colors ${contentViewMode === 'source' ? 'text-[var(--abu-text-primary)] bg-[var(--abu-bg-hover)]' : 'text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)]'}`}
+                    className={`p-1.5 rounded transition-colors ${contentViewMode === 'source' ? 'text-[var(--lingxi-text-primary)] bg-[var(--lingxi-bg-hover)]' : 'text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)]'}`}
                     title="Source"
                   >
                     <Code className="h-4 w-4" />
                   </button>
                 </div>
-                <div className="px-6 py-5 bg-[var(--abu-bg-base)]">
+                <div className="px-6 py-5 bg-[var(--lingxi-bg-base)]">
                   {contentViewMode === 'preview' ? (
                     <MarkdownRenderer content={selected.content} />
                   ) : (
-                    <pre className="text-xs text-[var(--abu-text-primary)] whitespace-pre-wrap break-words font-mono leading-relaxed">{selected.content}</pre>
+                    <pre className="text-xs text-[var(--lingxi-text-primary)] whitespace-pre-wrap break-words font-mono leading-relaxed">{selected.content}</pre>
                   )}
                 </div>
               </div>
             </div>
           )
         ) : (
-          <div className="flex items-center justify-center h-full text-sm text-[var(--abu-text-muted)]">
+          <div className="flex items-center justify-center h-full text-sm text-[var(--lingxi-text-muted)]">
             {t.toolbox.noSkillsFound}
           </div>
         )}
@@ -953,14 +953,14 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
       {/* npm install dialog */}
       {showNpmInstall && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="w-[420px] bg-white rounded-xl shadow-xl border border-[var(--abu-border)] overflow-hidden">
+          <div className="w-[420px] bg-white rounded-xl shadow-xl border border-[var(--lingxi-border)] overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--abu-border)]">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--lingxi-border)]">
               <div className="flex items-center gap-2">
-                <Package className="h-4 w-4 text-[var(--abu-clay)]" />
-                <h2 className="text-sm font-semibold text-[var(--abu-text-primary)]">{t.toolbox.installFromNpm}</h2>
+                <Package className="h-4 w-4 text-[var(--lingxi-clay)]" />
+                <h2 className="text-sm font-semibold text-[var(--lingxi-text-primary)]">{t.toolbox.installFromNpm}</h2>
               </div>
-              <button onClick={resetNpmDialog} className="p-1.5 rounded-lg text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-muted)] transition-colors">
+              <button onClick={resetNpmDialog} className="p-1.5 rounded-lg text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -969,7 +969,7 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
             <div className="px-5 py-4 space-y-3">
               {/* Package name */}
               <div>
-                <label className="block text-xs font-medium text-[var(--abu-text-secondary)] mb-1">{t.toolbox.npmPackageName}</label>
+                <label className="block text-xs font-medium text-[var(--lingxi-text-secondary)] mb-1">{t.toolbox.npmPackageName}</label>
                 <Input
                   type="text"
                   placeholder={t.toolbox.npmPackagePlaceholder}
@@ -981,7 +981,7 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
 
               {/* Registry (optional) */}
               <div>
-                <label className="block text-xs font-medium text-[var(--abu-text-secondary)] mb-1">{t.toolbox.npmRegistry}</label>
+                <label className="block text-xs font-medium text-[var(--lingxi-text-secondary)] mb-1">{t.toolbox.npmRegistry}</label>
                 <Input
                   type="text"
                   placeholder={skillRegistryDefault || t.toolbox.npmRegistryPlaceholder}
@@ -989,14 +989,14 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
                   onChange={(e) => setNpmRegistry(e.target.value)}
                   disabled={npmInstalling}
                 />
-                <p className="text-[11px] text-[var(--abu-text-muted)] mt-1">{t.toolbox.npmRegistryHint}</p>
+                <p className="text-[11px] text-[var(--lingxi-text-muted)] mt-1">{t.toolbox.npmRegistryHint}</p>
               </div>
 
               {/* Progress */}
               {npmInstalling && npmStep && (
-                <div className="flex items-center gap-2 py-2 px-3 bg-[var(--abu-bg-base)] rounded-lg">
-                  <Loader2 className="h-3.5 w-3.5 text-[var(--abu-clay)] animate-spin shrink-0" />
-                  <span className="text-xs text-[var(--abu-text-tertiary)]">
+                <div className="flex items-center gap-2 py-2 px-3 bg-[var(--lingxi-bg-base)] rounded-lg">
+                  <Loader2 className="h-3.5 w-3.5 text-[var(--lingxi-clay)] animate-spin shrink-0" />
+                  <span className="text-xs text-[var(--lingxi-text-tertiary)]">
                     {npmStep === 'fetching_metadata' && t.toolbox.npmStepFetchingMetadata}
                     {npmStep === 'downloading' && format(t.toolbox.npmStepDownloading, { version: npmStepDetail })}
                     {npmStep === 'extracting' && t.toolbox.npmStepExtracting}
@@ -1030,7 +1030,7 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
                   </div>
                   <button
                     onClick={() => { setNpmError(''); handleNpmInstall(true); }}
-                    className="text-xs font-medium text-[var(--abu-clay)] hover:text-[var(--abu-clay-hover)] transition-colors"
+                    className="text-xs font-medium text-[var(--lingxi-clay)] hover:text-[var(--lingxi-clay-hover)] transition-colors"
                   >
                     {t.toolbox.npmOverwrite}
                   </button>
@@ -1039,15 +1039,15 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-[var(--abu-border)]">
-              <button onClick={resetNpmDialog} className="px-4 py-1.5 rounded-lg text-sm font-medium text-[var(--abu-text-tertiary)] hover:bg-[var(--abu-bg-muted)] transition-colors">
+            <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-[var(--lingxi-border)]">
+              <button onClick={resetNpmDialog} className="px-4 py-1.5 rounded-lg text-sm font-medium text-[var(--lingxi-text-tertiary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors">
                 {npmSuccess ? t.common.close : t.common.cancel}
               </button>
               {!npmSuccess && (
                 <button
                   onClick={() => handleNpmInstall()}
                   disabled={!npmPackageName.trim() || npmInstalling}
-                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--abu-clay)] text-white hover:bg-[var(--abu-clay-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--lingxi-clay)] text-white hover:bg-[var(--lingxi-clay-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {npmInstalling ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Package className="h-3.5 w-3.5" />}
                   {t.toolbox.npmFindAndInstall}
@@ -1061,14 +1061,14 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
       {/* Agent Skills install dialog (npx skills add) */}
       {showAgentSkillsInstall && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-          <div className="w-[420px] bg-white rounded-xl shadow-xl border border-[var(--abu-border)] overflow-hidden">
+          <div className="w-[420px] bg-white rounded-xl shadow-xl border border-[var(--lingxi-border)] overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--abu-border)]">
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-[var(--lingxi-border)]">
               <div className="flex items-center gap-2">
-                <Globe className="h-4 w-4 text-[var(--abu-clay)]" />
-                <h2 className="text-sm font-semibold text-[var(--abu-text-primary)]">{t.toolbox.installAgentSkills}</h2>
+                <Globe className="h-4 w-4 text-[var(--lingxi-clay)]" />
+                <h2 className="text-sm font-semibold text-[var(--lingxi-text-primary)]">{t.toolbox.installAgentSkills}</h2>
               </div>
-              <button onClick={resetAgentSkillsDialog} className="p-1.5 rounded-lg text-[var(--abu-text-muted)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-muted)] transition-colors">
+              <button onClick={resetAgentSkillsDialog} className="p-1.5 rounded-lg text-[var(--lingxi-text-muted)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors">
                 <X className="h-4 w-4" />
               </button>
             </div>
@@ -1076,7 +1076,7 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
             {/* Body */}
             <div className="px-5 py-4 space-y-3">
               <div>
-                <label className="block text-xs font-medium text-[var(--abu-text-secondary)] mb-1">GitHub</label>
+                <label className="block text-xs font-medium text-[var(--lingxi-text-secondary)] mb-1">GitHub</label>
                 <Input
                   type="text"
                   placeholder={t.toolbox.installAgentSkillsPlaceholder}
@@ -1085,18 +1085,18 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
                   disabled={agentSkillsInstalling}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleAgentSkillsInstall(); }}
                 />
-                <p className="text-[11px] text-[var(--abu-text-muted)] mt-1">{t.toolbox.installAgentSkillsHint}</p>
+                <p className="text-[11px] text-[var(--lingxi-text-muted)] mt-1">{t.toolbox.installAgentSkillsHint}</p>
               </div>
 
               {/* Recommended repos */}
               <div>
-                <div className="text-[11px] font-medium text-[var(--abu-text-muted)] mb-1.5">{t.toolbox.recommendedSkills}</div>
+                <div className="text-[11px] font-medium text-[var(--lingxi-text-muted)] mb-1.5">{t.toolbox.recommendedSkills}</div>
                 <div className="flex flex-wrap gap-1.5">
                   {['larksuite/cli', 'anthropics/skills', 'vercel-labs/agent-skills'].map((repo) => (
                     <button
                       key={repo}
                       onClick={() => setAgentSkillsRepo(repo)}
-                      className="px-2 py-1 text-[11px] rounded-md bg-[var(--abu-bg-muted)] text-[var(--abu-text-tertiary)] hover:bg-[var(--abu-bg-active)] hover:text-[var(--abu-text-primary)] transition-colors"
+                      className="px-2 py-1 text-[11px] rounded-md bg-[var(--lingxi-bg-muted)] text-[var(--lingxi-text-tertiary)] hover:bg-[var(--lingxi-bg-active)] hover:text-[var(--lingxi-text-primary)] transition-colors"
                     >
                       {repo}
                     </button>
@@ -1106,9 +1106,9 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
 
               {/* Progress */}
               {agentSkillsInstalling && (
-                <div className="flex items-center gap-2 py-2 px-3 bg-[var(--abu-bg-base)] rounded-lg">
-                  <Loader2 className="h-3.5 w-3.5 text-[var(--abu-clay)] animate-spin shrink-0" />
-                  <span className="text-xs text-[var(--abu-text-tertiary)]">Installing...</span>
+                <div className="flex items-center gap-2 py-2 px-3 bg-[var(--lingxi-bg-base)] rounded-lg">
+                  <Loader2 className="h-3.5 w-3.5 text-[var(--lingxi-clay)] animate-spin shrink-0" />
+                  <span className="text-xs text-[var(--lingxi-text-tertiary)]">Installing...</span>
                 </div>
               )}
 
@@ -1130,15 +1130,15 @@ export default function SkillsSection({ manualCreateTrigger, onAICreate, onManua
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-[var(--abu-border)]">
-              <button onClick={resetAgentSkillsDialog} className="px-4 py-1.5 rounded-lg text-sm font-medium text-[var(--abu-text-tertiary)] hover:bg-[var(--abu-bg-muted)] transition-colors">
+            <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-[var(--lingxi-border)]">
+              <button onClick={resetAgentSkillsDialog} className="px-4 py-1.5 rounded-lg text-sm font-medium text-[var(--lingxi-text-tertiary)] hover:bg-[var(--lingxi-bg-muted)] transition-colors">
                 {agentSkillsSuccess ? t.common.close : t.common.cancel}
               </button>
               {!agentSkillsSuccess && (
                 <button
                   onClick={handleAgentSkillsInstall}
                   disabled={!agentSkillsRepo.trim() || agentSkillsInstalling}
-                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--abu-clay)] text-white hover:bg-[var(--abu-clay-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-medium bg-[var(--lingxi-clay)] text-white hover:bg-[var(--lingxi-clay-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {agentSkillsInstalling ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Globe className="h-3.5 w-3.5" />}
                   {t.toolbox.installAgentSkillsButton}

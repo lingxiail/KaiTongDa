@@ -82,14 +82,14 @@ export default function SkillDraftsPanel() {
     };
 
     return (
-      <div className="mx-4 my-3 p-4 rounded-xl border border-[var(--abu-border)] bg-[var(--abu-bg-elevated)]">
+      <div className="mx-4 my-3 p-4 rounded-xl border border-[var(--lingxi-border)] bg-[var(--lingxi-bg-elevated)]">
         <div className="flex items-center gap-2 mb-2">
-          <Sparkles className="h-4 w-4 text-[var(--abu-clay)]" />
-          <span className="text-sm font-semibold text-[var(--abu-text-primary)]">
+          <Sparkles className="h-4 w-4 text-[var(--lingxi-clay)]" />
+          <span className="text-sm font-semibold text-[var(--lingxi-text-primary)]">
             {t.toolbox.draftsOnboardTitle}
           </span>
         </div>
-        <p className="text-xs text-[var(--abu-text-tertiary)] leading-relaxed mb-3">
+        <p className="text-xs text-[var(--lingxi-text-tertiary)] leading-relaxed mb-3">
           {t.toolbox.draftsOnboardBody}
         </p>
         <div className="flex flex-col gap-1.5 mb-4">
@@ -100,16 +100,16 @@ export default function SkillDraftsPanel() {
               className={cn(
                 'flex items-start gap-2.5 px-3 py-2 rounded-lg text-left transition-colors border',
                 onboardingPick === lv.id
-                  ? 'bg-[var(--abu-clay-tint)] border-[var(--abu-clay-ring)]'
-                  : 'border-transparent hover:bg-[var(--abu-bg-active)]',
+                  ? 'bg-[var(--lingxi-clay-tint)] border-[var(--lingxi-clay-ring)]'
+                  : 'border-transparent hover:bg-[var(--lingxi-bg-active)]',
               )}
             >
               <span className="text-base leading-none mt-0.5">{lv.emoji}</span>
               <div className="flex-1 min-w-0">
-                <div className="text-xs font-semibold text-[var(--abu-text-primary)]">
+                <div className="text-xs font-semibold text-[var(--lingxi-text-primary)]">
                   {lv.title}
                 </div>
-                <div className="text-[11px] text-[var(--abu-text-muted)] mt-0.5">
+                <div className="text-[11px] text-[var(--lingxi-text-muted)] mt-0.5">
                   {lv.desc}
                 </div>
               </div>
@@ -119,7 +119,7 @@ export default function SkillDraftsPanel() {
         <div className="flex justify-end">
           <button
             onClick={handleConfirmOnboarding}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-[var(--abu-clay)] hover:bg-[var(--abu-clay-hover)] transition-colors"
+            className="px-3 py-1.5 rounded-lg text-xs font-medium text-white bg-[var(--lingxi-clay)] hover:bg-[var(--lingxi-clay-hover)] transition-colors"
           >
             {t.toolbox.draftsOnboardConfirm}
           </button>
@@ -170,27 +170,27 @@ export default function SkillDraftsPanel() {
 
   return (
     <>
-      <div className="mx-4 my-3 rounded-xl border border-[var(--abu-border)] bg-[var(--abu-bg-elevated)] overflow-hidden">
-        <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--abu-border)]">
+      <div className="mx-4 my-3 rounded-xl border border-[var(--lingxi-border)] bg-[var(--lingxi-bg-elevated)] overflow-hidden">
+        <div className="flex items-center justify-between px-3 py-2 border-b border-[var(--lingxi-border)]">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-3.5 w-3.5 text-[var(--abu-clay)]" />
-            <span className="text-xs font-semibold text-[var(--abu-text-primary)]">
+            <Sparkles className="h-3.5 w-3.5 text-[var(--lingxi-clay)]" />
+            <span className="text-xs font-semibold text-[var(--lingxi-text-primary)]">
               {t.toolbox.draftsTitle}
             </span>
-            <span className="text-[11px] text-[var(--abu-text-muted)]">
+            <span className="text-[11px] text-[var(--lingxi-text-muted)]">
               {format(t.toolbox.draftsCount, { count: String(drafts.length) })}
             </span>
           </div>
           <div className="flex items-center gap-1">
             <button
               onClick={() => (needsBatchConfirm ? setConfirmAllOpen('accept') : handleAcceptAll())}
-              className="px-2 py-1 rounded-md text-[11px] text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-active)] transition-colors"
+              className="px-2 py-1 rounded-md text-[11px] text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-active)] transition-colors"
             >
               {t.toolbox.draftsAcceptAll}
             </button>
             <button
               onClick={() => (needsBatchConfirm ? setConfirmAllOpen('reject') : handleRejectAll())}
-              className="px-2 py-1 rounded-md text-[11px] text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-active)] transition-colors"
+              className="px-2 py-1 rounded-md text-[11px] text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-active)] transition-colors"
             >
               {t.toolbox.draftsRejectAll}
             </button>
@@ -242,21 +242,21 @@ function DraftCard({
   const expiresWhen = relativeTime(draft.expiresAt, now);
 
   return (
-    <div className="px-3 py-2 border-b border-[var(--abu-border-subtle)] last:border-b-0 hover:bg-[var(--abu-bg-active)] transition-colors">
+    <div className="px-3 py-2 border-b border-[var(--lingxi-border-subtle)] last:border-b-0 hover:bg-[var(--lingxi-bg-active)] transition-colors">
       <div className="flex items-start gap-2">
         <div className="flex-1 min-w-0">
-          <div className="text-xs font-semibold text-[var(--abu-text-primary)] truncate">
+          <div className="text-xs font-semibold text-[var(--lingxi-text-primary)] truncate">
             {draft.skillName}
           </div>
           {draft.triggerReason && (
-            <div className="text-[11px] text-[var(--abu-text-muted)] mt-0.5 line-clamp-2">
-              <span className="text-[var(--abu-text-tertiary)]">
+            <div className="text-[11px] text-[var(--lingxi-text-muted)] mt-0.5 line-clamp-2">
+              <span className="text-[var(--lingxi-text-tertiary)]">
                 {t.toolbox.draftsTriggerReason}:
               </span>{' '}
               {draft.triggerReason}
             </div>
           )}
-          <div className="flex items-center gap-1.5 mt-1 text-[10px] text-[var(--abu-text-muted)]">
+          <div className="flex items-center gap-1.5 mt-1 text-[10px] text-[var(--lingxi-text-muted)]">
             <span>{format(t.toolbox.draftsCreatedAgo, { when: createdWhen })}</span>
             <span>·</span>
             <span className={cn(isExpired && 'text-red-500 font-medium')}>
@@ -268,14 +268,14 @@ function DraftCard({
           <button
             onClick={() => onAccept(draft.skillName)}
             title={t.toolbox.draftsAccept}
-            className="p-1 rounded hover:bg-[var(--abu-clay-tint)] text-[var(--abu-clay)] transition-colors"
+            className="p-1 rounded hover:bg-[var(--lingxi-clay-tint)] text-[var(--lingxi-clay)] transition-colors"
           >
             <Check className="h-3.5 w-3.5" />
           </button>
           <button
             onClick={() => onReject(draft.skillName)}
             title={t.toolbox.draftsReject}
-            className="p-1 rounded hover:bg-red-50 text-[var(--abu-text-muted)] hover:text-red-500 transition-colors"
+            className="p-1 rounded hover:bg-red-50 text-[var(--lingxi-text-muted)] hover:text-red-500 transition-colors"
           >
             {isExpired ? <Trash2 className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
           </button>

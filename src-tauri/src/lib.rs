@@ -1023,7 +1023,7 @@ const ENV_VAR_ALLOWED_PREFIXES: &[&str] = &[
     "GITHUB_TOKEN", "GITHUB_PERSONAL_TOKEN", "GH_TOKEN",
     "TAVILY_API_KEY", "BRAVE_API_KEY", "SERP_API_KEY",
     "FIRECRAWL_API_KEY", "EXA_API_KEY", "JINA_API_KEY",
-    // MCP / Abu specific
+    // MCP / Lingxi specific
     "LINGXI_", "MCP_", "CLAUDE_",
 ];
 

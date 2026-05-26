@@ -51,13 +51,13 @@ export default function CreateProjectDialog({
   const [instructions, setInstructions] = useState('');
   const [selectedFolder, setSelectedFolder] = useState<string | null>(null);
   const [defaultProjectsDir, setDefaultProjectsDir] = useState('');
-  const [hasAbuConfig, setHasAbuConfig] = useState(false);
+  const [hasLingxiConfig, setHasLingxiConfig] = useState(false);
   const [conflictProject, setConflictProject] = useState<string | null>(null);
 
   // Get default projects directory
   useEffect(() => {
     homeDir().then((home) => {
-      setDefaultProjectsDir(joinPath(home, 'Documents', 'Abu', 'Projects'));
+      setDefaultProjectsDir(joinPath(home, 'Documents', 'Lingxi', 'Projects'));
     }).catch(() => {});
   }, []);
 
@@ -71,21 +71,21 @@ export default function CreateProjectDialog({
     setProjectDesc('');
     setInstructions('');
     setSelectedFolder(presetFolder ?? null);
-    setHasAbuConfig(false);
+    setHasLingxiConfig(false);
     setConflictProject(null);
   }, [open, presetMode, presetFolder, presetName]);
 
   // Check folder for config and conflicts
   useEffect(() => {
     if (!selectedFolder) {
-      setHasAbuConfig(false);
+      setHasLingxiConfig(false);
       setConflictProject(null);
       return;
     }
     const existing = getProjectByWorkspace(selectedFolder);
     setConflictProject(existing?.name ?? null);
-    const abuPath = joinPath(selectedFolder, '.abu', 'ABU.md');
-    exists(abuPath).then(setHasAbuConfig).catch(() => setHasAbuConfig(false));
+    const abuPath = joinPath(selectedFolder, '.lingxi', 'ABU.md');
+    exists(abuPath).then(setHasLingxiConfig).catch(() => setHasLingxiConfig(false));
   }, [selectedFolder, getProjectByWorkspace]);
 
   // Handle folder selection for "existing-folder" mode
@@ -118,9 +118,9 @@ export default function CreateProjectDialog({
       finalFolder = joinPath(dir, projectName.trim());
       try {
         await mkdir(finalFolder, { recursive: true });
-        // Create .abu/ dir with instructions if provided
+        // Create .lingxi/ dir with instructions if provided
         if (instructions.trim()) {
-          const abuDir = joinPath(finalFolder, '.abu');
+          const abuDir = joinPath(finalFolder, '.lingxi');
           await mkdir(abuDir, { recursive: true });
           const { writeTextFile } = await import('@tauri-apps/plugin-fs');
           await writeTextFile(joinPath(abuDir, 'ABU.md'), instructions.trim());
@@ -180,24 +180,24 @@ export default function CreateProjectDialog({
           {mode !== null && !presetMode && (
             <button
               onClick={() => setMode(null)}
-              className="p-1 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-lg"
+              className="p-1 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-lg"
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
           )}
           <div className="flex-1">
-            <h2 className="text-[18px] font-semibold text-[var(--abu-text-primary)]">
+            <h2 className="text-[18px] font-semibold text-[var(--lingxi-text-primary)]">
               {t.project.createTitle}
             </h2>
             {mode === null && (
-              <p className="text-[13px] text-[var(--abu-text-tertiary)] mt-0.5">
+              <p className="text-[13px] text-[var(--lingxi-text-tertiary)] mt-0.5">
                 {t.project.createDesc}
               </p>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 text-[var(--abu-text-tertiary)] hover:text-[var(--abu-text-primary)] hover:bg-[var(--abu-bg-hover)] rounded-lg"
+            className="p-1.5 text-[var(--lingxi-text-tertiary)] hover:text-[var(--lingxi-text-primary)] hover:bg-[var(--lingxi-bg-hover)] rounded-lg"
           >
             <X className="h-4 w-4" />
           </button>
@@ -209,22 +209,22 @@ export default function CreateProjectDialog({
             <div className="space-y-2 mt-4">
               <button
                 onClick={() => setMode('scratch')}
-                className="w-full flex items-center gap-3 p-4 rounded-xl border border-[var(--abu-border)] hover:border-[var(--abu-clay)] hover:bg-[var(--abu-clay-bg)] transition-colors text-left"
+                className="w-full flex items-center gap-3 p-4 rounded-xl border border-[var(--lingxi-border)] hover:border-[var(--lingxi-clay)] hover:bg-[var(--lingxi-clay-bg)] transition-colors text-left"
               >
-                <FolderPlus className="h-5 w-5 text-[var(--abu-text-tertiary)] shrink-0" />
+                <FolderPlus className="h-5 w-5 text-[var(--lingxi-text-tertiary)] shrink-0" />
                 <div>
-                  <div className="text-[14px] font-medium text-[var(--abu-text-primary)]">{t.project.modeFromScratch}</div>
-                  <div className="text-[12px] text-[var(--abu-text-tertiary)] mt-0.5">{t.project.modeFromScratchDesc}</div>
+                  <div className="text-[14px] font-medium text-[var(--lingxi-text-primary)]">{t.project.modeFromScratch}</div>
+                  <div className="text-[12px] text-[var(--lingxi-text-tertiary)] mt-0.5">{t.project.modeFromScratchDesc}</div>
                 </div>
               </button>
               <button
                 onClick={() => { setMode('existing-folder'); handleSelectFolder(); }}
-                className="w-full flex items-center gap-3 p-4 rounded-xl border border-[var(--abu-border)] hover:border-[var(--abu-clay)] hover:bg-[var(--abu-clay-bg)] transition-colors text-left"
+                className="w-full flex items-center gap-3 p-4 rounded-xl border border-[var(--lingxi-border)] hover:border-[var(--lingxi-clay)] hover:bg-[var(--lingxi-clay-bg)] transition-colors text-left"
               >
-                <FolderOpen className="h-5 w-5 text-[var(--abu-text-tertiary)] shrink-0" />
+                <FolderOpen className="h-5 w-5 text-[var(--lingxi-text-tertiary)] shrink-0" />
                 <div>
-                  <div className="text-[14px] font-medium text-[var(--abu-text-primary)]">{t.project.modeExistingFolder}</div>
-                  <div className="text-[12px] text-[var(--abu-text-tertiary)] mt-0.5">{t.project.modeExistingFolderDesc}</div>
+                  <div className="text-[14px] font-medium text-[var(--lingxi-text-primary)]">{t.project.modeExistingFolder}</div>
+                  <div className="text-[12px] text-[var(--lingxi-text-tertiary)] mt-0.5">{t.project.modeExistingFolderDesc}</div>
                 </div>
               </button>
             </div>
@@ -235,7 +235,7 @@ export default function CreateProjectDialog({
             <div className="space-y-4 mt-4">
               {/* Name */}
               <div>
-                <label className="text-[13px] font-medium text-[var(--abu-text-secondary)] mb-1.5 block">
+                <label className="text-[13px] font-medium text-[var(--lingxi-text-secondary)] mb-1.5 block">
                   {t.project.nameLabel} *
                 </label>
                 <Input
@@ -248,20 +248,20 @@ export default function CreateProjectDialog({
 
               {/* Instructions */}
               <div>
-                <label className="text-[13px] font-medium text-[var(--abu-text-secondary)] mb-1.5 block">
+                <label className="text-[13px] font-medium text-[var(--lingxi-text-secondary)] mb-1.5 block">
                   Instructions
                 </label>
                 <Textarea
                   value={instructions}
                   onChange={(e) => setInstructions(e.target.value)}
-                  placeholder="Tell Abu how to work in this project (optional)"
+                  placeholder="Tell Lingxi how to work in this project (optional)"
                   className="min-h-[80px] resize-none"
                 />
               </div>
 
 
               {/* Project location (read-only) */}
-              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--abu-bg-subtle)] text-[12px] text-[var(--abu-text-tertiary)]">
+              <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--lingxi-bg-subtle)] text-[12px] text-[var(--lingxi-text-tertiary)]">
                 <FolderOpen className="h-3.5 w-3.5 shrink-0" />
                 <span className="truncate">
                   {projectName.trim()
@@ -283,15 +283,15 @@ export default function CreateProjectDialog({
             <div className="space-y-4 mt-4">
               {/* Folder picker */}
               <div>
-                <label className="text-[13px] font-medium text-[var(--abu-text-secondary)] mb-1.5 block">
+                <label className="text-[13px] font-medium text-[var(--lingxi-text-secondary)] mb-1.5 block">
                   {t.project.selectFolder}
                 </label>
                 <button
                   onClick={handleSelectFolder}
-                  className="w-full flex items-center gap-2 p-3 rounded-lg border border-[var(--abu-border)] hover:border-[var(--abu-clay)] transition-colors text-left"
+                  className="w-full flex items-center gap-2 p-3 rounded-lg border border-[var(--lingxi-border)] hover:border-[var(--lingxi-clay)] transition-colors text-left"
                 >
-                  <FolderOpen className="h-4 w-4 text-[var(--abu-clay)] shrink-0" />
-                  <span className="text-[13px] text-[var(--abu-text-primary)] truncate flex-1">
+                  <FolderOpen className="h-4 w-4 text-[var(--lingxi-clay)] shrink-0" />
+                  <span className="text-[13px] text-[var(--lingxi-text-primary)] truncate flex-1">
                     {selectedFolder || t.project.selectFolder}
                   </span>
                 </button>
@@ -300,8 +300,8 @@ export default function CreateProjectDialog({
               {/* Status */}
               {selectedFolder && (
                 <div className="space-y-2">
-                  {hasAbuConfig && (
-                    <div className="px-3 py-2 rounded-lg bg-[var(--abu-clay-bg)] text-[13px] text-[var(--abu-clay)]">
+                  {hasLingxiConfig && (
+                    <div className="px-3 py-2 rounded-lg bg-[var(--lingxi-clay-bg)] text-[13px] text-[var(--lingxi-clay)]">
                       ✓ {t.project.detectedConfig}
                     </div>
                   )}
@@ -315,7 +315,7 @@ export default function CreateProjectDialog({
 
               {/* Name */}
               <div>
-                <label className="text-[13px] font-medium text-[var(--abu-text-secondary)] mb-1.5 block">
+                <label className="text-[13px] font-medium text-[var(--lingxi-text-secondary)] mb-1.5 block">
                   {t.project.nameLabel} *
                 </label>
                 <Input

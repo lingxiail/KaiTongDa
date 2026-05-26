@@ -1,13 +1,13 @@
 /**
- * Project Rules — user-maintained project rules (ABU.md)
+ * Project Rules — user-maintained project rules (LINGXI.md)
  *
  * Rules are manually maintained by users (committed to git, high priority).
- * This is separate from AI-written memories (.abu/MEMORY.md).
+ * This is separate from AI-written memories (.lingxi/MEMORY.md).
  *
  * File structure:
- *   ~/.abu/ABU.md                    — User-level rules (cross-project)
- *   {workspace}/.abu/ABU.md          — Project main rules
- *   {workspace}/.abu/rules/*.md      — Modular rules (alphabetical)
+ *   ~/.lingxi/LINGXI.md                    — User-level rules (cross-project)
+ *   {workspace}/.lingxi/LINGXI.md          — Project main rules
+ *   {workspace}/.lingxi/rules/*.md      — Modular rules (alphabetical)
  */
 
 import { readTextFile, readDir, exists, mkdir } from '@tauri-apps/plugin-fs';
@@ -51,31 +51,31 @@ async function safeReadTextFile(path: string): Promise<string> {
 }
 
 /**
- * Load user-level rules from ~/.abu/ABU.md
+ * Load user-level rules from ~/.lingxi/LINGXI.md
  */
 export async function loadUserRules(): Promise<string> {
   const home = await getCachedHomeDir();
-  const rulesPath = joinPath(home, '.abu', 'ABU.md');
+  const rulesPath = joinPath(home, '.lingxi', 'LINGXI.md');
   const content = await safeReadTextFile(rulesPath);
   if (!content) return '';
   return truncateAtParagraph(content, MAX_USER_RULES_CHARS, '...(用户规则已截断)');
 }
 
 /**
- * Load project main rules from {workspace}/.abu/ABU.md
+ * Load project main rules from {workspace}/.lingxi/LINGXI.md
  */
 export async function loadProjectRules(workspacePath: string): Promise<string> {
-  const rulesPath = joinPath(workspacePath, '.abu', 'ABU.md');
+  const rulesPath = joinPath(workspacePath, '.lingxi', 'LINGXI.md');
   return await safeReadTextFile(rulesPath);
 }
 
 /**
- * Load modular rules from {workspace}/.abu/rules/*.md
+ * Load modular rules from {workspace}/.lingxi/rules/*.md
  * Files are sorted alphabetically, max MAX_RULE_FILES files.
  * Each file is prefixed with "### {filename}" header.
  */
 export async function loadModularRules(workspacePath: string): Promise<string> {
-  const rulesDir = joinPath(workspacePath, '.abu', 'rules');
+  const rulesDir = joinPath(workspacePath, '.lingxi', 'rules');
   try {
     if (!(await exists(rulesDir))) return '';
     const entries = await readDir(rulesDir);
@@ -103,9 +103,9 @@ export async function loadModularRules(workspacePath: string): Promise<string> {
 
 /**
  * Load all rules by priority (low → high):
- * 1. User-level rules (~/.abu/ABU.md)
- * 2. Project main rules ({workspace}/.abu/ABU.md)
- * 3. Modular rules ({workspace}/.abu/rules/*.md)
+ * 1. User-level rules (~/.lingxi/LINGXI.md)
+ * 2. Project main rules ({workspace}/.lingxi/LINGXI.md)
+ * 3. Modular rules ({workspace}/.lingxi/rules/*.md)
  *
  * Total budget: MAX_USER_RULES_CHARS + MAX_PROJECT_RULES_CHARS
  */
@@ -116,7 +116,7 @@ export async function loadAllRules(workspacePath: string | null): Promise<string
   try {
     const userRules = await loadUserRules();
     if (userRules.trim()) {
-      parts.push(`### 用户规则（~/.abu/ABU.md）\n${userRules.trim()}`);
+      parts.push(`### 用户规则（~/.lingxi/LINGXI.md）\n${userRules.trim()}`);
     }
   } catch (err) {
     console.warn('Failed to load user rules:', err);
@@ -127,7 +127,7 @@ export async function loadAllRules(workspacePath: string | null): Promise<string
     try {
       const projectRules = await loadProjectRules(workspacePath);
       if (projectRules.trim()) {
-        parts.push(`### 项目规则（.abu/ABU.md）\n${projectRules.trim()}`);
+        parts.push(`### 项目规则（.lingxi/LINGXI.md）\n${projectRules.trim()}`);
       }
     } catch (err) {
       console.warn('Failed to load project rules:', err);
@@ -136,7 +136,7 @@ export async function loadAllRules(workspacePath: string | null): Promise<string
     try {
       const modularRules = await loadModularRules(workspacePath);
       if (modularRules.trim()) {
-        parts.push(`### 模块化规则（.abu/rules/）\n${modularRules.trim()}`);
+        parts.push(`### 模块化规则（.lingxi/rules/）\n${modularRules.trim()}`);
       }
     } catch (err) {
       console.warn('Failed to load modular rules:', err);
@@ -155,27 +155,27 @@ export async function loadAllRules(workspacePath: string | null): Promise<string
 }
 
 /**
- * Initialize workspace rules: create template .abu/ABU.md and .abu/rules/ directory.
+ * Initialize workspace rules: create template .lingxi/LINGXI.md and .lingxi/rules/ directory.
  * Returns a description of what was created.
  */
 export async function initWorkspaceRules(workspacePath: string): Promise<string> {
-  const abuDir = joinPath(workspacePath, '.abu');
-  const rulesFile = joinPath(abuDir, 'ABU.md');
-  const rulesDir = joinPath(abuDir, 'rules');
+  const lingxiDir = joinPath(workspacePath, '.lingxi');
+  const rulesFile = joinPath(lingxiDir, 'LINGXI.md');
+  const rulesDir = joinPath(lingxiDir, 'rules');
   const results: string[] = [];
 
-  // Check if ABU.md already exists
+  // Check if LINGXI.md already exists
   if (await exists(rulesFile)) {
-    return '`.abu/ABU.md` 已存在，请直接编辑或使用 /init 技能让 AI 帮助改进。';
+    return '`.lingxi/LINGXI.md` 已存在，请直接编辑或使用 /init 技能让 AI 帮助改进。';
   }
 
-  // Ensure .abu directory exists
+  // Ensure .lingxi directory exists
   try {
-    if (!(await exists(abuDir))) {
-      await mkdir(abuDir, { recursive: true });
+    if (!(await exists(lingxiDir))) {
+      await mkdir(lingxiDir, { recursive: true });
     }
   } catch (err) {
-    console.warn('Failed to create .abu directory:', err);
+    console.warn('Failed to create .lingxi directory:', err);
   }
 
   // Create template ABU.md
@@ -183,10 +183,10 @@ export async function initWorkspaceRules(workspacePath: string): Promise<string>
 
 <!--
   这是项目规则文件，由团队成员手动维护。
-  Abu 会在每次对话中加载这些规则并严格遵守。
+  Lingxi 会在每次对话中加载这些规则并严格遵守。
   建议提交到 git，与团队共享。
 
-  注意：.abu/MEMORY.md 是 AI 自动记忆，不要提交到 git。
+  注意：.lingxi/MEMORY.md 是 AI 自动记忆，不要提交到 git。
 -->
 
 ## 项目概述
@@ -207,16 +207,16 @@ export async function initWorkspaceRules(workspacePath: string): Promise<string>
 
   try {
     await writeTextFile(rulesFile, template);
-    results.push('创建了 `.abu/ABU.md` 规则模板');
+    results.push('创建了 `.lingxi/LINGXI.md` 规则模板');
   } catch (err) {
-    results.push(`创建 ABU.md 失败: ${err}`);
+    results.push(`创建 LINGXI.md 失败: ${err}`);
   }
 
   // Create rules directory
   try {
     if (!(await exists(rulesDir))) {
       await mkdir(rulesDir, { recursive: true });
-      results.push('创建了 `.abu/rules/` 目录');
+      results.push('创建了 `.lingxi/rules/` 目录');
     }
   } catch (err) {
     results.push(`创建 rules 目录失败: ${err}`);

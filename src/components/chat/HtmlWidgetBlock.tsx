@@ -22,22 +22,22 @@ html, body { height: auto !important; min-height: 0 !important; }
 body {
   font-family: system-ui, -apple-system, sans-serif;
   font-size: 14px; line-height: 1.6;
-  color: var(--abu-text-primary); background: #fff; padding: 16px; overflow: hidden;
+  color: var(--lingxi-text-primary); background: #fff; padding: 16px; overflow: hidden;
 }
 :root {
-  --abu-primary: var(--abu-clay); --abu-text: var(--abu-text-primary); --abu-text-muted: var(--abu-text-muted);
-  --abu-bg: #fff; --abu-bg-secondary: var(--abu-bg-muted); --abu-border: var(--abu-bg-pressed);
+  --abu-primary: var(--lingxi-clay); --abu-text: var(--lingxi-text-primary); --abu-text-muted: var(--lingxi-text-muted);
+  --abu-bg: #fff; --abu-bg-secondary: var(--lingxi-bg-muted); --abu-border: var(--lingxi-bg-pressed);
   --abu-font: system-ui, -apple-system, sans-serif;
 }
 button {
   cursor: pointer; font-family: inherit;
-  border: 1px solid var(--abu-border); border-radius: 6px;
-  padding: 6px 12px; background: var(--abu-bg); color: var(--abu-text);
+  border: 1px solid var(--lingxi-border); border-radius: 6px;
+  padding: 6px 12px; background: var(--lingxi-bg); color: var(--lingxi-text);
   font-size: 13px; transition: background 0.15s;
 }
-button:hover { background: var(--abu-bg-secondary); }
+button:hover { background: var(--lingxi-bg-secondary); }
 button:active { transform: scale(0.98); }
-input[type="range"] { accent-color: var(--abu-primary); }
+input[type="range"] { accent-color: var(--lingxi-primary); }
 `;
 
 // Receiver page loaded once into iframe.srcdoc — all updates come via postMessage.
@@ -194,7 +194,7 @@ function sanitizeForStreaming(html: string): string {
   // Replace empty <canvas> with loading placeholder (charts need script to render)
   safe = safe.replace(
     /<canvas([^>]*)><\/canvas>/gi,
-    '<div$1 style="display:flex;align-items:center;justify-content:center;min-height:200px;background:var(--abu-bg-secondary);border-radius:8px;color:var(--abu-text-muted);font-size:13px;">图表加载中…</div>',
+    '<div$1 style="display:flex;align-items:center;justify-content:center;min-height:200px;background:var(--lingxi-bg-secondary);border-radius:8px;color:var(--lingxi-text-muted);font-size:13px;">图表加载中…</div>',
   );
   return safe;
 }

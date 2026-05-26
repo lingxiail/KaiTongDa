@@ -34,13 +34,13 @@ function SkillPatchSummaryRow({ skillName, calls }: { skillName: string; calls: 
     <div className="my-1">
       <button
         onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--abu-border-subtle)] bg-[var(--abu-bg-muted)] text-xs text-[var(--abu-text-tertiary)] hover:bg-[var(--abu-bg-elevated)] transition-colors"
+        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg border border-[var(--lingxi-border-subtle)] bg-[var(--lingxi-bg-muted)] text-xs text-[var(--lingxi-text-tertiary)] hover:bg-[var(--lingxi-bg-elevated)] transition-colors"
       >
-        <Sparkles className="h-3.5 w-3.5 text-[var(--abu-clay)] flex-shrink-0" />
+        <Sparkles className="h-3.5 w-3.5 text-[var(--lingxi-clay)] flex-shrink-0" />
         <span className="flex-1 text-left">
           {t.toolbox.skillPatchGroupLabel}{' '}
-          <span className="font-medium text-[var(--abu-text-primary)]">{skillName}</span>
-          <span className="text-[var(--abu-text-muted)]">（{calls.length} 处）</span>
+          <span className="font-medium text-[var(--lingxi-text-primary)]">{skillName}</span>
+          <span className="text-[var(--lingxi-text-muted)]">（{calls.length} 处）</span>
         </span>
         {expanded
           ? <ChevronDown className="h-3 w-3 flex-shrink-0" />
@@ -53,7 +53,7 @@ function SkillPatchSummaryRow({ skillName, calls }: { skillName: string; calls: 
             let msg = '';
             try { msg = (JSON.parse(tc.result ?? '{}') as { message?: string }).message ?? ''; } catch { /* empty */ }
             return msg ? (
-              <div key={tc.id} className="text-[11px] text-[var(--abu-text-muted)] px-2 py-0.5">
+              <div key={tc.id} className="text-[11px] text-[var(--lingxi-text-muted)] px-2 py-0.5">
                 {msg}
               </div>
             ) : null;
@@ -428,7 +428,7 @@ export default function MessageGroup({ messages, isLastGroup: isLastGroupProp = 
           {/* ABU Avatar - only shown once for the group */}
           <div className="shrink-0 mt-0.5">
             <div className="w-7 h-7 rounded-full overflow-hidden">
-              <img src={abuAvatar} alt="Abu" className="w-full h-full object-cover" />
+              <img src={abuAvatar} alt="Lingxi" className="w-full h-full object-cover" />
             </div>
           </div>
 
@@ -439,10 +439,10 @@ export default function MessageGroup({ messages, isLastGroup: isLastGroupProp = 
                 inside a TaskBlock) and hasAnyContent flips true, hiding these dots. */}
             {isStreaming && !hasAnyContent && (
               <div className="flex items-center gap-1.5 py-2">
-                <span className="text-[12px] text-[var(--abu-text-muted)]">{t.status.thinking}</span>
-                <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[var(--abu-clay-60)]" />
-                <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[var(--abu-clay-60)]" />
-                <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[var(--abu-clay-60)]" />
+                <span className="text-[12px] text-[var(--lingxi-text-muted)]">{t.status.thinking}</span>
+                <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[var(--lingxi-clay-60)]" />
+                <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[var(--lingxi-clay-60)]" />
+                <span className="typing-dot w-1.5 h-1.5 rounded-full bg-[var(--lingxi-clay-60)]" />
               </div>
             )}
 
@@ -466,7 +466,7 @@ export default function MessageGroup({ messages, isLastGroup: isLastGroupProp = 
                       </div>
                     )}
                     {cleanedText && (
-                      <div className="text-[var(--abu-text-primary)] break-words mb-2 select-text">
+                      <div className="text-[var(--lingxi-text-primary)] break-words mb-2 select-text">
                         <MarkdownRenderer
                           content={cleanedText}
                           searchResults={searchResults.length > 0 ? searchResults : undefined}

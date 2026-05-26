@@ -1,6 +1,6 @@
 /**
  * ImportedBadge — small download icon pinned before a conversation title
- * in the sidebar, signaling that the conversation came from a `.abu.json`
+ * in the sidebar, signaling that the conversation came from a `.lingxi.json`
  * share bundle someone else exported. The recipient can still continue
  * chatting; the badge only communicates provenance.
  *
@@ -22,7 +22,7 @@ export default function ImportedBadge({ importedAt }: ImportedBadgeProps) {
     : t.share.importedBadge;
   return (
     <span
-      className="shrink-0 h-4 w-4 flex items-center justify-center rounded text-[var(--abu-clay)]"
+      className="shrink-0 h-4 w-4 flex items-center justify-center rounded text-[var(--lingxi-clay)]"
       title={title}
       aria-label={title}
     >

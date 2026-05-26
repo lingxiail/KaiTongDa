@@ -5,7 +5,7 @@
  * variables (`$DESKTOP`, `$DOCUMENT`, `$DOWNLOAD`, ...) the moment the
  * plugin initializes. Because those three variables point to folders
  * that macOS TCC protects, declaring them in the scope caused macOS to
- * throw the "Abu wants to access Desktop folder" permission dialog the
+ * throw the "Lingxi wants to access Desktop folder" permission dialog the
  * instant the app launched — before the user did anything.
  *
  * Fix (this test guards): those paths are already covered by `$HOME/**`
@@ -92,9 +92,9 @@ describe('tauri capabilities — startup TCC regression guard', () => {
 // On macOS/Linux, Tauri's tauri-plugin-fs defaults require_literal_leading_dot
 // to true (see tauri::scope::fs and tauri-plugin-fs commands.rs). That means a
 // glob pattern like "$HOME/**" does NOT match path components starting with a
-// dot, so it cannot reach "~/Documents/foo/.abu/...". To allow workspace .abu
-// directories anywhere under $HOME, we must list .abu literally in the
-// pattern: "$HOME/**/.abu" (the directory itself) and "$HOME/**/.abu/**" (its
+// dot, so it cannot reach "~/Documents/foo/.lingxi/...". To allow workspace .lingxi
+// directories anywhere under $HOME, we must list .lingxi literally in the
+// pattern: "$HOME/**/.lingxi" (the directory itself) and "$HOME/**/.lingxi/**" (its
 // contents).
 //
 // On Windows the dot rule defaults to false, so "$HOME/**" already covers
@@ -102,8 +102,8 @@ describe('tauri capabilities — startup TCC regression guard', () => {
 //
 // Symptom that originally surfaced this: project-instructions modal failed to
 // save ABU.md to a workspace under "~/Documents/...", with the Tauri error
-// "forbidden path: .../.abu, ... allow-exists permission".
-describe('tauri capabilities — workspace .abu reachability under $HOME', () => {
+// "forbidden path: .../.lingxi, ... allow-exists permission".
+describe('tauri capabilities — workspace .lingxi reachability under $HOME', () => {
   const REQUIRED_BOTH = [
     'fs:allow-read-text-file',
     'fs:allow-read-file',
@@ -119,19 +119,19 @@ describe('tauri capabilities — workspace .abu reachability under $HOME', () =>
   ] as const;
 
   it.each(REQUIRED_BOTH)(
-    '%s declares both $HOME/**/.abu and $HOME/**/.abu/**',
+    '%s declares both $HOME/**/.lingxi and $HOME/**/.lingxi/**',
     (identifier) => {
       const paths = permissionScopePaths(loadCapabilities().permissions, identifier);
-      expect(paths).toContain('$HOME/**/.abu');
-      expect(paths).toContain('$HOME/**/.abu/**');
+      expect(paths).toContain('$HOME/**/.lingxi');
+      expect(paths).toContain('$HOME/**/.lingxi/**');
     }
   );
 
-  it('fs:allow-remove declares $HOME/**/.abu/** (contents only — not the .abu dir itself)', () => {
+  it('fs:allow-remove declares $HOME/**/.lingxi/** (contents only — not the .lingxi dir itself)', () => {
     const paths = permissionScopePaths(loadCapabilities().permissions, 'fs:allow-remove');
-    expect(paths).toContain('$HOME/**/.abu/**');
-    // Intentionally NOT $HOME/**/.abu — same convention as the existing
-    // $HOME/.abu/** entry: we allow deleting files inside but not the dir.
-    expect(paths).not.toContain('$HOME/**/.abu');
+    expect(paths).toContain('$HOME/**/.lingxi/**');
+    // Intentionally NOT $HOME/**/.lingxi — same convention as the existing
+    // $HOME/.lingxi/** entry: we allow deleting files inside but not the dir.
+    expect(paths).not.toContain('$HOME/**/.lingxi');
   });
 });

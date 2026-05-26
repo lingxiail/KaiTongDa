@@ -5,7 +5,7 @@
  * switch later — this is it.
  *
  * Mounted at the top of SoulSection since proactivity is a facet of
- * Abu's persona. Matches the PRD's "主动度 Preset UI" task; stats
+ * Lingxi's persona. Matches the PRD's "主动度 Preset UI" task; stats
  * tracking (7-day accept/reject counts) is deliberately out of scope
  * until the counter infrastructure exists.
  */
@@ -35,12 +35,12 @@ export default function ProactivityPicker() {
   const setProactivity = useSettingsStore((s) => s.setProactivity);
 
   return (
-    <div className="rounded-xl border border-[var(--abu-border)] bg-[var(--abu-bg-elevated)] p-4">
+    <div className="rounded-xl border border-[var(--lingxi-border)] bg-[var(--lingxi-bg-elevated)] p-4">
       <div>
-        <h4 className="text-[14px] font-semibold text-[var(--abu-text-primary)]">
+        <h4 className="text-[14px] font-semibold text-[var(--lingxi-text-primary)]">
           {t.soul.proactivityTitle}
         </h4>
-        <p className="text-[12px] text-[var(--abu-text-muted)] mt-1 leading-relaxed">
+        <p className="text-[12px] text-[var(--lingxi-text-muted)] mt-1 leading-relaxed">
           {t.soul.proactivityDesc}
         </p>
       </div>
@@ -54,17 +54,17 @@ export default function ProactivityPicker() {
               className={cn(
                 'flex flex-col items-start gap-1 px-3 py-2.5 rounded-lg text-left transition-colors border',
                 selected
-                  ? 'bg-[var(--abu-clay-tint)] border-[var(--abu-clay-ring)]'
-                  : 'border-[var(--abu-border-subtle)] hover:bg-[var(--abu-bg-active)]',
+                  ? 'bg-[var(--lingxi-clay-tint)] border-[var(--lingxi-clay-ring)]'
+                  : 'border-[var(--lingxi-border-subtle)] hover:bg-[var(--lingxi-bg-active)]',
               )}
             >
               <div className="flex items-center gap-1.5">
                 <span className="text-base leading-none">{opt.emoji}</span>
-                <span className="text-[12px] font-semibold text-[var(--abu-text-primary)]">
+                <span className="text-[12px] font-semibold text-[var(--lingxi-text-primary)]">
                   {t.toolbox[opt.titleKey]}
                 </span>
               </div>
-              <p className="text-[11px] text-[var(--abu-text-muted)] leading-snug">
+              <p className="text-[11px] text-[var(--lingxi-text-muted)] leading-snug">
                 {t.toolbox[opt.descKey]}
               </p>
             </button>

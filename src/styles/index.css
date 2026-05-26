@@ -112,7 +112,7 @@
   display: inline-block;
   width: 2px;
   height: 1em;
-  background: var(--abu-clay);
+  background: var(--lingxi-clay);
   margin-left: 2px;
   vertical-align: text-bottom;
   animation: blink 1s steps(2) infinite;
@@ -173,54 +173,54 @@
 :root {
   --radius: 0.5rem;
 
-  /* === Abu Design Tokens (aligned with Claude Desktop) === */
+  /* === Lingxi Design Tokens (aligned with Claude Desktop) === */
 
   /* Background hierarchy (warm neutral) */
-  --abu-bg-base:    #faf9f5;   /* main content area */
-  --abu-bg-subtle:  #f8f8f4;   /* sidebar, secondary surfaces */
-  --abu-bg-muted:   #f5f3ee;   /* cards, input fields */
-  --abu-bg-hover:   #e8e5de;   /* hover state */
-  --abu-bg-active:  #f0eee6;   /* selected / active state */
-  --abu-bg-pressed: #e5e2d9;   /* pressed / toggle-off */
+  --lingxi-bg-base:    #faf9f5;   /* main content area */
+  --lingxi-bg-subtle:  #f8f8f4;   /* sidebar, secondary surfaces */
+  --lingxi-bg-muted:   #f5f3ee;   /* cards, input fields */
+  --lingxi-bg-hover:   #e8e5de;   /* hover state */
+  --lingxi-bg-active:  #f0eee6;   /* selected / active state */
+  --lingxi-bg-pressed: #e5e2d9;   /* pressed / toggle-off */
 
   /* Text hierarchy */
-  --abu-text-primary:     #141413;   /* headings, emphasis (Claude text-000) */
-  --abu-text-secondary:   #3d3929;   /* body text (Claude text-200) */
-  --abu-text-tertiary:    #656358;   /* captions, labels (Claude text-400) */
-  --abu-text-muted:       #9a9689;   /* disabled, hints */
-  --abu-text-placeholder: #b8b5ab;   /* placeholder */
+  --lingxi-text-primary:     #141413;   /* headings, emphasis (Claude text-000) */
+  --lingxi-text-secondary:   #3d3929;   /* body text (Claude text-200) */
+  --lingxi-text-tertiary:    #656358;   /* captions, labels (Claude text-400) */
+  --lingxi-text-muted:       #9a9689;   /* disabled, hints */
+  --lingxi-text-placeholder: #b8b5ab;   /* placeholder */
 
   /* Border */
-  --abu-border:        #e8e4dd;
-  --abu-border-hover:  #d0cdc6;
-  --abu-border-subtle: rgba(112, 107, 87, 0.15);
+  --lingxi-border:        #e8e4dd;
+  --lingxi-border-hover:  #d0cdc6;
+  --lingxi-border-subtle: rgba(112, 107, 87, 0.15);
 
   /* Brand / Accent — Clay */
-  --abu-clay:       #d97757;
-  --abu-clay-hover: #c86a4d;
-  --abu-clay-ring:  rgba(217, 119, 87, 0.3);  /* focus ring */
-  --abu-clay-bg:    rgba(217, 119, 87, 0.1);  /* light tint backgrounds */
-  --abu-clay-bg-15: rgba(217, 119, 87, 0.15); /* IM badge, tags */
-  --abu-clay-5:     rgba(217, 119, 87, 0.05); /* selected option bg */
-  --abu-clay-20:    rgba(217, 119, 87, 0.2);  /* emphasized badges */
-  --abu-clay-40:    rgba(217, 119, 87, 0.4);  /* avatar ring hover */
-  --abu-clay-50:    rgba(217, 119, 87, 0.5);  /* medium emphasis */
-  --abu-clay-60:    rgba(217, 119, 87, 0.6);  /* borders, stronger emphasis */
+  --lingxi-clay:       #d97757;
+  --lingxi-clay-hover: #c86a4d;
+  --lingxi-clay-ring:  rgba(217, 119, 87, 0.3);  /* focus ring */
+  --lingxi-clay-bg:    rgba(217, 119, 87, 0.1);  /* light tint backgrounds */
+  --lingxi-clay-bg-15: rgba(217, 119, 87, 0.15); /* IM badge, tags */
+  --lingxi-clay-5:     rgba(217, 119, 87, 0.05); /* selected option bg */
+  --lingxi-clay-20:    rgba(217, 119, 87, 0.2);  /* emphasized badges */
+  --lingxi-clay-40:    rgba(217, 119, 87, 0.4);  /* avatar ring hover */
+  --lingxi-clay-50:    rgba(217, 119, 87, 0.5);  /* medium emphasis */
+  --lingxi-clay-60:    rgba(217, 119, 87, 0.6);  /* borders, stronger emphasis */
 
   /* Semantic status */
-  --abu-success: #22c55e;
-  --abu-warning: #f59e0b;
-  --abu-danger:  #ef4444;
+  --lingxi-success: #22c55e;
+  --lingxi-warning: #f59e0b;
+  --lingxi-danger:  #ef4444;
 
   /* Legacy aliases (shadcn compat — will phase out) */
-  --claude-bg: var(--abu-bg-base);
-  --claude-text-100: var(--abu-text-primary);
-  --claude-text-200: var(--abu-text-secondary);
-  --claude-text-400: var(--abu-text-tertiary);
+  --claude-bg: var(--lingxi-bg-base);
+  --claude-text-100: var(--lingxi-text-primary);
+  --claude-text-200: var(--lingxi-text-secondary);
+  --claude-text-400: var(--lingxi-text-tertiary);
   --claude-text-500: #737163;
-  --claude-border: var(--abu-border-subtle);
-  --claude-clay: var(--abu-clay);
-  --placeholder-foreground: var(--abu-text-placeholder);
+  --claude-border: var(--lingxi-border-subtle);
+  --claude-clay: var(--lingxi-clay);
+  --placeholder-foreground: var(--lingxi-text-placeholder);
 
   /* HSL tokens from Claude */
   --background: 48 33.3% 97.1%;
@@ -372,10 +372,10 @@ input[type="range"].slider-filled {
   border-radius: 999px;
   background: linear-gradient(
     to right,
-    var(--abu-clay) 0%,
-    var(--abu-clay) var(--slider-progress, 0%),
-    var(--abu-bg-hover) var(--slider-progress, 0%),
-    var(--abu-bg-hover) 100%
+    var(--lingxi-clay) 0%,
+    var(--lingxi-clay) var(--slider-progress, 0%),
+    var(--lingxi-bg-hover) var(--slider-progress, 0%),
+    var(--lingxi-bg-hover) 100%
   );
   cursor: pointer;
 }
@@ -386,7 +386,7 @@ input[type="range"].slider-filled::-webkit-slider-thumb {
   height: 14px;
   border-radius: 50%;
   background: white;
-  border: 2px solid var(--abu-clay);
+  border: 2px solid var(--lingxi-clay);
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }
@@ -395,7 +395,7 @@ input[type="range"].slider-filled::-moz-range-thumb {
   height: 14px;
   border-radius: 50%;
   background: white;
-  border: 2px solid var(--abu-clay);
+  border: 2px solid var(--lingxi-clay);
   cursor: pointer;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
 }

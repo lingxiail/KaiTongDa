@@ -1,12 +1,12 @@
 /**
  * Custom HTTP Adapter
  *
- * Sends raw JSON with AbuMessage fields.
+ * Sends raw JSON with LingxiMessage fields.
  * Supports custom headers (e.g. Authorization) passed via sendMessage.
  */
 
 import { BaseAdapter } from './base';
-import type { AdapterConfig, AbuMessage } from './types';
+import type { AdapterConfig, LingxiMessage } from './types';
 
 export class CustomAdapter extends BaseAdapter {
   readonly config: AdapterConfig = {
@@ -18,7 +18,7 @@ export class CustomAdapter extends BaseAdapter {
     supportsCard: false,
   };
 
-  formatOutbound(message: AbuMessage): unknown {
+  formatOutbound(message: LingxiMessage): unknown {
     return {
       title: message.title,
       content: message.content,

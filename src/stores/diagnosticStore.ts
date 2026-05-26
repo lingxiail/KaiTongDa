@@ -127,7 +127,7 @@ export const useDiagnosticStore = create<DiagnosticStore>()(
       clearResults: () => set({ results: {}, lastCheckedAt: null }),
     }),
     {
-      name: 'abu-diagnostic-store',
+      name: 'lingxi-diagnostic-store',
       version: 1,
       partialize: (s) => ({
         results: s.results,

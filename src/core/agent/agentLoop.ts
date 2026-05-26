@@ -157,8 +157,8 @@ function persistExecutionSnapshot(conversationId: string, loopId: string): void 
 }
 
 /**
- * Abu's default soul — factory personality.
- * Used when ~/.abu/SOUL.md is empty or doesn't exist.
+ * Lingxi's default soul — factory personality.
+ * Used when ~/.lingxi/SOUL.md is empty or doesn't exist.
  * Exported so orchestrator can use it as fallback.
  */
 export function getDefaultSoul(): string {
@@ -183,15 +183,15 @@ export function getDefaultSoul(): string {
 }
 
 /**
- * Abu's capability prompt — always injected, cannot be overridden by SOUL.md.
+ * Lingxi's capability prompt — always injected, cannot be overridden by SOUL.md.
  * Contains operational rules: visualization, work style, permissions, extensions.
  */
 export function getCapabilityPrompt(): string {
   const win = isWindows();
   const dangerousCmd = win ? 'del /s /q' : 'rm -rf';
-  const abuDir = win ? '%USERPROFILE%\\.abu\\' : '~/.abu/';
-  const skillPathTmpl = win ? '%USERPROFILE%\\.abu\\skills\\{技能名}\\' : '~/.abu/skills/{技能名}/';
-  const agentPathTmpl = win ? '%USERPROFILE%\\.abu\\agents\\{代理名}\\' : '~/.abu/agents/{代理名}/';
+  const lingxiDir = win ? '%USERPROFILE%\\.lingxi\\' : '~/.lingxi/';
+  const skillPathTmpl = win ? '%USERPROFILE%\\.lingxi\\skills\\{技能名}\\' : '~/.lingxi/skills/{技能名}/';
+  const agentPathTmpl = win ? '%USERPROFILE%\\.lingxi\\agents\\{代理名}\\' : '~/.lingxi/agents/{代理名}/';
 
   return `## 可视化输出 — 生成式 UI（重要！）
 当用户需要图表、可视化、交互式演示、动画、UI 原型、数据展示、流程解释等视觉内容时，
@@ -232,7 +232,7 @@ export function getCapabilityPrompt(): string {
 普通命令（run_command）可以直接执行，事后汇报结果即可。
 
 ## 扩展能力目录结构
-灵犀的扩展能力存放在用户主目录的 ${abuDir} 文件夹下：
+灵犀的扩展能力存放在用户主目录的 ${lingxiDir} 文件夹下：
 - **skills/** - 技能目录，每个技能包含 SKILL.md 文件，路径：${skillPathTmpl}SKILL.md
 - **agents/** - 代理目录，每个代理包含 AGENT.md 文件，路径：${agentPathTmpl}AGENT.md
 
@@ -488,7 +488,7 @@ export function isInteractiveDesktop(
  *
  * Memory extraction (the other isInteractiveDesktop consumer) is
  * intentionally NOT gated this way: memdir works without a workspace
- * (global `~/.abu/memory/`), so extraction stays useful even before
+ * (global `~/.lingxi/memory/`), so extraction stays useful even before
  * the user picks a project.
  *
  * Pure function, exported for testing.
@@ -774,7 +774,7 @@ export async function runAgentLoop(conversationId: string, userMessage: string, 
     type: 'agentStart',
     timestamp: Date.now(),
     conversationId,
-    agentName: route.name ?? 'abu',
+    agentName: route.name ?? 'lingxi',
     loopId,
   });
 
@@ -1046,7 +1046,7 @@ export async function runAgentLoop(conversationId: string, userMessage: string, 
       // Only affects toolCallsForContext (sent to LLM), not toolCalls (shown in UI).
       messagesForContext = applyMicroCompaction(messagesForContext);
 
-      // Inject compression hint into volatile system prompt so Abu can naturally acknowledge it
+      // Inject compression hint into volatile system prompt so Lingxi can naturally acknowledge it
       if (compressionApplied) {
         const compressionHint: PromptSection = {
           name: 'compression-hint',
@@ -1521,7 +1521,7 @@ export async function runAgentLoop(conversationId: string, userMessage: string, 
           type: 'agentEnd',
           timestamp: Date.now(),
           conversationId,
-          agentName: route.name ?? 'abu',
+          agentName: route.name ?? 'lingxi',
           loopId,
           reason: endReason,
         });

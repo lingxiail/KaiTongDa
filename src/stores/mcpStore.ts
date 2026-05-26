@@ -192,7 +192,7 @@ export const useMCPStore = create<MCPStore>()(
       },
     })),
     {
-      name: 'abu-mcp-store',
+      name: 'lingxi-mcp-store',
       version: 1,
       // Only persist server configs, not runtime status
       partialize: (state) => ({
