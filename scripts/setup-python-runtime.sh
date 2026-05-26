@@ -145,7 +145,7 @@ rm -rf "$LIBDIR/ensurepip" 2>/dev/null || true
 if [[ "$OS" == "Darwin" ]] && [[ -n "${APPLE_SIGNING_IDENTITY:-}" ]]; then
   echo "[setup-python] Signing binaries for macOS..."
   find "$TARGET_PATH" \( -name "*.so" -o -name "*.dylib" -o -name "python3" -o -name "python3.12" \) \
-    -exec codesign --force --sign "$APPLE_SIGNING_IDENTITY" --timestamp {} \; 2>/dev/null || true
+    -exec codesign --force --sign "$APPLE_SIGNING_IDENTITY" --options runtime --timestamp {} \;
   echo "[setup-python] Signing done."
 elif [[ "$OS" == "Darwin" ]]; then
   echo "[setup-python] Note: No APPLE_SIGNING_IDENTITY set, skipping code signing."
