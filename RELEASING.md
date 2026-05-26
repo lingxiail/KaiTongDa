@@ -1,6 +1,6 @@
 # Release Notes Convention
 
-Abu 的 release notes 写作规范。配合 `CLAUDE.md` 的 Release Process 一节使用。
+Lingxi 的 release notes 写作规范。配合 `CLAUDE.md` 的 Release Process 一节使用。
 
 > **核心原则**：跟 commit message 一样双语，但**中文为主，英文点睛**，不要每行翻译。Patch 走极简、Minor+ 走完整，永远写"为什么"和具体数字。
 
@@ -22,10 +22,10 @@ Abu 的 release notes 写作规范。配合 `CLAUDE.md` 的 Release Process 一�
 - [用户能看到的影响 2]
 - [必要时给出关键技术细节，例如"9 处 spawn 加 CREATE_NO_WINDOW"]
 
-Full Changelog: https://github.com/PM-Shawn/Abu-Cowork/compare/vX.Y.Z-1...vX.Y.Z
+Full Changelog: https://github.com/PM-Shawn/Lingxi-Cowork/compare/vX.Y.Z-1...vX.Y.Z
 ```
 
-**参考范例**：[v0.13.6](https://github.com/PM-Shawn/Abu-Cowork/releases/tag/v0.13.6)（Windows PowerShell 弹窗修复）。
+**参考范例**：[v0.13.6](https://github.com/PM-Shawn/Lingxi-Cowork/releases/tag/v0.13.6)（Windows PowerShell 弹窗修复）。
 
 **反例**：v0.13.5 仅 "See the assets below" — 用户不知道这版改了什么，不要再这样写。
 
@@ -58,10 +58,10 @@ Full Changelog: https://github.com/PM-Shawn/Abu-Cowork/compare/vX.Y.Z-1...vX.Y.Z
 - 重点功能 + 重点 fix，不需要逐条翻译
 - 末尾可附 migration / breaking 提示
 
-**Full Changelog**: https://github.com/PM-Shawn/Abu-Cowork/compare/vX.Y-1.0...vX.Y.0
+**Full Changelog**: https://github.com/PM-Shawn/Lingxi-Cowork/compare/vX.Y-1.0...vX.Y.0
 ```
 
-**参考范例**：[v0.13.9](https://github.com/PM-Shawn/Abu-Cowork/releases/tag/v0.13.9)（PPTX 预览 + 官网刷新）、[v0.13.12](https://github.com/PM-Shawn/Abu-Cowork/releases/tag/v0.13.12)（诊断面板 + confirm-dialog 修复）。
+**参考范例**：[v0.13.9](https://github.com/PM-Shawn/Lingxi-Cowork/releases/tag/v0.13.9)（PPTX 预览 + 官网刷新）、[v0.13.12](https://github.com/PM-Shawn/Lingxi-Cowork/releases/tag/v0.13.12)（诊断面板 + confirm-dialog 修复）。
 
 **English Summary 何时加**：会发到公众号 / 官网下载页 / 海外渠道时加；纯内部修复不加。
 

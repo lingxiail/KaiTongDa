@@ -1,4 +1,4 @@
-# Abu (阿布) — AI Desktop Office Assistant
+# Lingxi (灵犀) — AI Desktop Office Assistant
 
 ## Project Overview
 Local AI office assistant desktop app built with Tauri 2.0 + React + TypeScript.
@@ -61,7 +61,7 @@ Inspired by Claude Code's Cowork mode. Features multi-agent architecture with ex
 
 ## Key Commands
 - `npm run dev` — Start Vite dev server (frontend only)
-- ⚠️ **`npm run tauri:dev`** (注意冒号) — Start Tauri 桌面端,**走 dev 隔离配置** (`com.abu.app.dev`),数据写到 `~/Library/Application Support/com.abu.app.dev/`,跟正式安装的 Abu 完全隔离
+- ⚠️ **`npm run tauri:dev`** (注意冒号) — Start Tauri 桌面端,**走 dev 隔离配置** (`com.abu.app.dev`),数据写到 `~/Library/Application Support/com.abu.app.dev/`,跟正式安装的 Lingxi 完全隔离
 - ❌ **不要用 `npm run tauri dev`**(空格)—— 这会用默认 `tauri.conf.json` (`com.abu.app`),数据**会污染你正式环境的对话历史**
 - `npm run build` — Build frontend (`tsc -b && vite build`)
 - `npm run tauri build` — Build desktop app bundle
@@ -109,16 +109,16 @@ src/
 
 ### B1. Think Before Coding — 先暴露歧义，再动手
 
-Abu 的功能动辄横跨 store 持久化 / Tauri / i18n / 跨平台路径，一个词在三处可能各有定义。**不要沉默选一个解释就开干。**
+Lingxi 的功能动辄横跨 store 持久化 / Tauri / i18n / 跨平台路径，一个词在三处可能各有定义。**不要沉默选一个解释就开干。**
 
 - **Assumptions explicit**：动手前一句话说清楚你在假设什么。"我假设你说的'清空'是指清掉 conversation 列表，不是清掉 message 内容" — 比改完再回滚便宜。
 - **多个解释都摆出来**：如果用户的请求有 ≥2 种合理解读，列出来让 user 选，**不要默认挑一个就跑**。
 - **不懂就停**：发现自己在猜，就停下问。"checkpoint 这块我没读过，要我先读 `src/core/session/` 再回答吗？"
-- **Push back when warranted**：如果有更简单的方案，说出来。Abu 的 CLAUDE.md 第 14 节已经禁了一堆过度抽象，但**简单方案的提议得你先开口**。
+- **Push back when warranted**：如果有更简单的方案，说出来。Lingxi 的 CLAUDE.md 第 14 节已经禁了一堆过度抽象，但**简单方案的提议得你先开口**。
 
 ### B2. Goal-Driven Execution — 翻译成可验证目标，再循环
 
-Abu 是 Tauri 桌面端，每轮"改 → 重启 dev → 验证"的成本比 web 项目高。**给定可验证的成功标准 → 自循环到验证通过 → 再回报**，比"我改完了你跑跑看"省一个回合。
+Lingxi 是 Tauri 桌面端，每轮"改 → 重启 dev → 验证"的成本比 web 项目高。**给定可验证的成功标准 → 自循环到验证通过 → 再回报**，比"我改完了你跑跑看"省一个回合。
 
 **把祈使句翻译成可验证目标**：
 
@@ -142,7 +142,7 @@ Abu 是 Tauri 桌面端，每轮"改 → 重启 dev → 验证"的成本比 web 
 - `npm run tauri:dev` — 抓行为类 bug（UI 改动、Tauri 调用、跨平台路径必跑，**冒号别忘**）
 - 看 MEMORY 里 `feedback_tauri_e2e_required` — Tauri 改动**真实 dev 环境跑一遍**才算完
 
-**没验证就不要说"修好了"**。build 全绿 ≠ 功能正确 — Abu 大量 bug 是行为类的（看近期 commit：批量整理对齐、草稿不显示、中文文件名 docx），build 抓不到。
+**没验证就不要说"修好了"**。build 全绿 ≠ 功能正确 — Lingxi 大量 bug 是行为类的（看近期 commit：批量整理对齐、草稿不显示、中文文件名 docx），build 抓不到。
 
 ### B3. Surgical Changes — 只动该动的
 
