@@ -18,7 +18,7 @@ import type { PermissionDuration } from '@/stores/permissionStore';
 import { useI18n } from '@/i18n';
 import { Button } from '@/components/ui/button';
 import { cn, generateId } from '@/lib/utils';
-import type { ImageAttachment } from '@/types';
+import type { ImageAttachment, ModelInfo } from '@/types';
 import { generateAttachmentId, readFileAsBase64, SUPPORTED_IMAGE_TYPES } from '@/utils/imageUtils';
 import PermissionDialog from '@/components/common/PermissionDialog';
 import FolderSelector from '@/components/common/FolderSelector';
@@ -45,6 +45,8 @@ interface FileAttachmentItem {
   path: string;
   name: string;
 }
+
+const EMPTY_MODELS: ModelInfo[] = [];
 
 /** Read a local image file path into an ImageAttachment via Tauri fs */
 async function readLocalImage(filePath: string): Promise<ImageAttachment> {
@@ -139,7 +141,7 @@ export default function ChatInput({ variant, onSend, disabled, scenarioPlacehold
   // Chat-only derived state
   const isRunning = activeConv?.status === 'running';
   const isStreaming = !isWelcome && isRunning;
-  const availableModels = useSettingsStore((s) => getActiveProvider(s)?.models ?? []);
+  const availableModels = useSettingsStore((s) => getActiveProvider(s)?.models ?? EMPTY_MODELS);
   const activeModelInfo = availableModels.find((m) => m.id === currentModel);
   const modelDisplay = activeModelInfo?.label
     ?? (currentModel ? currentModel.split('/').pop()?.split('-').slice(0, 2).join(' ') : 'Claude');

@@ -129,8 +129,8 @@ export const PROVIDER_CONFIGS = {
     baseUrl: 'https://api.deepseek.com',
     format: 'openai-compatible',
     models: [
-      { id: 'deepseek-chat', label: 'DeepSeek V3.2' },
-      { id: 'deepseek-reasoner', label: 'DeepSeek R1' },
+      { id: 'deepseek-v4-pro', label: 'DeepSeek V4 Pro', capabilities: ['thinking'] },
+      { id: 'deepseek-v4-flash', label: 'DeepSeek V4 Flash' },
     ],
   },
   moonshot: {
@@ -239,6 +239,27 @@ export function getAvailableProviders(): LLMProvider[] {
 export const AVAILABLE_MODELS = Object.fromEntries(
   Object.entries(PROVIDER_CONFIGS).map(([k, v]) => [k, v.models])
 ) as Record<LLMProvider, { id: string; label: string }[]>;
+
+const DEFAULT_PROVIDER_ID: LLMProvider = 'deepseek';
+const DEFAULT_MODEL_ID = 'deepseek-v4-pro';
+
+function createDefaultProviders(): ProviderInstance[] {
+  const config = PROVIDER_CONFIGS[DEFAULT_PROVIDER_ID];
+  return [{
+    id: DEFAULT_PROVIDER_ID,
+    source: 'builtin',
+    name: config.name,
+    enabled: true,
+    apiFormat: config.format,
+    baseUrl: config.baseUrl,
+    apiKey: '',
+    models: config.models.map((m) => ({ ...m })),
+    capabilities: config.capabilities,
+    status: 'unchecked',
+    sortOrder: 0,
+    userAdded: true,
+  }];
+}
 
 // ============================================================
 // View mode types
@@ -564,8 +585,8 @@ export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set) => ({
       // ── Provider & Model defaults ──
-      providers: [],
-      activeModel: { providerId: '', modelId: '' },
+      providers: createDefaultProviders(),
+      activeModel: { providerId: DEFAULT_PROVIDER_ID, modelId: DEFAULT_MODEL_ID },
       recentModels: [],
       favoriteModels: [],
       auxiliaryServices: {},
@@ -1440,6 +1461,10 @@ export const useSettingsStore = create<SettingsStore>()(
         // Initialize i18n module with persisted language setting
         if (state.language) {
           initLanguage(state.language);
+        }
+        if (state.providers.length === 0) {
+          state.providers = createDefaultProviders();
+          state.activeModel = { providerId: DEFAULT_PROVIDER_ID, modelId: DEFAULT_MODEL_ID };
         }
         // Validate active model points to a usable provider
         reconcileActiveProvider(state);

@@ -312,6 +312,35 @@ describe('reconcileActiveProvider', () => {
   });
 });
 
+describe('settingsStore default providers', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('uses DeepSeek as the default provider for empty settings', () => {
+    const state = useSettingsStore.getState();
+
+    expect(state.providers).toHaveLength(1);
+    expect(state.providers[0]).toMatchObject({
+      id: 'deepseek',
+      name: '深度求索 (DeepSeek)',
+      enabled: true,
+      apiFormat: 'openai-compatible',
+      baseUrl: 'https://api.deepseek.com',
+      apiKey: '',
+      userAdded: true,
+    });
+    expect(state.providers[0].models.map((m) => m.id)).toEqual([
+      'deepseek-v4-pro',
+      'deepseek-v4-flash',
+    ]);
+    expect(state.activeModel).toEqual({
+      providerId: 'deepseek',
+      modelId: 'deepseek-v4-pro',
+    });
+  });
+});
+
 // ─── Whitespace trimming at the store boundary ──────────────────
 // Regression coverage for the trailing-space-in-baseUrl bug:
 // users pasting URLs like "http://x.com/ " would hit /%20/v1/... 404s.
